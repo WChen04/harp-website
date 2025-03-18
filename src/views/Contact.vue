@@ -108,7 +108,7 @@
 import ContactCard from "@/components/Contact/ContactCard.vue";
 import GradientButton from "@/components/Buttons/GradientButton.vue";
 import Footer from "@/components/General/Footer.vue";
-import singleIcon from "@/assets/HARPResearchLockUps/Icons/SingleIcon.png";
+import singleIcon from "@/assets/HARPResearchLockUps/Icons/singleIcon.png";
 import doubleIcon from "@/assets/HARPResearchLockUps/Icons/doubleIcon.png";
 import { ref } from "vue";
 
