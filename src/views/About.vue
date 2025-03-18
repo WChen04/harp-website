@@ -53,7 +53,7 @@
         </div>
         <img
           class="mission-img"
-          src="../assets/HARPResearchLockUps/Photos/orientation_1.jpg"
+          src="@/assets/HARPResearchLockUps/Photos/orientation_1.jpg"
           alt="team photo"
         />
       </div>
