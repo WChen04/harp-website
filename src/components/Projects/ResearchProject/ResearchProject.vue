@@ -32,7 +32,7 @@
           ea voluptate velit esse quam nihil molestiae consequatur, vel illum
           qui dolorem eum fugiat quo voluptas nulla pariatur?"
         </p>
-        <img src="../assets/clearGraph.png" alt="clear graph" />
+        <img src="../../../assets/HARPResearchLockUps/Graphs/clearGraph.png" alt="clear graph" />
         <p>
           "Sed ut perspiciatis unde omnis iste natus error sit voluptatem
           accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae
@@ -83,8 +83,8 @@
           qui dolorem eum fugiat quo voluptas nulla pariatur?"
         </p>
         <div class="double-graph">
-          <img src="../assets/growthGraph.png" alt="fish graph" />
-          <img src="../assets/growthGraph.png" alt="fish graph" />
+          <img src="../../../assets/HARPResearchLockUps/Graphs/growthGraph.png" alt="fish graph" />
+          <img src="../../../assets/HARPResearchLockUps/Graphs/growthGraph.png" alt="fish graph" />
         </div>
         <p>
           "Sed ut perspiciatis unde omnis iste natus error sit voluptatem

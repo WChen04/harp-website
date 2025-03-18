@@ -8,11 +8,11 @@
       <div class="values">
         <div class="values-img">
           <img
-            src="../assets/HARPResearchLockUps/Photos/orientation_2.JPG"
+            src="../assets/HARPResearchLockUps/Photos/orientation_2.jpg"
             alt="team photo"
           />
           <img
-            src="../assets/HARPResearchLockUps/Photos/orientation_3.JPG"
+            src="../assets/HARPResearchLockUps/Photos/orientation_3.jpg"
             alt="team photo"
           />
         </div>
@@ -53,7 +53,7 @@
         </div>
         <img
           class="mission-img"
-          src="../assets/HARPResearchLockUps/Photos/orientation_1.JPG"
+          src="../assets/HARPResearchLockUps/Photos/orientation_1.jpg"
           alt="team photo"
         />
       </div>
