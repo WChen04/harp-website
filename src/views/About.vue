@@ -8,11 +8,11 @@
       <div class="values">
         <div class="values-img">
           <img
-            src="../assets/HARPResearchLockUps/Photos/orientation_2.jpg"
+            src="@/assets/HARPResearchLockUps/Photos/orientation_2.jpg"
             alt="team photo"
           />
           <img
-            src="../assets/HARPResearchLockUps/Photos/orientation_3.jpg"
+            src="@/assets/HARPResearchLockUps/Photos/orientation_3.jpg"
             alt="team photo2"
           />
         </div>
