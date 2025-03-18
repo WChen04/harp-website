@@ -13,7 +13,7 @@
           />
           <img
             src="../assets/HARPResearchLockUps/Photos/orientation_3.jpg"
-            alt="team photo"
+            alt="team photo2"
           />
         </div>
         <div class="values-text">
