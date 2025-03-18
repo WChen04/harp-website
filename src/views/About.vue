@@ -8,11 +8,11 @@
       <div class="values">
         <div class="values-img">
           <img
-            src="@/assets/HARPResearchLockUps/Photos/orientation_2.jpg"
+            src="@/assets/HARPResearchLockUps/Photos/o2.jpg"
             alt="team photo"
           />
           <img
-            src="@/assets/HARPResearchLockUps/Photos/orientation_3.jpg"
+            src="@/assets/HARPResearchLockUps/Photos/o3.jpg"
             alt="team photo2"
           />
         </div>
@@ -53,13 +53,12 @@
         </div>
         <img
           class="mission-img"
-          src="@/assets/HARPResearchLockUps/Photos/orientation_1.jpg"
+          src="@/assets/HARPResearchLockUps/Photos/o1.jpg"
           alt="team photo"
         />
       </div>
     </div>
     <div class="team">
-      <h1 class="team-header">Meet the team</h1>
       <h2 class="team-foundersHeader">Founders & Management</h2>
       <div class="team-foundersCards">
         <TeamMember
@@ -111,6 +110,7 @@ import GeneralButton from "@/components/About/GeneralButton.vue";
 import CareersButton from "@/components/About/CareersButton.vue";
 import Footer from "@/components/General/Footer.vue";
 import TeamMembers from "@/components/About/teamMembers.json";
+
 
 const selectedFilter = ref("all");
 const filteredTeamMembers = computed(() => {
