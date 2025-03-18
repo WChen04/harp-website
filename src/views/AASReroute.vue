@@ -27,7 +27,7 @@
 
 <script setup>
 import ContactCard from "@/components/Contact/ContactCard.vue";
-import singleIcon from "@/assets/HARPResearchLockUps/Icons/SingleIcon.png";
+import singleIcon from "@/assets/HARPResearchLockUps/Icons/singleIcon.png";
 import doubleIcon from "@/assets/HARPResearchLockUps/Icons/doubleIcon.png";
 import Footer from "@/components/General/Footer.vue";
 </script>
