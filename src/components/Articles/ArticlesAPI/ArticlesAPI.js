@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VUE_APP_BACKEND_URL; // Adjust URL based on your backend
-
+const API_URL = 'http://localhost:3000'; // Adjust URL based on your backend
 
 export const articleAPI = {
     async getArticles() {

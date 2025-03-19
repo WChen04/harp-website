@@ -18,24 +18,50 @@
 import { computed } from 'vue'
 
 const props = defineProps({
-  "Article ID": Number, 
+  articleId: Number,  // Changed from "Article ID"
   image_url: String,
   date: String,
   read_time: String,
   title: String,
   intro: String,
   link: String,
+  topStory: Boolean
 })
 
 const resolvedImageUrl = computed(() => {
-  return new URL(`../../../assets/HARPResearchLockUps/Photos/${props.image_url.split('/').pop()}`, import.meta.url).href
+  if (!props.image_url) {
+    return ''; // Or a default image URL
+  }
+  
+  try {
+    return new URL(
+      `../../../assets/HARPResearchLockUps/Photos/${props.image_url.split('/').pop()}`, 
+      import.meta.url
+    ).href;
+  } catch (error) {
+    console.error('Error resolving image URL:', error);
+    return ''; // Or a default image URL
+  }
 })
 
 const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  return date.toISOString().split('T')[0];
+  if (!dateString) return 'No date'; // Handle null/undefined case
+  
+  try {
+    const date = new Date(dateString);
+    
+    // Check if date is valid
+    if (isNaN(date.getTime())) {
+      console.log('Invalid date value:', dateString);
+      return 'Invalid date';
+    }
+    
+    return date.toISOString().split('T')[0];
+  } catch (error) {
+    console.error('Error formatting date:', error, dateString);
+    return 'Error';
+  }
 }
-
 const navigateToArticle = () => {
   if (props.link) {
     window.open(props.link, '_blank')

@@ -51,11 +51,28 @@ export default {
   },
   methods: {
     resolveImageUrl(imageUrl) {
-      return new URL(`../../../../assets/HARPResearchLockUps/Photos/${imageUrl.split('/').pop()}`, import.meta.url).href
+      if (!imageUrl) {
+        return ''; // Or a default image URL
+      }
+      return new URL(`../../../assets/HARPResearchLockUps/Photos/${imageUrl.split('/').pop()}`, import.meta.url).href
     },
     formatDate(dateString) {
-      const date = new Date(dateString);
-      return date.toISOString().split('T')[0];
+      if (!dateString) return 'No date available';
+      
+      try {
+        // If dateString is already a Date object
+        const date = typeof dateString === 'object' ? dateString : new Date(dateString);
+        
+        // Check if date is valid
+        if (isNaN(date.getTime())) {
+          return 'Invalid date';
+        }
+        
+        return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD
+      } catch (error) {
+        console.error('Error formatting date:', error);
+        return 'Error formatting date';
+      }
     },
     navigateToArticle(article) {
       if (article.link) {

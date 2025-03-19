@@ -18,7 +18,14 @@
       <PostCard
         v-for="(post, index) in displayedArticles"
         :key="post['Article ID']"
-        v-bind="post"
+        :article-id="post['Article ID']"
+        :image_url="post.image_url"
+        :date="post.date"
+        :read_time="post.read_time"
+        :title="post.title"
+        :intro="post.intro"
+        :link="post.link"
+        :top-story="post.TopStory"
       />
     </div>
     <button v-if="canLoadMore" @click="loadMore" class="load-more-btn">
