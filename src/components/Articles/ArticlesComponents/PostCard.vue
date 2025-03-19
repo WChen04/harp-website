@@ -28,7 +28,7 @@ const props = defineProps({
 })
 
 const resolvedImageUrl = computed(() => {
-  return new URL(`../../../../assets/HARPResearchLockUps/Photos/${props.image_url.split('/').pop()}`, import.meta.url).href
+  return new URL(`../../../assets/HARPResearchLockUps/Photos/${props.image_url.split('/').pop()}`, import.meta.url).href
 })
 
 const formatDate = (dateString) => {

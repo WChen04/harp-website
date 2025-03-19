@@ -1,7 +1,7 @@
 import axios from 'axios';
-import 'dotenv/config';
 
-const API_URL = process.env.BACKEND_URL; // Adjust URL based on your backend
+const API_URL = import.meta.env.VUE_APP_BACKEND_URL; // Adjust URL based on your backend
+
 
 export const articleAPI = {
     async getArticles() {
