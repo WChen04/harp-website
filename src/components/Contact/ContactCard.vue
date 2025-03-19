@@ -92,6 +92,7 @@ const cardStyle = computed(() => {
     margin-bottom: 1em;
   }
 }
+
 .card {
   background: rgb(21, 139, 194);
   background: linear-gradient(

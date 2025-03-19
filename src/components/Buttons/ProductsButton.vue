@@ -20,7 +20,7 @@ export default {
   .blue-button {
     font-size: 1em;
     padding: 0.5em 0.75em;
-    width: 40%;
+    /* width: 40%; */
   }
   .blue-button svg {
     margin-left: 0.25em;
@@ -47,6 +47,7 @@ export default {
   cursor: pointer;
   transition: background-color 0.3s ease;
   text-decoration: none;
+  width: 8em;
 }
 
 .blue-button:hover {

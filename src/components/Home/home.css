@@ -228,14 +228,8 @@
   }
 }
 
-@media (min-width: 961px) {
-  /* tablet, landscape iPad, lo-res laptops ands desktops */
-}
-@media (min-width: 1025px) {
+@media (min-width: 1440px) {
   /* big landscape tablets, laptops, and desktops */
-}
-@media (min-width: 1281px) {
-  /* hi-res laptops and desktops */
 }
 
 .product-text {
@@ -397,4 +391,8 @@
 .images img:nth-child(2):hover {
   transform: scale(1.2);
   z-index: 10;
+}
+
+.projects-line {
+  background-color: #4a4a4a;
 }

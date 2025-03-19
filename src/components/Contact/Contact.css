@@ -74,6 +74,35 @@
     font-size: 1em;
   }
 }
+@media (min-width: 1024px) {
+ 
+  .modal-content {
+    padding: 1em;
+    border-radius: 1em;
+    max-width: 100%;
+  }
+  .modal-content h2,
+  .modal-content form div,
+  .modal-content input {
+    font-size: 1.5em;
+    border-radius: 0.75em;
+  }
+  .modal-content label {
+    font-size: 1em;
+  }
+  .modal-content textarea {
+    height: 11em;
+    border-radius: 1em;
+  }
+  .modal-content button {
+    padding: 0.5em 0.75em;
+    font-size: .75em;
+    /* margin-right: 3em; */
+  }
+  .close-icon {
+    font-size: 1em;
+  }
+}
 
 h1 {
   /* padding-top: 10rem; */

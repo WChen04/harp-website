@@ -1,83 +1,24 @@
-@media (min-width: 320px) {
-  #opening-line {
-    top: 8em;
-    left: 3em;
-    font-size: 0.5em;
-    width: 100%;
-    line-height: 2.5em;
-  }
-  #second-line {
-    margin-top: 1em;
-    font-size: 0.5rem;
-    line-height: 1.5em;
-    width: 60%;
-  }
-  #demo-canvas {
-    clip-path: inset(0 0 65% 0);
-  }
-  .action-items {
-    margin-top: 2em;
-    display: flex;
-    align-items: center;
-  }
-}
-@media (min-width: 390px) {
-  #demo-canvas {
-    clip-path: inset(0 0 70% 0);
-  }
-}
-@media (min-width: 412px) {
-  #demo-canvas {
-    clip-path: inset(0 0 75% 0);
-  }
-}
-@media (min-width: 768px) {
-  #opening-line {
-    top: 9em;
-    left: 4em;
-    font-size: 0.75em;
-    width: 100%;
-    line-height: 2.5em;
-  }
-  #second-line {
-    margin-top: 1em;
-    font-size: 0.8rem;
-    line-height: 1.3em;
-    width: 45%;
-  }
-  #demo-canvas {
-    clip-path: inset(0 0 70% 0);
-  }
-  .action-items {
-    margin-top: 2em;
-    display: flex;
-    align-items: center;
-  }
-}
-
-@media (min-width: 961px) {
-  /* tablet, landscape iPad, lo-res laptops ands desktops */
-}
-@media (min-width: 1025px) {
-  /* big landscape tablets, laptops, and desktops */
-}
-@media (min-width: 1281px) {
-  /* hi-res laptops and desktops */
-}
-
-.canvas-container {
-  position: relative;
-  width: 100%;
-}
 .action-items {
   display: flex;
   align-items: center;
 }
+
+#opening-line-parent{
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  /* align-items: center; */
+  /* justify-content: center; */
+}
+
 #opening-line {
-  position: absolute;
+  width: 50%;
   color: white;
   z-index: 10; /* Ensures the heading is on top of the canvas */
   text-align: left;
+  display: flex;
+  flex-direction: column;
+  row-gap: 15px;
 }
 .gradient-text {
   background: linear-gradient(
@@ -92,6 +33,50 @@
 }
 
 #demo-canvas {
+  /* background: #161616; */
   background: #161616;
-  width: 100%;
+  width: 100vw;
+  height: 33vh;
+  position: absolute;
 }
+
+/*Changed min to max width here since the default css is acceptable for desktop pages*/
+
+@media (max-width: 1281px) {
+  /* hi-res laptops and desktops */
+}
+
+@media (max-width: 1025px) {
+  #opening-line-parent{
+    padding: 9em 5em;
+    font-size: 0.75em;
+  }
+}
+
+@media (max-width: 961px) {
+  /* tablet, landscape iPad, lo-res laptops ands desktops */
+}
+
+@media (max-width: 768px) {   
+  #opening-line{
+    width: 100%;
+    padding: 20px;
+  }
+  #opening-line-parent{
+    padding: 7em 3em;
+    font-size: 0.75em;
+  }
+ 
+}
+
+@media (max-width: 320px) {
+  #opening-line{
+    width: 100%;
+    padding: 10px;
+  }
+  #opening-line-parent{
+    padding: 7em 3em;
+    font-size: 0.5em;
+  }
+}
+

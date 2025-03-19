@@ -62,14 +62,17 @@ export default {
       <h1 id="intro2">Projects</h1>
       <div class="harp2">
         <div class="vertical-line"></div>
+       
         <div class="harpinfo2">
           <h1 id="projectstext">
             Transforming AI's powerful predictions into ultra-compact tools,
             small enough to fit on <br />
             <span class="gradient-text">a calculator.</span>
-          </h1>
-          <ProjectsButton />
+          </h1> <ProjectsButton />
+          
         </div>
+       
+   
         <div>
           <img
             src="../assets/HARPResearchLockUps/Photos/HARP Research Chip.webp"
@@ -87,8 +90,7 @@ export default {
           With 65+ years of AI expertise, we’ve created Polymorphic AI—an
           efficient, open-source framework anyone can use,<br />
           <span class="product-text">no super computer needed.</span>
-        </h1>
-        <ProductsButton></ProductsButton>
+        </h1><ProductsButton></ProductsButton>
       </div>
       <Cube></Cube>
     </div>

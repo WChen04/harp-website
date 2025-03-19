@@ -48,6 +48,12 @@ export default {
     font-size: 1.2em;
   }
 }
+  @media (min-width: 1024px) {
+  .blue-button {
+    padding: 0.5em;
+    font-size: 1.2em;
+  }
+}
 .blue-button {
   background: rgb(18, 65, 136);
   background: linear-gradient(
