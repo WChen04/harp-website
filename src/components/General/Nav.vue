@@ -137,9 +137,9 @@ export default {
         <router-link class="navLink" to="/contact">Contact Us</router-link>
         <template v-if="currentUser && currentUser.full_name">
           <profile-button 
-            :full-name="currentUser.fullName" 
-            :profile-picture.sync="currentUser.profilePicture" 
-            @profile-updated="handleProfileUpdate"
+            :fullName="currentUser.full_name" 
+            :profilePicture.sync="currentUser.profile-picture" 
+            @profile-picture-updated="handleProfileUpdate"
           />
         </template>
         <template v-else>
