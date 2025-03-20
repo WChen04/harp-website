@@ -192,7 +192,7 @@ app.get('/auth/google/callback',
         const userData = encodeURIComponent(JSON.stringify({
             email: req.user.email,
             full_name: req.user.full_name,
-            profile_picture: req.user.profile_picture_data
+            profile_picture: req.user.profile_picture
         }));
         
         // Redirect to frontend with user data as URL parameter
@@ -206,7 +206,7 @@ app.get('/api/user', (req, res) => {
         res.json({
             email: req.user.email,
             full_name: req.user.full_name,
-            profile_picture: req.user.profile_picture_data
+            profile_picture: req.user.profile_picture
         });
     } else {
         res.status(401).json({ error: 'Not authenticated' });
