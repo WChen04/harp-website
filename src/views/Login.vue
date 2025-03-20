@@ -102,7 +102,7 @@ export default {
 
   handleSocialLogin(provider) {
       if (provider === 'google') {
-        window.location.href = 'http://localhost:3000 /auth/google';
+        window.location.href = 'http://localhost:3000/auth/google';
         return;
       }
     
