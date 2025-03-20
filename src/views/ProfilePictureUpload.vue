@@ -102,6 +102,7 @@ export default {
       if (contentType && contentType.includes('application/json')) {
         const userData = await response.json();
         console.log('User data fetched:', userData);
+        console.log('User Picture:', userData.profile_picture);
         
         if (userData.profile_picture) {
           this.currentPicture = userData.profile_picture;
