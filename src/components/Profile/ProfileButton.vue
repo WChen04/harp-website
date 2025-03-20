@@ -105,7 +105,6 @@
           
           if (!authCheckResponse.ok) {
             console.log('User not authenticated, redirecting to login...');
-            // Redirect to login page
             this.$router.push('/login');
             return;
           }
@@ -121,12 +120,9 @@
             // Store in localStorage
             localStorage.setItem('userData', JSON.stringify(userData));
             
-            // If there's a profile picture, use it
+            // Update the profile picture prop directly
             if (userData.profile_picture) {
-              const profileImgElements = this.$el.querySelectorAll('.profile-image');
-              profileImgElements.forEach(img => {
-                img.src = userData.profile_picture;
-              });
+              this.$emit('update:profilePicture', userData.profile_picture);
             }
           } else {
             console.error('Error loading user data:', response.status);
@@ -144,6 +140,7 @@
       },
       
       onPictureUpdated(newPictureUrl) {
+        // Update prop through parent
         this.$emit('update:profilePicture', newPictureUrl);
         this.closeModal();
         
@@ -151,6 +148,11 @@
         const userData = JSON.parse(localStorage.getItem('userData') || '{}');
         userData.profile_picture = newPictureUrl;
         localStorage.setItem('userData', JSON.stringify(userData));
+        
+        // Dispatch a global event for other components
+        window.dispatchEvent(new CustomEvent('profile-picture-updated', { 
+          detail: { profilePicture: newPictureUrl }
+        }));
         
         // Emit event to parent components
         this.$emit('profile-updated', { 
