@@ -1,6 +1,6 @@
 <script>
 import GetStarted from "./GetStarted.vue";
-import ProfileButton from "./ProfileButton.vue";
+import ProfileButton from "../Profile/ProfileButton.vue";
 import axios from 'axios';
 
 export default {

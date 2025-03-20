@@ -9,6 +9,7 @@ import Login from "@/views/Login.vue";
 import Register from "@/views/Register.vue";
 import ForgotPassword from '@/views/ForgotPassword.vue';
 import ResetPassword from '@/views/ResetPassword.vue';
+import Profile from '@/views/ProfilePictureUpload.vue';
 import OpenSourceProject from "@/components/Projects/OpenSourceProject/OpenSourceProject.vue";
 import ResearchProject from "@/components/Projects/ResearchProject/ResearchProject.vue";
 import AASReroute from "@/views/AASReroute.vue";
@@ -63,6 +64,11 @@ const routes = [
     path: "/reset-password/:token",
     name: "ResetPassword",
     component: ResetPassword,
+  },
+  {
+    path: "/profile",
+    name: "Profile",
+    component: Profile,
   },
   {
     path: "/open-source-project",

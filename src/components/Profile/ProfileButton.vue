@@ -40,9 +40,9 @@
           />
           <div class="user-name">{{ fullName }}</div>
         </div>
-        <!--<button @click="showProfilePictureModal = true; showDropdown = false" class="menu-button">
+        <button @click="showProfilePictureModal = true; showDropdown = false" class="menu-button">
           Change Profile Picture
-        </button>-->
+        </button>
         <button @click="signOut" class="sign-out-button">Sign Out</button>
       </div>
       
@@ -50,7 +50,7 @@
       <div v-if="showProfilePictureModal" class="modal-overlay" @click="closeModal">
         <div class="modal-content" @click.stop>
           <button class="close-button" @click="closeModal">&times;</button>
-          <!--<ProfilePictureUpload @picture-updated="onPictureUpdated" /> -->
+          <ProfilePictureUpload @picture-updated="onPictureUpdated" />
         </div>
       </div>
     </div>
@@ -58,13 +58,13 @@
     
   <script>
   import axios from 'axios';
-  //import ProfilePictureUpload from '../../views/ProfilePictureUpload.vue';
+  import ProfilePictureUpload from '../../views/ProfilePictureUpload.vue';
   
   export default {
     name: 'ProfileButton',
     
     components: {
-      //ProfilePictureUpload
+      ProfilePictureUpload
     },
     
     props: {
