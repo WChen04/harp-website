@@ -138,8 +138,7 @@ export default {
         <template v-if="currentUser && currentUser.full_name">
           <profile-button 
             :fullName="currentUser.full_name" 
-            :profilePicture="currentUser.profile_picture" 
-            @profile-picture-updated="handleProfileUpdate"
+            :profilePicture.sync="currentUser.profile_picture" 
           />
         </template>
         <template v-else>
