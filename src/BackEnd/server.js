@@ -28,7 +28,8 @@ app.use(session({
     cookie: {
         secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000
+        maxAge: 24 * 60 * 60 * 1000,
+        sameSite: 'lax'
     }
 }));
 
@@ -169,9 +170,9 @@ passport.use(new GoogleStrategy({
 
 // Import traditional login routes
 import loginRoutes from '../components/Login/LoginAPI.js';
-// import profileRoutes from './ProfilePictureAPI.js';
+import profileRoutes from '../components/Profile/ProfilePictureAPI.js';
 app.use('/api', loginRoutes(pool));
-//app.use('/api', profileRoutes(pool));
+app.use('/api', profileRoutes(pool));
 
 // OAuth routes
 app.get('/auth/google',
