@@ -26,7 +26,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: process.env.NODE_ENV === 'development',
+        secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000
     }
@@ -36,7 +36,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Database configuration
-// Use either API_URL or DATABASE_URL environment variable
 const dbConnectionString = process.env.DATABASE_URL;
 if (!dbConnectionString) {
     console.error("ERROR: No database connection string found in environment variables");
@@ -115,21 +114,17 @@ initializeDatabase();
 
 // Passport serialization
 passport.serializeUser((user, done) => {
-    console.log("Serializing User:", user);
     done(null, user);
 });
 
 passport.deserializeUser(async (user, done) => {
     try {
-        console.log("Deserializing User:", user);
         const { rows } = await pool.query('SELECT * FROM "Login" WHERE email = $1', [user.email]);
 
         if (rows.length === 0) {
             console.log("User not found in DB");
             return done(null, false);
         }
-
-        console.log("User found:", rows[0]);
         done(null, rows[0]);
     } catch (error) {
         console.error("Deserialization error:", error);
@@ -145,13 +140,10 @@ passport.use(new GoogleStrategy({
 },
     async (accessToken, refreshToken, profile, done) => {
         try {
-            console.log("Google Profile:", profile);
             const { rows } = await pool.query(
                 'SELECT * FROM "Login" WHERE email = $1 OR google_id = $2',
                 [profile.emails[0].value, profile.id]
             );
-            
-            console.log("Database Lookup:", rows);
 
             if (rows.length) {
                 // Update existing user
@@ -167,8 +159,6 @@ passport.use(new GoogleStrategy({
                 'INSERT INTO "Login" (email, full_name, google_id, is_active) VALUES ($1, $2, $3, true) RETURNING *',
                 [profile.emails[0].value, profile.displayName, profile.id]
             );
-
-            console.log("New User Created:", newUser.rows[0]);  
 
             return done(null, newUser.rows[0]);
         } catch (error) {
@@ -211,10 +201,6 @@ app.get('/auth/google/callback',
 
 // Add a new endpoint to check auth status
 app.get('/api/user', (req, res) => {
-    console.log("🔍 Checking User Session");
-    console.log("User:", req.user);
-    console.log("Session:", req.session);
-
     if (req.isAuthenticated()) {
         res.json({
             email: req.user.email,

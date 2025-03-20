@@ -99,6 +99,8 @@ export default (pool) => {
         const { email, password } = req.body;
         
         console.log('Login attempt for email:', email);
+        console.log('Session info:', req.session);
+        console.log('Is Passport initialized:', !!req.passport);
         
         try {
             const result = await pool.query(
@@ -131,10 +133,18 @@ export default (pool) => {
                 [email]
             );
     
-            const { password: _, ...userData } = user;
-            res.json({
-                message: 'Login successful',
-                user: userData
+            // Create Passport session - THIS IS THE KEY ADDITION
+            req.login(user, (err) => {
+                if (err) {
+                    console.error('Session creation error:', err);
+                    return res.status(500).json({ error: 'Failed to create session' });
+                }
+                
+                const { password: _, ...userData } = user;
+                return res.json({
+                    message: 'Login successful',
+                    user: userData
+                });
             });
         } catch (error) {
             console.error('Detailed login error:', {

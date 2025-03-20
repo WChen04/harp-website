@@ -77,38 +77,40 @@ export default {
 
   methods: {
     async handleLogin(event) {
-    event.preventDefault();
+      event.preventDefault();
 
-    try {
-      const response = await axios.post('http://localhost:3000/api/login', {
-        email: this.email,
-        password: this.password
-      });
+      try {
+        const response = await axios.post('http://localhost:3000/api/login', {
+            email: this.email,
+            password: this.password
+        }, {
+            withCredentials: true 
+        });
 
-      // Store user data in localStorage
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-      
-      // Emit a custom event that we'll listen for
-      window.dispatchEvent(new Event('userLoggedIn'));
-      
-      this.responseMessage = response.data.message;
-      //console.log('User Info:', response.data.user);
-      this.$router.push('/');
-    } catch (error) {
-      this.responseMessage = error.response?.data?.error || 'Login failed.';
-      console.error('Login error:', error);
-    }
-  },
-
-  handleSocialLogin(provider) {
-      if (provider === 'google') {
-        window.location.href = 'http://localhost:3000/auth/google';
-        return;
+        // Store user data in localStorage
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        
+        // Emit a custom event that we'll listen for
+        window.dispatchEvent(new Event('userLoggedIn'));
+        
+        this.responseMessage = response.data.message;
+        //console.log('User Info:', response.data.user);
+        this.$router.push('/');
+      } catch (error) {
+        this.responseMessage = error.response?.data?.error || 'Login failed.';
+        console.error('Login error:', error);
       }
-    
-      // For other providers (temporary)
-      this.responseMessage = `${provider} login not implemented yet`;
-  },
+    },
+
+    handleSocialLogin(provider) {
+        if (provider === 'google') {
+          window.location.href = 'http://localhost:3000/auth/google';
+          return;
+        }
+      
+        // For other providers (temporary)
+        this.responseMessage = `${provider} login not implemented yet`;
+    },
 
     redirectToAAS() {
       window.location.href = 'https://aas.org/membership/join';
