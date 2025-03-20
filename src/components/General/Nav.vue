@@ -61,7 +61,7 @@ export default {
         const userData = localStorage.getItem('user');
         if (userData) {
           this.currentUser = JSON.parse(userData);
-          console.log('User found in localStorage:', this.currentUser);
+          //console.log('User found in localStorage:', this.currentUser);
           return;
         }
       } catch (error) {

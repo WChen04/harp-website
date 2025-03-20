@@ -26,7 +26,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: process.env.NODE_ENV === 'production',
+        secure: process.env.NODE_ENV === 'development',
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000
     }
@@ -115,14 +115,24 @@ initializeDatabase();
 
 // Passport serialization
 passport.serializeUser((user, done) => {
-    done(null, user.email);
+    console.log("Serializing User:", user);
+    done(null, user);
 });
 
-passport.deserializeUser(async (email, done) => {
+passport.deserializeUser(async (user, done) => {
     try {
-        const { rows } = await pool.query('SELECT * FROM "Login" WHERE email = $1', [email]);
+        console.log("Deserializing User:", user);
+        const { rows } = await pool.query('SELECT * FROM "Login" WHERE email = $1', [user.email]);
+
+        if (rows.length === 0) {
+            console.log("User not found in DB");
+            return done(null, false);
+        }
+
+        console.log("User found:", rows[0]);
         done(null, rows[0]);
     } catch (error) {
+        console.error("Deserialization error:", error);
         done(error);
     }
 });
@@ -131,14 +141,17 @@ passport.deserializeUser(async (email, done) => {
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.GOOGLE_CALLBACK_URL || "http://localhost:5000/auth/google/callback"
+    callbackURL: process.env.GOOGLE_CALLBACK_URL || "http://localhost:3000/auth/google/callback"
 },
     async (accessToken, refreshToken, profile, done) => {
         try {
+            console.log("Google Profile:", profile);
             const { rows } = await pool.query(
                 'SELECT * FROM "Login" WHERE email = $1 OR google_id = $2',
                 [profile.emails[0].value, profile.id]
             );
+            
+            console.log("Database Lookup:", rows);
 
             if (rows.length) {
                 // Update existing user
@@ -154,6 +167,8 @@ passport.use(new GoogleStrategy({
                 'INSERT INTO "Login" (email, full_name, google_id, is_active) VALUES ($1, $2, $3, true) RETURNING *',
                 [profile.emails[0].value, profile.displayName, profile.id]
             );
+
+            console.log("New User Created:", newUser.rows[0]);  
 
             return done(null, newUser.rows[0]);
         } catch (error) {
@@ -196,6 +211,10 @@ app.get('/auth/google/callback',
 
 // Add a new endpoint to check auth status
 app.get('/api/user', (req, res) => {
+    console.log("🔍 Checking User Session");
+    console.log("User:", req.user);
+    console.log("Session:", req.session);
+
     if (req.isAuthenticated()) {
         res.json({
             email: req.user.email,

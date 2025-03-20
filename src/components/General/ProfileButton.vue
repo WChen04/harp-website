@@ -128,10 +128,6 @@
                 img.src = userData.profile_picture;
               });
             }
-          } else if (response.status === 401) {
-            // Not authenticated
-            console.log('User not authenticated, redirecting to login...');
-            this.$router.push('/login');
           } else {
             console.error('Error loading user data:', response.status);
           }

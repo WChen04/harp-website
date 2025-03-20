@@ -92,7 +92,7 @@ export default {
       window.dispatchEvent(new Event('userLoggedIn'));
       
       this.responseMessage = response.data.message;
-      console.log('User Info:', response.data.user);
+      //console.log('User Info:', response.data.user);
       this.$router.push('/');
     } catch (error) {
       this.responseMessage = error.response?.data?.error || 'Login failed.';
