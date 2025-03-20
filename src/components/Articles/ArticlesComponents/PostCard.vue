@@ -9,7 +9,6 @@
       <p class="post-date">{{ formatDate(date) }} • {{ read_time }}</p>
       <h3 class="post-title">{{ title }}</h3>
       <p class="post-intro">{{ intro }}</p>
-      <button class="linkedin-btn">in</button>
     </div>
   </div>
 </template>
@@ -130,18 +129,6 @@ const navigateToArticle = () => {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}
-
-.linkedin-btn {
-  background-color: #0077b5;
-  color: white;
-  padding: 0.3em 0.8em;
-  border: none;
-  border-radius: 4px;
-  font-size: 1em;
-  cursor: pointer;
-  align-self: start;
-  margin-top: auto;
 }
 
 /* Media Queries */
