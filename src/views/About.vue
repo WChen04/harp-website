@@ -62,19 +62,21 @@
       <h2 class="team-foundersHeader">Founders & Management</h2>
       <div class="team-foundersCards">
         <TeamMember
-          v-for="member in TeamMembers.filter((member) => member.founder)"
+          v-for="member in teamMembers.filter((member) => member.founder)"
           :key="member.id"
           :member="member"
         />
       </div>
       <h2 class="team-membersHeader">Team Members</h2>
-      <div class="team-buttons">
-        <GeneralButton label="View All" @click="updateFilter('all')" />
-        <GeneralButton label="Developers" @click="updateFilter('Developer')" />
-        <GeneralButton
-          label="Researchers"
-          @click="updateFilter('Researcher')"
-        />
+      <!-- Dropdown for filtering team members -->
+      <div class="team-dropdown">
+        <select @change="handleDropdownChange($event)">
+          <option value="all">View All</option>
+          <option value="Developer">Developers</option>
+          <option value="Researcher">Researchers</option>
+          <option value="Fall 2024">Fall 2024</option>
+          <option value="Spring 2025">Spring 2025</option>
+        </select>
       </div>
       <div class="team-membersCards">
         <TeamMember
@@ -102,29 +104,57 @@
     <Footer />
   </div>
 </template>
-<script setup>
-import { ref, computed } from "vue";
-import TeamMember from "@/components/About/TeamMemberCard.vue";
-import Header from "../components/General/Header.vue";
-import GeneralButton from "@/components/About/GeneralButton.vue";
-import CareersButton from "@/components/About/CareersButton.vue";
-import Footer from "@/components/General/Footer.vue";
-import TeamMembers from "@/components/About/teamMembers.json";
 
+<script setup>
+import { ref, computed, onMounted } from "vue";
+import TeamMember from "@/components/About/Frontend/TeamMemberCard.vue";
+import Header from "@/components/General/Header.vue";
+import Footer from "@/components/General/Footer.vue";
+import axios from "axios";
 
 const selectedFilter = ref("all");
+const teamMembers = ref([]);
+
 const filteredTeamMembers = computed(() => {
   if (selectedFilter.value === "all") {
-    return TeamMembers.filter((member) => !member.founder);
+    return teamMembers.value.filter((member) => !member.founder);
   }
-  return TeamMembers.filter(
-    (member) => !member.founder && member.type === selectedFilter.value
+  if (selectedFilter.value === "Fall 2024" || selectedFilter.value === "Spring 2025") {
+    return teamMembers.value.filter(
+      (member) => !member.founder && member.semester === selectedFilter.value
+    );
+  }
+  return teamMembers.value.filter(
+    (member) => !member.founder && member.member_type === selectedFilter.value
   );
 });
 
-function updateFilter(filter) {
-  selectedFilter.value = filter;
+async function fetchTeamMembers() {
+  try {
+    let url = "http://localhost:3000/api/team-members";
+    if (
+      selectedFilter.value === "Developer" ||
+      selectedFilter.value === "Researcher" ||
+      selectedFilter.value === "Fall 2024" ||
+      selectedFilter.value === "Spring 2025"
+    ) {
+      url = `http://localhost:3000/api/team-members?semester=${selectedFilter.value}`;
+    }
+    const response = await axios.get(url);
+    teamMembers.value = response.data;
+  } catch (error) {
+    console.error("Error fetching team members:", error);
+  }
 }
+
+function handleDropdownChange(event) {
+  selectedFilter.value = event.target.value;
+  fetchTeamMembers();
+}
+
+onMounted(() => {
+  fetchTeamMembers();
+});
 </script>
 
 <style scoped>
