@@ -273,6 +273,43 @@ app.get('/articles/search', async (req, res) => {
     }
 });
 
+// API Endpoint to fetch all team members from the team_members table (organized by role)
+app.get("/api/team-members", async (req, res) => {
+    try {
+      let query = `SELECT * FROM team_members`;
+      const queryParams = [];
+      
+      if (req.query.semester) {
+        // Handle both cases: member_type filter or semester filter
+        if (req.query.semester === 'Developer' || req.query.semester === 'Researcher') {
+          query += ` WHERE member_type = $1`;
+          queryParams.push(req.query.semester);
+        } else if (req.query.semester === 'Fall 2024' || req.query.semester === 'Spring 2025') {
+          query += ` WHERE semester = $1`;
+          queryParams.push(req.query.semester);
+        }
+      }
+      
+      query += ` ORDER BY 
+        CASE WHEN founder = true THEN 0 ELSE 1 END,
+        CASE 
+          WHEN role = 'CEO, Vice President of Core Research' THEN 1
+          WHEN role LIKE 'Vice President%' THEN 2
+          WHEN role = 'Marketing Manager' THEN 3
+          WHEN role LIKE 'Project Manager%' THEN 4
+          ELSE 5
+        END, 
+        role ASC,
+        name ASC`;
+      
+      const result = await pool.query(query, queryParams);
+      res.json(result.rows);
+    } catch (error) {
+      console.error('Error fetching team members:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
 app.get('/', (req, res) => {
     res.json({ message: 'Backend is running' });
 });
