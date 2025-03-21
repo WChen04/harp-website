@@ -55,13 +55,30 @@ export default {
       }
     },
     
+    updateProfilePicture(newPictureUrl) {
+      if (this.currentUser) {
+        this.currentUser.profile_picture = newPictureUrl;
+        
+        // Update localStorage
+        localStorage.setItem('user', JSON.stringify(this.currentUser));
+      }
+    },
+    
+    onProfilePictureUpdate(newPictureUrl) {
+      if (this.currentUser) {
+        this.currentUser.profile_picture = newPictureUrl;
+        
+        // Update localStorage
+        localStorage.setItem('user', JSON.stringify(this.currentUser));
+      }
+    },
+    
     async checkAuthStatus() {
       // First check localStorage (for regular login)
       try {
         const userData = localStorage.getItem('user');
         if (userData) {
           this.currentUser = JSON.parse(userData);
-          //console.log('User found in localStorage:', this.currentUser);
           return;
         }
       } catch (error) {
@@ -138,7 +155,8 @@ export default {
         <template v-if="currentUser && currentUser.full_name">
           <profile-button 
             :fullName="currentUser.full_name" 
-            :profilePicture.sync="currentUser.profile_picture" 
+            :profilePicture="currentUser.profile_picture"
+            @update:profilePicture="onProfilePictureUpdate" 
           />
         </template>
         <template v-else>
@@ -150,6 +168,8 @@ export default {
     </nav>
   </div>
 </template>
+
+
 
 <style lang="css" scoped>
 @import "./nav.css";
