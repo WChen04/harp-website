@@ -20,11 +20,19 @@ app.use(cors({
 }));
 app.use(express.json());
 
+const isAdmin = (req, res, next) => {
+    if (req.isAuthenticated() && req.user.is_admin) {
+        return next();
+    }
+    return res.status(403).json({ error: 'Access denied. Admin privileges required.' });
+};
+
 // Session configuration
 app.use(session({
     secret: process.env.SESSION_SECRET || 'your-secret-key',
     resave: false,
     saveUninitialized: false,
+    admin: false,
     cookie: {
         secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
@@ -65,6 +73,7 @@ pool.query('SELECT NOW()', (err, res) => {
 const initializeDatabase = async () => {
     try {
         // Login table
+        // In your initializeDatabase function, modify the createLoginTableQuery:
         const createLoginTableQuery = `
             CREATE TABLE IF NOT EXISTS "public"."Login" (
                 email TEXT PRIMARY KEY,
@@ -76,7 +85,8 @@ const initializeDatabase = async () => {
                 reset_token TEXT,
                 reset_token_expiry TIMESTAMP WITH TIME ZONE,
                 google_id TEXT,
-                profile_picture TEXT
+                profile_picture TEXT,
+                is_admin BOOLEAN DEFAULT false
             );
         `;
         await pool.query(createLoginTableQuery);
@@ -126,6 +136,8 @@ passport.deserializeUser(async (user, done) => {
             console.log("User not found in DB");
             return done(null, false);
         }
+        
+        // Include admin status in the user object
         done(null, rows[0]);
     } catch (error) {
         console.error("Deserialization error:", error);
@@ -147,7 +159,7 @@ passport.use(new GoogleStrategy({
             );
 
             if (rows.length) {
-                // Update existing user
+                // Update existing user but preserve admin status
                 await pool.query(
                     'UPDATE "Login" SET last_login = CURRENT_TIMESTAMP, google_id = $1, is_active = true WHERE email = $2',
                     [profile.id, profile.emails[0].value]
@@ -155,9 +167,9 @@ passport.use(new GoogleStrategy({
                 return done(null, rows[0]);
             }
 
-            // Create new user
+            // Create new user (non-admin by default)
             const newUser = await pool.query(
-                'INSERT INTO "Login" (email, full_name, google_id, is_active) VALUES ($1, $2, $3, true) RETURNING *',
+                'INSERT INTO "Login" (email, full_name, google_id, is_active, is_admin) VALUES ($1, $2, $3, true, false) RETURNING *',
                 [profile.emails[0].value, profile.displayName, profile.id]
             );
 
@@ -192,7 +204,8 @@ app.get('/auth/google/callback',
         const userData = encodeURIComponent(JSON.stringify({
             email: req.user.email,
             full_name: req.user.full_name,
-            profile_picture: req.user.profile_picture
+            profile_picture: req.user.profile_picture,
+            is_admin: req.user.is_admin
         }));
         
         // Redirect to frontend with user data as URL parameter
@@ -206,7 +219,8 @@ app.get('/api/user', (req, res) => {
         res.json({
             email: req.user.email,
             full_name: req.user.full_name,
-            profile_picture: req.user.profile_picture
+            profile_picture: req.user.profile_picture,
+            is_admin: req.user.is_admin
         });
     } else {
         res.status(401).json({ error: 'Not authenticated' });
@@ -270,6 +284,33 @@ app.get('/articles/search', async (req, res) => {
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ error: 'Search failed' });
+    }
+});
+
+app.post('/api/admin/articles', isAdmin, async (req, res) => {
+    // Admin-only functionality
+    // ...
+});
+
+app.post('/api/admin/setup', async (req, res) => {
+    try {
+        const { adminEmail, secretKey } = req.body;
+        
+        // Check a secret key from your environment for security
+        if (secretKey !== process.env.ADMIN_SETUP_KEY) {
+            return res.status(403).json({ error: 'Invalid setup key' });
+        }
+        
+        // Set the user as admin
+        await pool.query(
+            'UPDATE "Login" SET is_admin = true WHERE email = $1',
+            [adminEmail]
+        );
+        
+        res.json({ message: 'Admin setup completed successfully' });
+    } catch (error) {
+        console.error('Admin setup error:', error);
+        res.status(500).json({ error: 'Admin setup failed' });
     }
 });
 

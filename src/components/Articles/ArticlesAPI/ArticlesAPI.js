@@ -38,4 +38,4 @@ export const articleAPI = {
             throw error;
         }
     }
-};
+}
