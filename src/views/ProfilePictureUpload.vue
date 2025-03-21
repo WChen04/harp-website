@@ -3,12 +3,21 @@
     <h3>Change Profile Picture</h3>
     
     <div class="current-picture">
+      <!-- Show preview of the new image if available -->
       <img 
-        v-if="currentPicture" 
+        v-if="currentPreview" 
+        :src="currentPreview" 
+        alt="Preview" 
+        class="preview-image"
+      />
+      <!-- Show current profile picture if no preview -->
+      <img 
+        v-else-if="currentPicture" 
         :src="currentPicture" 
         alt="Current profile picture" 
         class="preview-image"
       />
+      <!-- Fallback if no image is available -->
       <div v-else class="no-picture">
         <svg 
           xmlns="http://www.w3.org/2000/svg" 
@@ -26,13 +35,8 @@
       </div>
     </div>
     
-    <div v-if="selectedFile && !currentPreview" class="selected-file">
+    <div v-if="selectedFile" class="selected-file">
       Selected file: {{ selectedFile.name }}
-    </div>
-    
-    <div v-if="currentPreview && !currentPicture" class="preview">
-      <p>Preview:</p>
-      <img :src="currentPreview" alt="Preview" class="preview-image" />
     </div>
     
     <div class="upload-controls">
@@ -93,40 +97,40 @@ export default {
     async fetchUserProfile() {
       try {
         const response = await fetch('http://localhost:3000/api/user', {
-        credentials: 'include'
-      });
-    
-    if (response.ok) {
-      // Try to check content type before parsing
-      const contentType = response.headers.get('content-type');
-      if (contentType && contentType.includes('application/json')) {
-        const userData = await response.json();
-        console.log('User data fetched:', userData);
-        console.log('User Picture:', userData.profile_picture);
-        
-        if (userData.profile_picture) {
-          this.currentPicture = userData.profile_picture;
-          
-          // Update localStorage
-          const storedData = JSON.parse(localStorage.getItem('userData') || '{}');
-          storedData.profile_picture = userData.profile_picture;
-          localStorage.setItem('userData', JSON.stringify(storedData));
+          credentials: 'include'
+        });
+      
+        if (response.ok) {
+          // Try to check content type before parsing
+          const contentType = response.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            const userData = await response.json();
+            console.log('User data fetched:', userData);
+            console.log('User Picture:', userData.profile_picture);
+            
+            if (userData.profile_picture) {
+              this.currentPicture = userData.profile_picture;
+              
+              // Update localStorage
+              const storedData = JSON.parse(localStorage.getItem('userData') || '{}');
+              storedData.profile_picture = userData.profile_picture;
+              localStorage.setItem('userData', JSON.stringify(storedData));
+            }
+          } else {
+            // Log the actual response text for debugging
+            const text = await response.text();
+            console.error('Expected JSON but got:', text);
+          }
+        } else {
+          console.error('Failed to fetch user profile:', response.status);
+          // Log response text for more details
+          const text = await response.text();
+          console.error('Error response:', text);
         }
-      } else {
-        // Log the actual response text for debugging
-        const text = await response.text();
-        console.error('Expected JSON but got:', text);
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
       }
-    } else {
-      console.error('Failed to fetch user profile:', response.status);
-      // Log response text for more details
-      const text = await response.text();
-      console.error('Error response:', text);
-    }
-  } catch (error) {
-    console.error('Error fetching user profile:', error);
-  }
-},
+    },
     
     triggerFileInput() {
       this.$refs.fileInput.click();
@@ -139,7 +143,6 @@ export default {
       // Reset previous states
       this.error = null;
       this.success = null;
-      this.currentPreview = null;
       
       // Validate file size (max 2MB)
       if (file.size > 2 * 1024 * 1024) {
@@ -215,6 +218,11 @@ export default {
         userData.profile_picture = data.profilePicture;
         localStorage.setItem('userData', JSON.stringify(userData));
         
+        // Also update the user object in localStorage
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        user.profile_picture = data.profilePicture;
+        localStorage.setItem('user', JSON.stringify(user));
+        
         // Reset file input
         this.selectedFile = null;
         this.$refs.fileInput.value = '';
@@ -224,6 +232,11 @@ export default {
         
         // Emit event for parent components
         this.$emit('picture-updated', data.profilePicture);
+        
+        // Trigger global event
+        window.dispatchEvent(new CustomEvent('profile-picture-updated', { 
+          detail: { profilePicture: data.profilePicture }
+        }));
           
       } catch (error) {
           console.error('Upload error:', error);
@@ -270,13 +283,6 @@ export default {
   text-align: center;
   margin: 10px 0;
   color: #495057;
-}
-
-.preview {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 10px 0;
 }
 
 .upload-controls {
