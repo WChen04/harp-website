@@ -285,15 +285,8 @@ export default {
       };
       this.imagePreview = null;
     },
-    checkAdminStatus() {
-      // Get user from session/storage and check if admin
-      const user = JSON.parse(localStorage.getItem('user') || '{}');
-      this.isAdmin = user.is_admin === true;
-      console.log("Admin Status: ", user.is_admin);
-    }
   },
   async mounted() {
-    this.checkAdminStatus();
     await this.fetchArticles();
   },
 };
