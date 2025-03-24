@@ -18,14 +18,14 @@ app.use(cors({
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
-app.use(express.json());
-
 const isAdmin = (req, res, next) => {
+    // Check if user is authenticated and is an admin
     if (req.isAuthenticated() && req.user.is_admin) {
         return next();
     }
-    return res.status(403).json({ error: 'Access denied. Admin privileges required.' });
+    return res.status(403).json({ error: 'Unauthorized: Admin access required' });
 };
+app.use(express.json());
 
 // Session configuration
 app.use(session({
@@ -287,30 +287,52 @@ app.get('/articles/search', async (req, res) => {
     }
 });
 
-app.post('/api/admin/articles', isAdmin, async (req, res) => {
-    // Admin-only functionality
-    // ...
-});
+//Admin only Routes:
 
-app.post('/api/admin/setup', async (req, res) => {
+import multer from 'multer';
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+app.post('/admin/articles/add', isAdmin, upload.single('image'), async (req, res) => {
     try {
-        const { adminEmail, secretKey } = req.body;
+        // Access form data
+        const { title, intro, date, read_time, link, TopStory } = req.body;
+        let image_url;
         
-        // Check a secret key from your environment for security
-        if (secretKey !== process.env.ADMIN_SETUP_KEY) {
-            return res.status(403).json({ error: 'Invalid setup key' });
+        // Handle file upload if using multer
+        if (req.file) {
+            // If using multer for file uploads
+            const fileName = `${Date.now()}-${req.file.originalname}`;
+            const uploadPath = path.join(__dirname, '../../assets/HARPResearchLockUps/Photos/', fileName);
+            
+            // Save file
+            fs.writeFileSync(uploadPath, req.file.buffer);
+            image_url = `/assets/HARPResearchLockUps/Photos/${fileName}`;
+        } 
+        // Or handle base64 image if that approach is used
+        else if (req.body.imageBase64) {
+            const base64Data = req.body.imageBase64.split(';base64,').pop();
+            const fileName = `${Date.now()}.png`;
+            const uploadPath = path.join(__dirname, '../../assets/HARPResearchLockUps/Photos/', fileName);
+            
+            // Save base64 as file
+            fs.writeFileSync(uploadPath, base64Data, {encoding: 'base64'});
+            image_url = `/assets/HARPResearchLockUps/Photos/${fileName}`;
+        } else {
+            return res.status(400).json({ error: 'No image provided' });
         }
         
-        // Set the user as admin
-        await pool.query(
-            'UPDATE "Login" SET is_admin = true WHERE email = $1',
-            [adminEmail]
+        // Insert into database
+        const result = await pool.query(
+            'INSERT INTO "Articles" (title, intro, date, read_time, link, image_url, "TopStory") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+            [title, intro, date, read_time, link, image_url, TopStory === 'true' || TopStory === true]
         );
         
-        res.json({ message: 'Admin setup completed successfully' });
+        // Return the new article
+        res.status(201).json(result.rows[0]);
     } catch (error) {
-        console.error('Admin setup error:', error);
-        res.status(500).json({ error: 'Admin setup failed' });
+        console.error('Error adding article:', error);
+        res.status(500).json({ error: 'Failed to add article', details: error.message });
     }
 });
 
