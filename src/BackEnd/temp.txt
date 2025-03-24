@@ -1,0 +1,20 @@
+
+
+
+
+Update app.vue:
+<script>
+import { useAuthStore } from './stores/auth';
+
+export default {
+  setup() {
+    const authStore = useAuthStore();
+    return { authStore };
+  },
+  
+  async mounted() {
+    // Fetch user information when the app loads
+    await this.authStore.fetchCurrentUser();
+  }
+};
+</script>

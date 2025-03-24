@@ -137,8 +137,13 @@
 <script>
 import PostCard from "./PostCard.vue";
 import { articleAPI } from '../ArticlesAPI/ArticlesAPI.js';
+import { useAuthStore } from '../../../stores/auth.js';
 
 export default {
+  setup() {
+    const authStore = useAuthStore();
+    return { authStore };
+  },
   components: { PostCard },
   data() {
     return {
@@ -171,6 +176,9 @@ export default {
     canLoadMore() {
       return this.articlesToShow < this.filteredArticles.length;
     },
+    isAdmin() {
+      return this.authStore.isAdmin;
+    }
   },
   methods: {
     async fetchArticles() {
@@ -281,10 +289,11 @@ export default {
       // Get user from session/storage and check if admin
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       this.isAdmin = user.is_admin === true;
-      console.log("Admin Status: ", this.isAdmin);
+      console.log("Admin Status: ", user.is_admin);
     }
   },
   async mounted() {
+    this.checkAdminStatus();
     await this.fetchArticles();
   },
 };

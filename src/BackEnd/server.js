@@ -1,15 +1,32 @@
 import express from 'express';
 import cors from 'cors';
 import passport from 'passport';
-import session from 'express-session';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import pg from 'pg';
+import session from 'express-session';
+import connectPgSimple from 'connect-pg-simple';
 import dotenv from 'dotenv';
  dotenv.config({ path: '../../.env' });
 
 const app = express();
 const port = process.env.PORT || 5000;
 const { Pool } = pg;
+
+// Database configuration
+const dbConnectionString = process.env.DATABASE_URL;
+if (!dbConnectionString) {
+    console.error("ERROR: No database connection string found in environment variables");
+    console.error("Please set either API_URL or DATABASE_URL in your .env file");
+}
+
+const pool = new Pool({
+    connectionString: dbConnectionString,
+    ssl: {
+        rejectUnauthorized: false
+    }
+});
+
+const pgSession = connectPgSimple(session);
 
 // Middleware
 app.use(cors({
@@ -38,25 +55,18 @@ app.use(session({
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000,
         sameSite: 'lax'
-    }
+    },
+    store: new pgSession({
+        pool: pool,                // Use the PostgreSQL pool
+        tableName: 'session',      // Use a custom session table name (default is "session")
+        createTableIfMissing: true // Automatically creates the session table if it doesn't exist
+      })
 }));
 
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Database configuration
-const dbConnectionString = process.env.DATABASE_URL;
-if (!dbConnectionString) {
-    console.error("ERROR: No database connection string found in environment variables");
-    console.error("Please set either API_URL or DATABASE_URL in your .env file");
-}
 
-const pool = new Pool({
-    connectionString: dbConnectionString,
-    ssl: {
-        rejectUnauthorized: false
-    }
-});
 
 // Database connection verification
 pool.query('SELECT NOW()', (err, res) => {
@@ -200,16 +210,8 @@ app.get('/auth/google/callback',
         failureFlash: true 
     }),
     (req, res) => {
-        // Include user data in the redirect URL
-        const userData = encodeURIComponent(JSON.stringify({
-            email: req.user.email,
-            full_name: req.user.full_name,
-            profile_picture: req.user.profile_picture,
-            is_admin: req.user.is_admin
-        }));
-        
         // Redirect to frontend with user data as URL parameter
-        res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5174'}/?userData=${userData}`);
+        res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5174'}`);
     }
 );
 
@@ -226,6 +228,22 @@ app.get('/api/user', (req, res) => {
         res.status(401).json({ error: 'Not authenticated' });
     }
 });
+
+app.get('/api/me', (req, res) => {
+    // Check if user is authenticated
+    if (!req.isAuthenticated() || !req.user) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+  
+    // Return user data (omit sensitive info)
+    return res.json({
+      id: req.user.id,
+      email: req.user.email,
+      full_name: req.user.full_name,
+      profile_picture: req.user.profile_picture,
+      is_admin: req.user.is_admin || false
+    });
+  });
 
 // Logout route
 app.get('/api/logout', (req, res) => {
