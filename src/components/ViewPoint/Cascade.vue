@@ -212,7 +212,7 @@ export default {
     max-width: 50em;
   }
   .product {
-    margin: 7vh;
+    margin: 10vh;
   }
 }
 </style>
