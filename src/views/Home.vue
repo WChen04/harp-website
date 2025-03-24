@@ -86,7 +86,7 @@ export default {
       <div class="vertical-line"></div>
       <div class="productsinfo">
         <h1 class="harpproductsinfo">
-          With 65+ years of AI expertise, we’ve created Polymorphic AI—an
+          With years of AI expertise, we’ve created Polymorphic AI—an
           efficient, open-source framework anyone can use,<br />
           <span class="product-text">no super computer needed.</span>
         </h1>
