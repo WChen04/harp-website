@@ -3,12 +3,9 @@
   align-items: center;
 }
 
-#opening-line-parent{
+#opening-line-parent {
   display: flex;
   width: 100vw;
-  height: 100vh;
-  /* align-items: center; */
-  /* justify-content: center; */
 }
 
 #opening-line {
@@ -18,7 +15,7 @@
   text-align: left;
   display: flex;
   flex-direction: column;
-  row-gap: 15px;
+  /* row-gap: 15px; */
 }
 .gradient-text {
   background: linear-gradient(
@@ -33,50 +30,69 @@
 }
 
 #demo-canvas {
-  /* background: #161616; */
   background: #161616;
   width: 100vw;
-  height: 33vh;
+  height: 50vh;
   position: absolute;
 }
 
-/*Changed min to max width here since the default css is acceptable for desktop pages*/
-
-@media (max-width: 1281px) {
-  /* hi-res laptops and desktops */
-}
-
-@media (max-width: 1025px) {
-  #opening-line-parent{
-    padding: 9em 5em;
+@media (min-width: 1024px) and (max-width: 1439px) {
+  #opening-line {
+    gap: 1em;
+  }
+  #opening-line-parent {
+    padding: 10em 6em 6em;
     font-size: 0.75em;
   }
 }
 
-@media (max-width: 961px) {
-  /* tablet, landscape iPad, lo-res laptops ands desktops */
-}
-
-@media (max-width: 768px) {   
-  #opening-line{
+@media (min-width: 768px) and (max-width: 1023px) {
+  #opening-line {
     width: 100%;
-    padding: 20px;
+    padding: 7em 3em 0em;
+    gap: 0.75em;
   }
-  #opening-line-parent{
-    padding: 7em 3em;
+  #opening-line-parent {
+    padding: 3em 2em 5em;
     font-size: 0.75em;
   }
- 
 }
 
-@media (max-width: 320px) {
-  #opening-line{
+@media (min-width: 320px) and (max-width: 767px) {
+  #opening-line {
     width: 100%;
     padding: 10px;
   }
-  #opening-line-parent{
+  #opening-line-parent {
     padding: 7em 3em;
     font-size: 0.5em;
   }
 }
 
+@media (min-width: 1440px) and (max-width: 2559px) {
+  #demo-canvas {
+    background: #161616;
+    width: 100vw;
+    position: absolute;
+  }
+  #opening-line {
+    gap: 1em;
+  }
+  #opening-line-parent {
+    padding: 10em 8em 5em;
+  }
+}
+@media (min-width: 2560px) {
+  #demo-canvas {
+    background: #161616;
+    width: 100vw;
+    position: absolute;
+  }
+  #opening-line {
+    gap: 1em;
+  }
+  #opening-line-parent {
+    padding: 10em 6em 6em;
+    font-size: 2em;
+  }
+}

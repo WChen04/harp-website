@@ -81,7 +81,7 @@
   .social-links a svg {
     width: 1em;
     height: 1em;
-    margin-right: 1em;
+    margin-right: 2em;
   }
   #followtext {
     font-size: 0.75em;
@@ -97,8 +97,50 @@
 @media (min-width: 1025px) {
   /* big landscape tablets, laptops, and desktops */
 }
-@media (min-width: 1281px) {
-  /* hi-res laptops and desktops */
+@media (min-width: 2056px) {
+  .footer-container {
+    font-size: 2.5em;
+    padding: 3em 0;
+  }
+
+  #socials a {
+    width: 20px;
+    height: 20px;
+  }
+  .vertical-line {
+    height: 10em;
+    margin: 1em 1em 0em 0em;
+  }
+  .footer-logo img {
+    width: 5em;
+    margin-bottom: 0em;
+    margin-top: 1em;
+  }
+  .footer-logo p {
+    font-size: 0.75em;
+    margin-bottom: 1em;
+  }
+  .footer-column h3 {
+    font-size: 1em;
+    margin-bottom: 0.5em;
+    margin-top: 1.5em;
+  }
+  .footer-column ul li {
+    margin-bottom: 0.5em;
+    font-size: 0.75em;
+  }
+  .footer-column p {
+    font-size: 0.75em;
+  }
+  .social-links a svg {
+    width: 1em;
+    height: 1em;
+    margin-right: 0em;
+  }
+  #followtext {
+    font-size: 0.75em;
+    padding-bottom: 0.5em;
+  }
 }
 .vertical-line {
   position: relative;
@@ -145,7 +187,8 @@
 }
 
 .footer-logo p {
-  max-width: 300px;
+  /* max-width: 300px; */
+  margin-right: 1em;
   color: #a0aec0;
   line-height: 1.5em;
   /* font-size: 1em; */

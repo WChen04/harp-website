@@ -52,5 +52,15 @@ export default {
     height: 2em;
     margin-left: 1em;
   }
+  @media (min-width: 2056px) {
+    .linkedin-icon svg {
+      width: 2em;
+      height: 2em;
+      margin-left: 0em;
+    }
+    .linkedin-icon a {
+      margin-left: 2em;
+    }
+  }
 }
 </style>
