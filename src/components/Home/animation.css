@@ -6,6 +6,7 @@
 #opening-line-parent {
   display: flex;
   width: 100vw;
+  height: 100vh;
 }
 
 #opening-line {
@@ -32,7 +33,7 @@
 #demo-canvas {
   background: #161616;
   width: 100vw;
-  height: 50vh;
+  height: 100vh;
   position: absolute;
 }
 
@@ -77,9 +78,10 @@
   }
   #opening-line {
     gap: 1em;
+    font-size: 1.5em;
   }
   #opening-line-parent {
-    padding: 10em 8em 5em;
+    padding: 25em 8em 5em;
   }
 }
 @media (min-width: 2560px) {
@@ -93,6 +95,6 @@
   }
   #opening-line-parent {
     padding: 10em 6em 6em;
-    font-size: 2em;
+    font-size: 3em;
   }
 }
