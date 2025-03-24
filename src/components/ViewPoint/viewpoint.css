@@ -307,7 +307,7 @@
   }
   .product {
     width: 85%;
-    margin: 11vh;
+    margin: 15vh;
   }
 
   .product img {
@@ -326,16 +326,16 @@
     gap: 1em;
   }
   .product-card {
-    width: 53em;
+    width: 40em;
     padding: 3em;
   }
   .product-card h1 {
     margin-bottom: 0.5em;
-    font-size: 3em;
+    font-size: 2em;
   }
 
   .product-card p {
-    font-size: 3em;
+    font-size: 2em;
     line-height: 1.5;
   }
   .product-card img {
