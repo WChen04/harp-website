@@ -10,7 +10,6 @@
     flex-direction: row;
     align-items: flex-start;
     padding: 1.5em;
-    margin: -25em 0 0 0;
   }
   .harp {
     display: flex;
@@ -25,7 +24,6 @@
 
   .founderphotos img {
     width: 2.5em;
-    margin-left: -1em;
   }
   .founderinfo {
     display: flex;
@@ -34,7 +32,7 @@
   .founderinfo h1 {
     margin: 0;
     line-height: 1.2em;
-    font-size: 0.5em;
+    font-size: 1em;
     font-weight: 400;
   }
   .harpright {
@@ -42,7 +40,7 @@
     padding-left: 7em;
   }
   .harpinfo {
-    font-size: 1em;
+    font-size: 1.5em;
     gap: 1em;
   }
   .harpprojects {
@@ -58,7 +56,7 @@
     font-size: 1em;
   }
   .harp2 {
-    margin: -3em 1em 1em 3em;
+    /* margin: -3em 1em 1em 3em; */
   }
   .harpinfo2 {
     gap: 1.5em;
@@ -105,23 +103,12 @@
     border-radius: 1em;
   }
 }
-@media (min-width: 390px) {
-  .harpstart {
-    margin: -40em 0 0 0;
-  }
-}
-@media (min-width: 412px) {
-  .harpstart {
-    margin: -45em 0 0 0;
-  }
-}
 @media (min-width: 768px) {
   .harpstart {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
     padding: 4em;
-    margin: -50em 0 0 0;
   }
   .harp {
     display: flex;
@@ -136,7 +123,6 @@
 
   .founderphotos img {
     width: 4.5em;
-    margin-left: -1em;
   }
   .founderinfo {
     display: flex;
@@ -218,20 +204,312 @@
     border-radius: 1em;
   }
 }
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .harpstart {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
     padding: 4em;
-    margin: -50em 0 0 0;
+  }
+  .harp {
+    display: flex;
+    flex-direction: column;
+    align-items: right;
+    gap: 0.25em;
+  }
+  #intro {
+    font-size: 1.5em;
+    font-weight: 400;
+  }
+
+  .founderphotos img {
+    width: 7em;
+  }
+  .founderinfo {
+    display: flex;
+    flex-direction: column;
+  }
+  .founderinfo h1 {
+    margin: 0;
+    line-height: 1.2em;
+    font-size: 1.5em;
+    font-weight: 400;
+  }
+  .harpright {
+    font-size: 0.65em;
+    padding-left: 7em;
+    width: 65%;
+  }
+  .harpinfo {
+    font-size: 1em;
+    gap: 1em;
+  }
+  .harpprojects {
+    margin: 0em;
+    gap: 1em;
+    font-size: 1.15em;
+  }
+  .harpinfo2 {
+    gap: 3em;
+    margin-left: 3em;
+  }
+  #intro2 {
+    margin: 0em 0em 2em 2em;
+    font-size: 1.5em;
+  }
+  .harp2 {
+    /* margin: -3em 1em 1em 3em; */
+  }
+  .harpinfo2 {
+    gap: 1.5em;
+    margin-left: 2em;
+  }
+  .vertical-line {
+    width: 0.1em;
+    height: 10em;
+    background-color: #4a4a4a;
+  }
+
+  .vertical-line::before {
+    top: 30%;
+    transform: translateY(-50%);
+    width: 0.2em;
+    height: 5em;
+  }
+  #projectstext {
+    font-size: 1.2em;
+    font-weight: 400;
+  }
+  #chipimg {
+    width: 17em;
+    height: 11em;
+    margin: 0em 2em 0em;
+    border-radius: 2em;
+  }
+  .harpproducts {
+    margin: 2em 0em 3em 0em;
+    font-size: 1em;
+  }
+  .harpproductsinfo {
+    font-size: 1.5em;
+  }
+  .productsinfo {
+    gap: 2em;
+  }
+  .images {
+    margin-bottom: 0rem;
+  }
+
+  .images img {
+    width: 23em;
+    height: 13em;
+    border-radius: 1em;
+  }
+}
+@media (min-width: 1440px) {
+  .harpstart {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 3em 5em 5em;
+  }
+  .harp {
+    display: flex;
+    flex-direction: column;
+    align-items: right;
+    gap: 0.25em;
+  }
+  #intro {
+    font-size: 1.75em;
+    font-weight: 500;
+  }
+
+  .founderphotos img {
+    width: 7em;
+  }
+  .founderinfo {
+    display: flex;
+    flex-direction: column;
+  }
+  .founderinfo h1 {
+    margin: 0;
+    line-height: 1.2em;
+    font-size: 1.5em;
+    font-weight: 400;
+  }
+  .harpright {
+    font-size: 0.75em;
+    padding-left: 7em;
+    width: 65%;
+  }
+  .harpinfo {
+    font-size: 1em;
+    gap: 1em;
+  }
+  .harpprojects {
+    margin: 0em;
+    gap: 1em;
+    font-size: 1.5em;
+  }
+  .harpinfo2 {
+    gap: 3em;
+    margin-left: 3em;
+  }
+  #intro2 {
+    margin: 0em 0em 3em 3em;
+    font-size: 1.2em;
+  }
+
+  .harpinfo2 {
+    gap: 1.5em;
+    margin-left: 2em;
+  }
+  .vertical-line {
+    width: 0.1em;
+    height: 10em;
+    background-color: #4a4a4a;
+  }
+
+  .vertical-line::before {
+    top: 30%;
+    transform: translateY(-50%);
+    width: 0.2em;
+    height: 5em;
+  }
+  #projectstext {
+    font-size: 1.2em;
+    font-weight: 400;
+  }
+  #chipimg {
+    width: 17em;
+    height: 11em;
+    margin: 0em 2em 0em;
+    border-radius: 2em;
+  }
+  .harpproducts {
+    margin: 2em 0em 3em 0em;
+    font-size: 1em;
+  }
+  .harpproductsinfo {
+    font-size: 2em;
+  }
+  .productsinfo {
+    gap: 2em;
+  }
+  .images {
+    margin-bottom: 0rem;
+  }
+
+  .images img {
+    width: 40em;
+    height: 25em;
+    border-radius: 1em;
   }
 }
 
-@media (min-width: 1440px) {
-  /* big landscape tablets, laptops, and desktops */
-}
+@media (min-width: 2560px) {
+  .harpstart {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 5em 12em 2em;
+  }
+  .harp {
+    display: flex;
+    flex-direction: column;
+    align-items: right;
+    gap: 3em;
+  }
+  #intro {
+    font-size: 4.5em;
+    font-weight: 400;
+  }
 
+  .founderphotos img {
+    width: 15em;
+  }
+  .founderinfo {
+    display: flex;
+    flex-direction: column;
+  }
+  .founderinfo h1 {
+    margin: 0;
+    line-height: 1.2em;
+    font-size: 4.5em;
+    font-weight: 400;
+  }
+  .harpright {
+    font-size: 1.5em;
+    padding-left: 7em;
+    width: 75%;
+  }
+  .harpinfo {
+    font-size: 1em;
+    gap: 1em;
+  }
+  .harpprojects {
+    margin: 0em;
+    gap: 1em;
+    font-size: 2em;
+  }
+  .harpinfo2 {
+    gap: 3em;
+    margin-left: 3em;
+  }
+  #intro2 {
+    margin: 2em 0em 0em 3em;
+    font-size: 2em;
+  }
+  .harp2 {
+    margin: 2em 0em 0em 6em;
+  }
+
+  .harpinfo2 {
+    gap: 1.5em;
+    margin-left: 2em;
+  }
+  .vertical-line {
+    width: 0.1em;
+    height: 15em;
+    background-color: #4a4a4a;
+  }
+
+  .vertical-line::before {
+    top: 30%;
+    transform: translateY(-50%);
+    width: 0.2em;
+    height: 5em;
+  }
+  #projectstext {
+    font-size: 1.6em;
+    font-weight: 400;
+  }
+  #chipimg {
+    width: 21em;
+    height: 14em;
+    margin: 0em 5em 0em;
+    border-radius: 2em;
+  }
+  .harpproducts {
+    margin: 2em 2em 3em 0em;
+    font-size: 2em;
+  }
+  .harpproductsinfo {
+    font-size: 2em;
+  }
+  .productsinfo {
+    gap: 2em;
+  }
+  .images {
+    margin-bottom: 0rem;
+  }
+
+  .images img {
+    width: 70em;
+    height: 40em;
+    border-radius: 1em;
+  }
+}
 .product-text {
   background: rgb(27, 104, 236);
   background: linear-gradient(

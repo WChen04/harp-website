@@ -72,8 +72,8 @@ export default {
 
 /* Image styling */
 .product img {
-  width: 100%; /* Ensure the images scale properly */
-  max-width: 600px; /* Limit the maximum size of the images */
+  width: 100%;
+  max-width: 600px;
   height: auto; /* Maintain aspect ratio */
   border-radius: 1em; /* Optional rounded corners */
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Optional shadow for depth */
@@ -147,6 +147,72 @@ export default {
   }
   .product {
     margin: 0vh;
+  }
+}
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .product1 {
+    top: 22%;
+    right: 25%;
+  }
+
+  .product2 {
+    top: 10%;
+    right: 45%;
+  }
+
+  .product3 {
+    bottom: 70%;
+    left: 45%;
+  }
+
+  .product img {
+    max-width: 16em;
+  }
+  .product {
+    margin: 0vh;
+  }
+}
+@media (min-width: 1440px) and (max-width: 2055px) {
+  .product1 {
+    top: 25%;
+    right: 25%;
+  }
+
+  .product2 {
+    top: 10%;
+    right: 45%;
+  }
+
+  .product3 {
+    bottom: 55%;
+    left: 42%;
+  }
+
+  .product img {
+    max-width: 30em;
+  }
+}
+@media (min-width: 2056px) {
+  .product1 {
+    top: 30%;
+    right: 25%;
+  }
+
+  .product2 {
+    top: 10%;
+    right: 40%;
+  }
+
+  .product3 {
+    bottom: 70%;
+    left: 50%;
+  }
+
+  .product img {
+    max-width: 50em;
+  }
+  .product {
+    margin: 7vh;
   }
 }
 </style>

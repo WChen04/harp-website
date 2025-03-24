@@ -66,11 +66,67 @@
 @media (min-width: 961px) {
   /* tablet, landscape iPad, lo-res laptops ands desktops */
 }
-@media (min-width: 1025px) {
-  /* big landscape tablets, laptops, and desktops */
+@media (min-width: 1440px) and (max-width: 2055px) {
+  .stay-in-the-loop {
+    padding: 2em;
+    border-radius: 1em;
+  }
+  .image-placeholder {
+    width: 20em;
+    height: 20em;
+  }
+  #FirstText {
+    font-size: 2.75em;
+    margin: -2% 0% 3% 8%;
+  }
+
+  #SecondaryText {
+    font-size: 2.5em;
+    margin: -2% 0% 3% 15%;
+  }
+  .subscribe-form {
+    padding: 1em 1.75em;
+    width: 80%;
+  }
+  .subscribe-form input {
+    padding: 0.5em;
+    font-size: 1.5em;
+  }
+  .subscribe-form button {
+    font-size: 1.5em;
+    padding: 0.5em;
+  }
 }
-@media (min-width: 1281px) {
-  /* hi-res laptops and desktops */
+@media (min-width: 2056px) {
+  .stay-in-the-loop {
+    padding: 10em;
+    border-radius: 3em;
+  }
+  .image-placeholder {
+    width: 30em;
+    height: 30em;
+  }
+  #FirstText {
+    font-size: 4em;
+    margin: -2% 0% 3% 8%;
+  }
+
+  #SecondaryText {
+    font-size: 3.5em;
+    margin: -2% 0% 3% 15%;
+  }
+  .subscribe-form {
+    padding: 1em 1em;
+    width: 100%;
+  }
+  .subscribe-form input {
+    padding: 1em;
+    font-size: 3em;
+  }
+  .subscribe-form button {
+    font-size: 2.5em;
+    padding: 1em;
+  }
 }
 
 #FirstText {

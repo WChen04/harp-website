@@ -26,9 +26,9 @@ export default {
     margin-left: 0.25em;
   }
 }
-@media (min-width: 768px) {
+@media (min-width: 768px) and (max-width: 1023px) {
   .blue-button {
-    font-size: 2em;
+    font-size: 1em;
     padding: 0.5em 0.75em;
     width: 30%;
   }

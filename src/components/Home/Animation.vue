@@ -2,7 +2,7 @@
 // import { initHeader, addListeners, initAnimation } from "./animation.js";
 import GetStarted from "../General/GetStarted.vue";
 import { gsap } from "gsap";
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted } from "vue";
 
 const width = ref(window.innerWidth),
   height = ref(window.innerHeight),
@@ -24,7 +24,7 @@ onUnmounted(() => {
 
 function initAnimation() {
   if (canvas.value) {
-    ctx.value = canvas.value.getContext('2d');
+    ctx.value = canvas.value.getContext("2d");
   }
   cancelAnimationFrame(animationFrame.value);
   animate();
@@ -36,7 +36,6 @@ function initAnimation() {
 }
 
 function initHeader() {
-
   // create points
   points.value = [];
   for (let x = 0; x < width.value; x = x + width.value / 10) {
@@ -129,9 +128,7 @@ function animate() {
   animationFrame.value = requestAnimationFrame(animate);
 }
 
-
-
-function addListeners(){
+function addListeners() {
   if (!("ontouchstart" in window)) {
     window.addEventListener("mousemove", mouseMove);
   }
@@ -147,7 +144,7 @@ function addListeners(){
 //   window.removeEventListener("resize", resizeWait);
 // }
 
-function resizeWait (){
+function resizeWait() {
   resize(false);
 }
 
@@ -171,7 +168,7 @@ function mouseMove(e) {
 
 const resizeFunc = () => {
   width.value = window.innerWidth;
-  height.value = window.innerHeight/3;
+  height.value = window.innerHeight / 2;
 
   if (canvas.value) {
     canvas.value.width = width.value;
@@ -180,22 +177,18 @@ const resizeFunc = () => {
   }
   initHeader();
   initAnimation();
+};
 
-  
-}
-
-function resize (init) {
-  if(init){
+function resize(init) {
+  if (init) {
     resizeFunc();
   } else {
-    if(resizeTimeout.value != null){
+    if (resizeTimeout.value != null) {
       clearTimeout(resizeTimeout.value);
     }
     resizeTimeout.value = setTimeout(resizeFunc, 100);
   }
 }
-
-
 
 function shiftPoint(p) {
   gsap.to(p, {
@@ -229,7 +222,14 @@ function Circle(pos, rad, color) {
   this.draw = function () {
     if (!_this.active) return;
     ctx.value.beginPath();
-    ctx.value.arc(_this.pos.x, _this.pos.y, _this.radius, 0, 4 * Math.PI, false);
+    ctx.value.arc(
+      _this.pos.x,
+      _this.pos.y,
+      _this.radius,
+      0,
+      4 * Math.PI,
+      false
+    );
     ctx.value.fillStyle = "rgba(16, 71, 190," + _this.active + ")";
     ctx.value.fill();
   };
@@ -259,7 +259,6 @@ function getDistance(p1, p2) {
         </div>
       </div>
     </div>
-    
   </div>
   <div id="mouse-pos" ref="mouse-pos"></div>
 </template>
