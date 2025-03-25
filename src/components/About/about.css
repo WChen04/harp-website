@@ -93,6 +93,10 @@
   .gradient-text {
     margin-bottom: 0.5em;
   }
+
+  .About .Header {
+    margin-top: -30%; /* Adjust to pull content up slightly */
+  }
 }
 @media (min-width: 768px) {
   .info-container {
@@ -189,6 +193,9 @@
   .gradient-text {
     margin-bottom: 0.5em;
   }
+  .About .Header {
+    margin-top: -3%; /* Further adjustment */
+  }
 }
 @media (min-width: 641px) {
   /* portrait tablets, portrait iPad, landscape e-readers, landscape 800x480 or 854x480 phones */
@@ -201,6 +208,241 @@
 }
 @media (min-width: 1281px) {
   /* hi-res laptops and desktops */
+}
+
+@media screen and (min-width: 1024px) and (max-width: 1440px) {
+  .info-container {
+    padding: 0 4em;
+  }
+
+  .values,
+  .mission {
+    margin: 2em 2em;
+  }
+
+  .values-text h2 {
+    font-size: 1.5em;
+  }
+
+  .values-text h5 {
+    font-size: 0.8em;
+  }
+
+  #valuetext {
+    font-size: 0.9em;
+  }
+
+  .values-img img {
+    width: 15em;
+  }
+
+  .mission-text h2 {
+    font-size: 1.5em;
+  }
+
+  .mission-text h5 {
+    font-size: 0.8em;
+  }
+
+  #missiontext {
+    font-size: 0.9em;
+  }
+
+  .mission-img {
+    width: 25em;
+  }
+
+  .team {
+    margin: 2em 4em;
+  }
+
+  .team h1 {
+    font-size: 2em;
+  }
+
+  .team h2 {
+    font-size: 1.5em;
+  }
+
+  .gradient {
+    font-size: 2.5em;
+  }
+  .About .Header {
+    margin-top: -2%; /* Fine-tune positioning */
+  }
+}
+
+@media screen and (min-width: 1440px) and (max-width: 2559px) {
+  .info-container {
+    padding: 0 6em;
+  }
+
+  .values,
+  .mission {
+    margin: 3em 3em;
+  }
+
+  .values-text h2 {
+    font-size: 2em;
+  }
+
+  .values-text h5 {
+    font-size: 1em;
+  }
+
+  #valuetext {
+    font-size: 1.1em;
+  }
+
+  .values-img img {
+    width: 20em;
+  }
+
+  .mission-text h2 {
+    font-size: 2em;
+  }
+
+  .mission-text h5 {
+    font-size: 1em;
+  }
+
+  #missiontext {
+    font-size: 1.1em;
+  }
+
+  .mission-img {
+    width: 30em;
+  }
+
+  .team {
+    margin: 3em 6em;
+  }
+
+  .team h1 {
+    font-size: 2.5em;
+  }
+
+  .team h2 {
+    font-size: 2em;
+  }
+
+  .gradient {
+    font-size: 3em;
+  }
+
+  .team-foundersCards,
+  .team-membersCards {
+    gap: 3%;
+  }
+  .About .Header {
+    margin-top: -1%; /* Subtle adjustment */
+  }
+}
+
+@media (min-width: 2560px) {
+  /* Adjust Header */
+  .About .header {
+    height: 50vh; /* Adjusted height */
+    font-size: 2.5em;
+    text-align: left;
+}
+
+.About .header h1 {
+    font-size: 5em;
+    width: 100%;
+    text-align: left;
+}
+
+.About .header h3 {
+    font-size: 2.5em;
+    max-width: 80%;
+    text-align: center;
+    line-height: 1.5;
+    margin: 0 auto; /* Center the subtitle */
+}
+  /* Values Section Enlargement */
+  .values {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 4em 6em;
+  }
+
+  .values-img {
+    display: flex;
+    align-items: center;
+    margin-right: 6em;
+  }
+
+  .values-img img {
+    width: 25em; /* Significantly larger images */
+    height: 35em; /* Fixed height to maintain aspect ratio */
+    object-fit: cover;
+    border-radius: 5%;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+  }
+
+  .values-img img:first-child {
+    margin-right: -100px; /* Overlap images */
+    z-index: 1;
+    transform: translateY(-50px);
+  }
+
+  .values-img img:last-child {
+    z-index: 2;
+    transform: translateY(50px);
+  }
+
+  .values-text {
+    max-width: 50%;
+  }
+
+  .values-text h5 {
+    font-size: 1.5em;
+  }
+
+  .values-text h2 {
+    font-size: 3em;
+  }
+
+  .gradient {
+    font-size: 4em;
+  }
+
+  #valuetext {
+    font-size: 1.5em;
+    line-height: 1.6;
+  }
+
+  /* Ensure consistent scaling for other sections */
+  .mission {
+    margin: 4em 6em;
+    display: flex;
+    align-items: center;
+  }
+
+  .mission-img {
+    width: 40em;
+    border-radius: 5%;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+  }
+
+  .mission-text h2 {
+    font-size: 3em;
+  }
+
+  #missiontext {
+    font-size: 1.5em;
+    line-height: 1.6;
+  }
+
+  .team {
+    margin: 4em 6em;
+  }
+
+  .team h2 {
+    font-size: 2.5em;
+  }
 }
 
 .info-container {
@@ -407,3 +649,4 @@ img {
   border-color: rgb(128, 68, 248);
   box-shadow: 0 0 0 2px rgba(128, 68, 248, 0.25);
 }
+

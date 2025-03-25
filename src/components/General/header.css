@@ -50,6 +50,14 @@
 @media (min-width: 1281px) {
   /* hi-res laptops and desktops */
 }
+@media(min-width: 2560px) {
+  .header h3 {
+    /* margin: 2rem; */
+    font-size: 1.5rem;
+    text-align: center;
+    z-index: 3;
+  }
+}
 .header {
   position: relative;
   background-image: url("@/assets/HARPResearchLockUps/Photos/prometheus.webp");

@@ -1,9 +1,9 @@
 <template>
   <div class="About">
-    <Header
-      title="About"
-      subtitle="We deliver next-gen AI solutions that drive innovation and unlock new possibilities"
-    />
+      <Header
+        title="About"
+        subtitle="We deliver next-gen AI solutions that drive innovation and unlock new possibilities"
+      />
     <div class="info-container">
       <div class="values">
         <div class="values-img">
