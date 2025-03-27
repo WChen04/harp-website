@@ -168,7 +168,7 @@ function mouseMove(e) {
 
 const resizeFunc = () => {
   width.value = window.innerWidth;
-  height.value = window.innerHeight / 2;
+  height.value = window.innerHeight;
 
   if (canvas.value) {
     canvas.value.width = width.value;

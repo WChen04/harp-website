@@ -160,8 +160,8 @@ nav.scrolled {
 
 @media (min-width: 2560px) {
   nav {
-    padding: 3% 5%;
-    font-size: 3em;
+    padding: 2% 5%;
+    font-size: 1.5em;
   }
 
   .nav-left, .nav-right {

@@ -417,12 +417,12 @@
     gap: 3em;
   }
   #intro {
-    font-size: 4.5em;
+    font-size: 3em;
     font-weight: 400;
   }
 
   .founderphotos img {
-    width: 15em;
+    width: 13em;
   }
   .founderinfo {
     display: flex;
@@ -431,11 +431,11 @@
   .founderinfo h1 {
     margin: 0;
     line-height: 1.2em;
-    font-size: 4.5em;
+    font-size: 3em;
     font-weight: 400;
   }
   .harpright {
-    font-size: 1.5em;
+    font-size: 1em;
     padding-left: 7em;
     width: 75%;
   }
@@ -453,8 +453,8 @@
     margin-left: 3em;
   }
   #intro2 {
-    margin: 2em 0em 0em 3em;
-    font-size: 2em;
+    margin: 3em 0em 0em 4em;
+    font-size: 1.75em;
   }
   .harp2 {
     margin: 2em 0em 0em 6em;
@@ -477,7 +477,7 @@
     height: 5em;
   }
   #projectstext {
-    font-size: 1.6em;
+    font-size: 1.2em;
     font-weight: 400;
   }
   #chipimg {
@@ -491,7 +491,7 @@
     font-size: 2em;
   }
   .harpproductsinfo {
-    font-size: 2em;
+    font-size: 1.25em;
   }
   .productsinfo {
     gap: 2em;
