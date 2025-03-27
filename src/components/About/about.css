@@ -273,6 +273,25 @@
 }
 
 @media screen and (min-width: 1440px) and (max-width: 2559px) {
+  .About .header {
+    height: 40vh; /* Adjusted height */
+    font-size: 1.5em;
+    text-align: left;
+}
+
+.About .header h1 {
+    font-size: 2.5em;
+    width: 100%;
+    text-align: left;
+}
+
+.About .header h3 {
+    font-size: 2.5em;
+    max-width: 80%;
+    text-align: center;
+    line-height: 1.5;
+    margin: 0 auto; /* Center the subtitle */
+}
   .info-container {
     padding: 0 6em;
   }
