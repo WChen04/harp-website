@@ -90,9 +90,8 @@ export default {
           open-source framework anyone can use,<br />
           <span class="product-text">no super computer needed.</span>
         </h1>
-        <<<<<<< Updated upstream
+
         <!-- <ProductsButton></ProductsButton> -->
-        =======
         <ProductsButton></ProductsButton>
         >>>>>>> Stashed changes
       </div>
