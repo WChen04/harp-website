@@ -1,9 +1,8 @@
 <template>
   <section class="top-stories">
-    <div class="carousel">
+    <div class="carousel" v-if="articles.length > 0">
       <div 
         class="story" 
-        v-if="articles.length > 0"
         @click="navigateToArticle(articles[currentStoryIndex])"
       >
         <div class="story-info">
@@ -15,21 +14,22 @@
           <p class="story-intro">{{ articles[currentStoryIndex].intro }}</p>
         </div>
         <img
-          :src="resolveImageUrl(articles[currentStoryIndex].image_url)" 
+          v-if="resolveImageUrl(articles[currentStoryIndex])"
+          :src="resolveImageUrl(articles[currentStoryIndex])" 
           alt="Story image"
           class="story-image"
         />
+        <div v-else class="placeholder-image">No Image Available</div>
       </div>
-      <div v-else>Loading...</div>
     </div>
+    <div v-else class="loading">Loading top stories...</div>
     <div class="dots" v-if="articles.length > 0">
       <span
         v-for="(article, index) in articles"
         :key="index"
         :class="{ active: index === currentStoryIndex }"
         @click="changeStory(index)"
-        >•
-      </span>
+      >•</span>
     </div>
   </section>
 </template>
@@ -41,55 +41,92 @@ export default {
   data() {
     return {
       articles: [],
-      filteredArticles: [],
-      articlesToShow: 3,
-      loading: false,
-      error: null,
       currentStoryIndex: 0,
-      carouselInterval: null
+      carouselInterval: null,
+      loading: false,
+      error: null
     };
   },
   methods: {
-    resolveImageUrl(imageUrl) {
-      if (!imageUrl) {
-        return ''; // Or a default image URL
+    resolveImageUrl(article) {
+      console.log('Resolving image for article:', article);
+      
+      // Check if article exists
+      if (!article) {
+        console.warn('No article provided');
+        return null;
       }
-      return new URL(`../../../assets/HARPResearchLockUps/Photos/${imageUrl.split('/').pop()}`, import.meta.url).href
+
+      // Check for existing imageUrl
+      if (article.imageUrl) {
+        console.log('Using existing imageUrl:', article.imageUrl);
+        return article.imageUrl;
+      }
+
+      // Fallback to default or null
+      console.warn('No image URL found for article:', article);
+      return null;
     },
     formatDate(dateString) {
       if (!dateString) return 'No date available';
       
       try {
-        // If dateString is already a Date object
-        const date = typeof dateString === 'object' ? dateString : new Date(dateString);
+        const date = new Date(dateString);
         
-        // Check if date is valid
         if (isNaN(date.getTime())) {
           return 'Invalid date';
         }
         
-        return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD
+        return date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
       } catch (error) {
         console.error('Error formatting date:', error);
         return 'Error formatting date';
       }
     },
     navigateToArticle(article) {
-      if (article.link) {
-        window.open(article.link, '_blank')
+      if (article && article.link) {
+        window.open(article.link, '_blank');
       }
     },
     async fetchArticles() {
       this.loading = true;
       this.error = null;
       try {
+        console.log('Fetching top stories...');
         const articles = await articleAPI.getTopStories();
-        console.log('Fetched Top Stories:', articles);
-        this.articles = articles;
-        this.filteredArticles = articles;
+        
+        console.log('Raw top stories:', articles);
+        
+        // Fetch images for each top story
+        const topStoriesWithImages = await Promise.all(
+          articles.map(async (article) => {
+            try {
+              const imageUrl = await articleAPI.getArticleImage(article.id);
+              console.log(`Image for article ${article.id}:`, imageUrl);
+              return { ...article, imageUrl };
+            } catch (error) {
+              console.warn(`Could not fetch image for top story ${article.id}:`, error);
+              return { ...article, imageUrl: null };
+            }
+          })
+        );
+        
+        console.log('Top Stories with Images:', topStoriesWithImages);
+        
+        this.articles = topStoriesWithImages;
+        
+        // Reset carousel if needed
+        if (this.articles.length > 0) {
+          this.currentStoryIndex = 0;
+          this.startCarousel();
+        }
       } catch (error) {
+        console.error('Error fetching top stories:', error);
         this.error = 'Failed to fetch top stories. Please try again later.';
-        console.error('Error:', error);
       } finally {
         this.loading = false;
       }
@@ -111,11 +148,7 @@ export default {
     }
   },
   mounted() {
-    this.fetchArticles().then(() => {
-      if (this.articles.length > 0) {
-        this.startCarousel();
-      }
-    });
+    this.fetchArticles();
   },
   beforeUnmount() {
     this.stopCarousel();

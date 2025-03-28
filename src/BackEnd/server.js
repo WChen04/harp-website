@@ -75,8 +75,7 @@ pool.query('SELECT NOW()', (err, res) => {
 // Initialize database
 const initializeDatabase = async () => {
     try {
-        // Login table
-        // In your initializeDatabase function, modify the createLoginTableQuery:
+        // Login table (existing code)
         const createLoginTableQuery = `
             CREATE TABLE IF NOT EXISTS "public"."Login" (
                 email TEXT PRIMARY KEY,
@@ -94,29 +93,40 @@ const initializeDatabase = async () => {
         `;
         await pool.query(createLoginTableQuery);
         
-        // Make sure articles table exists too
-        const checkArticlesTableQuery = `
-            SELECT EXISTS (
-                SELECT FROM information_schema.tables 
-                WHERE table_schema = 'public' 
-                AND table_name = 'articles'
+        // Articles table (existing code)
+        const createArticlesTableQuery = `
+            CREATE TABLE IF NOT EXISTS "public"."Articles" (
+                id SERIAL PRIMARY KEY,
+                title TEXT NOT NULL,
+                intro TEXT,
+                content TEXT,
+                date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                read_time TEXT,
+                link TEXT,
+                "TopStory" BOOLEAN DEFAULT FALSE
             );
         `;
-        const tableExists = await pool.query(checkArticlesTableQuery);
-        
-        if (!tableExists.rows[0].exists) {
-            const createArticlesTableQuery = `
-                CREATE TABLE IF NOT EXISTS "public"."articles" (
-                    id SERIAL PRIMARY KEY,
-                    title TEXT NOT NULL,
-                    intro TEXT,
-                    content TEXT,
-                    date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                    "TopStory" BOOLEAN DEFAULT FALSE
-                );
-            `;
-            await pool.query(createArticlesTableQuery);
-        }
+        await pool.query(createArticlesTableQuery);
+
+        // New ArticleImages table
+        const createArticleImagesTableQuery = `
+            CREATE TABLE IF NOT EXISTS "public"."ArticleImages" (
+                id SERIAL PRIMARY KEY,
+                article_id INTEGER NOT NULL,
+                image_data BYTEA NOT NULL,
+                image_mimetype VARCHAR(100) NOT NULL,
+                uploaded_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (article_id) REFERENCES "public"."Articles"(id) ON DELETE CASCADE
+            );
+        `;
+        await pool.query(createArticleImagesTableQuery);
+
+        // Create index on article_id in ArticleImages table
+        const createArticleImagesIndexQuery = `
+            CREATE INDEX IF NOT EXISTS idx_article_images_article_id 
+            ON "public"."ArticleImages"(article_id);
+        `;
+        await pool.query(createArticleImagesIndexQuery);
         
         console.log('Database initialized successfully');
     } catch (error) {
@@ -254,9 +264,11 @@ app.get('/articles', async (req, res) => {
     console.log('Received GET request to /articles');
     try {
         console.log('Attempting to query database');
-        const { rows } = await pool.query('SELECT * FROM articles ORDER BY date DESC');
-        console.log(`Query successful. Retrieved ${rows.length} articles`);
-        res.json(rows);
+        const articlesResult = await pool.query(
+            'SELECT id, title, intro, date, read_time, link, "TopStory" FROM "Articles"'
+        );
+        console.log(`Query successful. Retrieved ${articlesResult.rows.length} articles`);
+        res.json(articlesResult.rows);
     } catch (error) {
         console.error('Detailed error in /articles route:', error);
         res.status(500).json({
@@ -266,13 +278,49 @@ app.get('/articles', async (req, res) => {
     }
 });
 
+//Retrieve Articles Image
+app.get('/articles/:id/image', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        // Fetch image for specific article
+        const result = await pool.query(
+            'SELECT image_data, image_mimetype FROM "ArticleImages" WHERE article_id = $1',
+            [id]
+        );
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'No image found' });
+        }
+        
+        const { image_data, image_mimetype } = result.rows[0];
+        
+        res.contentType(image_mimetype);
+        res.send(image_data);
+    } catch (error) {
+        console.error('Error retrieving image:', error);
+        res.status(500).json({ error: 'Failed to retrieve image', details: error.message });
+    }
+});
+
 app.get('/articles/top', async (req, res) => {
     console.log('Received GET request to /articles/top');
     try {
-        console.log('Attempting to query database for top stories');
-        const { rows } = await pool.query('SELECT * FROM articles WHERE "TopStory" = TRUE ORDER BY date DESC');
-        console.log(`Query successful. Retrieved ${rows.length} top stories`);
-        res.json(rows);
+        console.log('Executing query: SELECT * FROM "Articles" WHERE "TopStory" = TRUE ORDER BY date DESC');
+        
+        const topStoriesResult = await pool.query(
+            'SELECT * FROM "Articles" WHERE "TopStory" = TRUE ORDER BY date DESC'
+        );
+        
+        // Log full details of each row
+        topStoriesResult.rows.forEach((row, index) => {
+            console.log(`Top Story ${index + 1}:`, JSON.stringify(row, null, 2));
+            console.log(`TopStory value type: ${typeof row.TopStory}, value: ${row.TopStory}`);
+        });
+        
+        console.log(`Retrieved ${topStoriesResult.rows.length} top stories`);
+        
+        res.json(topStoriesResult.rows);
     } catch (error) {
         console.error('Detailed error in /articles/top route:', error);
         res.status(500).json({
@@ -301,57 +349,57 @@ app.get('/articles/search', async (req, res) => {
 //Admin only Routes:
 
 import multer from 'multer';
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+import path from 'path';
+const upload = multer({ 
+    storage: multer.memoryStorage(),
+    fileFilter: (req, file, cb) => {
+        if (!file.originalname.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+            return cb(new Error('Only image files are allowed!'), false);
+        }
+        cb(null, true);
+    },
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5MB file size limit
+    }
+});
 
 app.post('/admin/articles/add', upload.single('image'), async (req, res) => {
+    const client = await pool.connect();
+    
     try {
-        console.log('Request body:', req.body);
-        console.log('Request file:', req.file);
-        // Access form data
+        // Start a transaction
+        await client.query('BEGIN');
+
+        // Extract article data
         const { title, intro, date, read_time, link, TopStory } = req.body;
-        //let image_url;
         
-        // Handle file upload if using multer
-        // if (req.file) {
-        //     // If using multer for file uploads
-        //     const fileName = `${Date.now()}-${req.file.originalname}`;
-        //     const uploadPath = path.join(__dirname, '../../assets/HARPResearchLockUps/Photos/', fileName);
-            
-        //     // Save file
-        //     fs.writeFileSync(uploadPath, req.file.buffer);
-        //     image_url = `/assets/HARPResearchLockUps/Photos/${fileName}`;
-        // } 
-        // // Or handle base64 image if that approach is used
-        // else if (req.body.imageBase64) {
-        //     const base64Data = req.body.imageBase64.split(';base64,').pop();
-        //     const fileName = `${Date.now()}.png`;
-        //     const uploadPath = path.join(__dirname, '../../assets/HARPResearchLockUps/Photos/', fileName);
-            
-        //     // Save base64 as file
-        //     fs.writeFileSync(uploadPath, base64Data, {encoding: 'base64'});
-        //     image_url = `/assets/HARPResearchLockUps/Photos/${fileName}`;
-        // } else {
-        //     return res.status(400).json({ error: 'No image provided' });
-        // }
-        
-        // Insert into database
-        // const result = await pool.query(
-        //     'INSERT INTO "Articles" (title, intro, date, read_time, link, image_url, "TopStory") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-        //     [title, intro, date, read_time, link, image_url, TopStory === 'true' || TopStory === true]
-        // );
-        
-        //Test
-        const result = await pool.query(
-            'INSERT INTO "articles" (title, intro, date, read_time, link, image_url, "TopStory") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-            [title, intro, date, read_time, link, "vision_webp", TopStory === 'true' || TopStory === true]
+        // Insert article first
+        const articleResult = await client.query(
+            'INSERT INTO "Articles" (title, intro, date, read_time, link, "TopStory") VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
+            [title, intro, date, read_time, link, TopStory === 'true' || TopStory === true]
         );
         
-        // Return the new article
-        res.status(201).json(result.rows[0]);
+        const articleId = articleResult.rows[0].id;
+
+        // Handle image if uploaded
+        if (req.file) {
+            await client.query(
+                'INSERT INTO "ArticleImages" (article_id, image_data, image_mimetype) VALUES ($1, $2, $3)',
+                [articleId, req.file.buffer, req.file.mimetype]
+            );
+        }
+
+        // Commit the transaction
+        await client.query('COMMIT');
+
+        res.status(201).json({ id: articleId, message: 'Article added successfully' });
     } catch (error) {
+        // Rollback the transaction in case of error
+        await client.query('ROLLBACK');
         console.error('Error adding article:', error);
         res.status(500).json({ error: 'Failed to add article', details: error.message });
+    } finally {
+        client.release();
     }
 });
 

@@ -3,6 +3,15 @@ import axios from 'axios';
 const API_URL = 'http://localhost:3000'; // Adjust URL based on your backend
 
 export const articleAPI = {
+    async getArticles() {
+        try {
+            const response = await axios.get(`${API_URL}/articles`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching articles:', error);
+            throw error;
+        }
+    },
     async addArticle(articleData, token) {
         try {
             const response = await axios.post(`${API_URL}/admin/articles/add`, articleData, {
@@ -17,18 +26,17 @@ export const articleAPI = {
             throw error;
         }
     },
-    async getArticles() {
+    async getArticleImage(articleId) {
         try {
-            console.log('Sending request to:', `${API_URL}/articles`);
-            const response = await axios.get(`${API_URL}/articles`);
-            console.log("Get complete");
-            return response.data;
+            const response = await axios.get(`${API_URL}/articles/${articleId}/image`, {
+                responseType: 'blob'
+            });
+            return URL.createObjectURL(response.data);
         } catch (error) {
-            console.error('Error fetching articles:', error);
-            throw error;
+            console.error('Error retrieving article image:', error);
+            return null;
         }
     },
-
     async getTopStories() {
         try {
             console.log('Sending request for Top Stories to:', `${API_URL}/articles/top`);

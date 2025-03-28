@@ -20,15 +20,15 @@
     <div class="posts">
       <PostCard
         v-for="(post, index) in displayedArticles"
-        :key="post['Article ID']"
-        :article-id="post['Article ID']"
-        :image_url="post.image_url"
+        :key="post.id"
+        :article-id="post.id"
         :date="post.date"
         :read_time="post.read_time"
         :title="post.title"
         :intro="post.intro"
         :link="post.link"
         :top-story="post.TopStory"
+        :image-url="post.imageUrl"
       />
     </div>
     <button v-if="canLoadMore" @click="loadMore" class="load-more-btn">
@@ -160,12 +160,11 @@ export default {
       newArticle: {
         title: '',
         intro: '',
-        date: new Date().toISOString().split('T')[0], // Default to today
+        date: new Date().toISOString().split('T')[0],
         read_time: '',
         link: '',
         TopStory: false,
-        image: null, // Will hold the file object
-        imageBase64: '' // Will hold base64 string
+        image: null
       }
     };
   },
@@ -186,29 +185,24 @@ export default {
       this.error = null;
       try {
         const articles = await articleAPI.getArticles();
-        console.log('Fetched articles:', articles); // Add this line
-        this.articles = articles;
-        this.filteredArticles = articles;
+        
+        // Fetch images for each article
+        const articlesWithImages = await Promise.all(
+          articles.map(async (article) => {
+            try {
+              const imageUrl = await articleAPI.getArticleImage(article.id);
+              return { ...article, imageUrl };
+            } catch (error) {
+              console.warn(`Could not fetch image for article ${article.id}:`, error);
+              return { ...article, imageUrl: null };
+            }
+          })
+        );
+        
+        this.articles = articlesWithImages;
+        this.filteredArticles = articlesWithImages;
       } catch (error) {
         this.error = 'Failed to fetch articles. Please try again later.';
-        console.error('Error:', error);
-      } finally {
-        this.loading = false;
-      }
-    },
-    async filterArticles() {
-      this.loading = true;
-      this.error = null;
-      try {
-        if (this.searchQuery.trim()) {
-          const results = await articleAPI.searchArticles(this.searchQuery);
-          this.filteredArticles = results;
-        } else {
-          this.filteredArticles = this.articles;
-        }
-        this.articlesToShow = 3;
-      } catch (error) {
-        this.error = 'Search failed. Please try again.';
         console.error('Error:', error);
       } finally {
         this.loading = false;
@@ -250,9 +244,6 @@ export default {
         formData.append('link', this.newArticle.link);
         formData.append('TopStory', this.newArticle.TopStory);
         formData.append('image', this.newArticle.image);
-        
-        // For the base64 option instead of file upload
-        // formData.append('imageBase64', this.newArticle.imageBase64);
         
         // Submit to API
         const result = await articleAPI.addArticle(formData);

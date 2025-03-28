@@ -1,10 +1,8 @@
 <template>
   <div class="post-card" @click="navigateToArticle">
-    <img 
-      :src="resolvedImageUrl" 
-      alt="Article image" 
-      class="post-image"  
-    />
+    <div v-if="imageUrl" class="post-image">
+      <img :src="imageUrl" :alt="title" />
+    </div>
     <div class="post-info">
       <p class="post-date">{{ formatDate(date) }} • {{ read_time }}</p>
       <h3 class="post-title">{{ title }}</h3>
@@ -18,7 +16,10 @@ import { computed } from 'vue'
 
 const props = defineProps({
   articleId: Number,  // Changed from "Article ID"
-  image_url: String,
+  imageUrl: {
+      type: String,
+      default: null
+    },
   date: String,
   read_time: String,
   title: String,
