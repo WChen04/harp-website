@@ -50,50 +50,49 @@ export default (pool) => {
         }
     });
 
-    // router.post('/social-register/:provider', async (req, res) => {
-    //     const { provider } = req.params;
-    //     const { email, fullName } = req.body; // These would come from the social provider
+    router.post('/social-register/:provider', async (req, res) => {
+        const { provider } = req.params;
+        const { email, fullName } = req.body; // These would come from the social provider
 
-    //     try {
-    //         // Check if user already exists
-    //         const existingUser = await pool.query(
-    //             'SELECT * FROM "Login" WHERE email = $1',
-    //             [email]
-    //         );
+        try {
+            // Check if user already exists
+            const existingUser = await pool.query(
+                'SELECT * FROM "Login" WHERE email = $1',
+                [email]
+            );
 
-    //         if (existingUser.rows.length > 0) {
-    //             // If user exists, treat it as a login
-    //             return res.json({
-    //                 message: 'User already registered, logged in successfully',
-    //                 user: {
-    //                     email: existingUser.rows[0].email,
-    //                     full_name: existingUser.rows[0].full_name,
-    //                     created_at: existingUser.rows[0].created_at,
-    //                     is_admin: existingUser.rows[0].is_admin
-    //                 }
-    //             });
-    //         }
+            if (existingUser.rows.length > 0) {
+                // If user exists, treat it as a login
+                return res.json({
+                    message: 'User already registered, logged in successfully',
+                    user: {
+                        email: existingUser.rows[0].email,
+                        full_name: existingUser.rows[0].full_name,
+                        created_at: existingUser.rows[0].created_at
+                    }
+                });
+            }
 
-    //         // Generate a random secure password for social users
-    //         // They can reset it later if they want to use password login
-    //         const randomPassword = Math.random().toString(36).slice(-12);
-    //         const hashedPassword = await bcrypt.hash(randomPassword, 10);
+            // Generate a random secure password for social users
+            // They can reset it later if they want to use password login
+            const randomPassword = Math.random().toString(36).slice(-12);
+            const hashedPassword = await bcrypt.hash(randomPassword, 10);
 
-    //         // Insert new social user
-    //         const newUser = await pool.query(
-    //             'INSERT INTO "Login" (email, password, full_name) VALUES ($1, $2, $3) RETURNING email, full_name, created_at',
-    //             [email, hashedPassword, fullName, false]
-    //         );
+            // Insert new social user
+            const newUser = await pool.query(
+                'INSERT INTO "Login" (email, password, full_name) VALUES ($1, $2, $3) RETURNING email, full_name, created_at',
+                [email, hashedPassword, fullName]
+            );
 
-    //         res.status(201).json({
-    //             message: 'Social registration successful',
-    //             user: newUser.rows[0],
-    //         });
-    //     } catch (error) {
-    //         console.error(`${provider} registration error:`, error);
-    //         res.status(500).json({ error: 'Internal server error' });
-    //     }
-    // });
+            res.status(201).json({
+                message: 'Social registration successful',
+                user: newUser.rows[0]
+            });
+        } catch (error) {
+            console.error(`${provider} registration error:`, error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
 
     // Login user
     router.post('/login', async (req, res) => {
@@ -114,7 +113,6 @@ export default (pool) => {
             }
     
             const user = result.rows[0];
-            console.log('User from database:', user);
             
             // Check if user has a password (might be a social login user)
             if (!user.password) {

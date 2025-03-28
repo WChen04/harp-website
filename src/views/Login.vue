@@ -63,23 +63,15 @@
 
 <script>
 import axios from 'axios';
-import { useAuthStore } from '../stores/auth.js';
-import { useRouter } from 'vue-router';
 
 export default {
-  setup() {
-    const authStore = useAuthStore();
-    const router = useRouter();
-    return { authStore, router };
-  },
   name: 'LoginPage',
   
   data() {
     return {
       email: '',
       password: '',
-      responseMessage: '',
-      error: null
+      responseMessage: ''
     };
   },
 
@@ -96,7 +88,7 @@ export default {
         });
 
         // Store user data in localStorage
-        await this.authStore.fetchCurrentUser();
+        localStorage.setItem('user', JSON.stringify(response.data.user));
         
         // Emit a custom event that we'll listen for
         window.dispatchEvent(new Event('userLoggedIn'));

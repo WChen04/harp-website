@@ -1,14 +1,5 @@
 <script setup>
 import Nav from "./components/General/Nav.vue";
-import { useAuthStore } from './stores/auth.js';
-import { onMounted } from 'vue';
-
-const authStore = useAuthStore();
-  
-onMounted(async () => {
-  // Fetch user information when the app loads
-  await authStore.fetchCurrentUser();
-});
 </script>
 
 <template>
