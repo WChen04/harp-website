@@ -13,7 +13,7 @@ export const articleAPI = {
             });
             return response.data;
         } catch (error) {
-            console.error('Error adding article:', error);
+            console.error('Detailed error adding article:', error.response?.data || error.message);
             throw error;
         }
     },
