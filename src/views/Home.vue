@@ -28,7 +28,7 @@ export default {
         <h1 id="intro">HARP Research Inc.</h1>
         <div class="founderphotos">
           <img
-            src="../assets/HARPResearchLockUps/TeamMember/ManagementTeam/HarperChisari/HARP Research Chisari Harper.webp"
+            src="../assets/HARPResearchLockUps/TeamMember/ManagementTeam/HarperChisari/HARPResearchChisariHarper.webp"
             alt="Founder 1"
           />
           <img
@@ -69,7 +69,7 @@ export default {
             small enough to fit on <br />
             <span class="gradient-text">a calculator.</span>
           </h1>
-          <ProductsButton />
+          <ProjectsButton />
         </div>
 
         <div>
@@ -86,11 +86,15 @@ export default {
       <div class="vertical-line"></div>
       <div class="productsinfo">
         <h1 class="harpproductsinfo">
-          With years of AI expertise, we’ve created Polymorphic AI—an
-          efficient, open-source framework anyone can use,<br />
+          With years of AI expertise, we’ve created Polymorphic AI—an efficient,
+          open-source framework anyone can use,<br />
           <span class="product-text">no super computer needed.</span>
         </h1>
+        <<<<<<< Updated upstream
         <!-- <ProductsButton></ProductsButton> -->
+        =======
+        <ProductsButton></ProductsButton>
+        >>>>>>> Stashed changes
       </div>
       <Cube></Cube>
     </div>
