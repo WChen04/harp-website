@@ -153,8 +153,8 @@ export default {
             >
           </div>
         </div>
-        <!-- <router-link class="navLink" to="/projects">Projects</router-link>
-        <router-link class="navLink" to="/articles">Articles</router-link> -->
+        <!-- <router-link class="navLink" to="/projects">Projects</router-link>-->
+        <router-link class="navLink" to="/articles">Articles</router-link>
       </div>
       <div class="nav-right">
         <router-link class="navLink" to="/contact">Contact Us</router-link>
