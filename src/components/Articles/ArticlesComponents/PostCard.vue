@@ -92,9 +92,16 @@ const navigateToArticle = () => {
 .post-image {
   width: 40%;
   height: 300px;
-  object-fit: cover;
   border-radius: 8px;
   margin-right: 2em;
+  overflow: hidden; /* Ensures the image is clipped to the div's boundaries */
+}
+
+.post-image img {
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; /* Ensures image covers entire div while maintaining aspect ratio */
+  object-position: center; /* Centers the image */
 }
 
 .post-info {
