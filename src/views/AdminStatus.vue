@@ -30,7 +30,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="user in users" :key="user.email">
+            <tr v-for="(user, index) in paginatedUsers" :key="user.email || index">
               <td class="user-info">
                 <div class="user-avatar" v-if="user.profile_picture">
                   <img :src="user.profile_picture" :alt="user.full_name" />
@@ -38,7 +38,9 @@
                 <div class="user-avatar default-avatar" v-else>
                   {{ getUserInitials(user.full_name) }}
                 </div>
-                <span>{{ user.full_name || 'Unknown' }}</span>
+                <span>{{ user.full_name || 'Missing Name' }}</span>
+                <!-- Debug info -->
+                <small v-if="!user.full_name" style="color: red;">(Debug: {{ JSON.stringify(user) }})</small>
               </td>
               <td>{{ user.email }}</td>
               <td>
@@ -62,6 +64,40 @@
             </tr>
           </tbody>
         </table>
+        
+        <!-- Pagination Controls -->
+        <div class="pagination-controls" v-if="totalPages > 1">
+          <button 
+            @click="changePage(currentPage - 1)" 
+            :disabled="currentPage === 1"
+            class="pagination-button"
+          >
+            Previous
+          </button>
+          
+          <div class="page-numbers">
+            <button 
+              v-for="page in displayedPageNumbers" 
+              :key="page" 
+              @click="changePage(page)"
+              :class="['page-number', currentPage === page ? 'active' : '']"
+            >
+              {{ page }}
+            </button>
+          </div>
+          
+          <button 
+            @click="changePage(currentPage + 1)" 
+            :disabled="currentPage === totalPages"
+            class="pagination-button"
+          >
+            Next
+          </button>
+        </div>
+        
+        <div class="pagination-info" v-if="users.length > 0">
+          Showing {{ paginationInfo.from }} to {{ paginationInfo.to }} of {{ users.length }} users
+        </div>
       </div>
     </div>
   </template>
@@ -72,8 +108,8 @@
   
   export default {
     setup() {
-        const authStore = useAuthStore();
-        return { authStore };
+      const authStore = useAuthStore();
+      return { authStore };
     },
     name: 'AdminStatus',
     data() {
@@ -84,8 +120,75 @@
         isAdmin: false,
         successMessage: null,
         processing: false,
-        currentUser: null
+        currentUser: null,
+        // Pagination
+        currentPage: 1,
+        usersPerPage: 10,
+        maxPageNumbers: 5
       };
+    },
+    
+    computed: {
+      // Get users for current page
+      paginatedUsers() {
+        const start = (this.currentPage - 1) * this.usersPerPage;
+        const end = start + this.usersPerPage;
+        return this.users.slice(start, end);
+      },
+      
+      // Calculate total pages
+      totalPages() {
+        return Math.ceil(this.users.length / this.usersPerPage);
+      },
+      
+      // Create an array of page numbers to display
+      displayedPageNumbers() {
+        let pages = [];
+        
+        if (this.totalPages <= this.maxPageNumbers) {
+          // If we have fewer pages than max, show all pages
+          for (let i = 1; i <= this.totalPages; i++) {
+            pages.push(i);
+          }
+        } else {
+          // Always include first page
+          pages.push(1);
+          
+          let startPage = Math.max(2, this.currentPage - 1);
+          let endPage = Math.min(this.totalPages - 1, this.currentPage + 1);
+          
+          // Add ellipsis if needed
+          if (startPage > 2) {
+            pages.push('...');
+          }
+          
+          // Add pages around current page
+          for (let i = startPage; i <= endPage; i++) {
+            pages.push(i);
+          }
+          
+          // Add ellipsis if needed
+          if (endPage < this.totalPages - 1) {
+            pages.push('...');
+          }
+          
+          // Always include last page
+          pages.push(this.totalPages);
+        }
+        
+        return pages;
+      },
+      
+      // Information about current pagination state
+      paginationInfo() {
+        const from = (this.currentPage - 1) * this.usersPerPage + 1;
+        const to = Math.min(from + this.usersPerPage - 1, this.users.length);
+        
+        return {
+          from: from,
+          to: to
+        };
+      }
     },
     
     methods: {
@@ -94,9 +197,23 @@
         this.error = null;
         
         try {
-          const response = await axios.get('/api/admin/users', {
+          const response = await axios.get('http://localhost:3000/api/admin/users', {
             withCredentials: true
           });
+          
+          console.log('Users API response:', response);
+          console.log('Raw users data:', response.data);
+          
+          // Check each user individually
+          response.data.forEach((user, index) => {
+            console.log(`User ${index}:`, {
+              email: user.email,
+              name: user.full_name,
+              is_admin: user.is_admin,
+              has_profile: !!user.profile_picture
+            });
+          });
+          
           this.users = response.data;
         } catch (err) {
           console.error('Failed to fetch users:', err);
@@ -108,21 +225,21 @@
       
       async fetchCurrentUser() {
         try {
-            const response = await axios.get('http://localhost:3000/api/me', {
+          const response = await axios.get('http://localhost:3000/api/me', {
             withCredentials: true
-            });
-            this.currentUser = response.data;
-            console.log('Current user data loaded:', this.currentUser);
-            return this.currentUser;
+          });
+          this.currentUser = response.data;
+          console.log('Current user data loaded:', this.currentUser);
+          return this.currentUser;
         } catch (err) {
-            console.error('Failed to fetch current user:', err);
-            // Redirect to login if not authenticated
-            if (err.response?.status === 401) {
+          console.error('Failed to fetch current user:', err);
+          // Redirect to login if not authenticated
+          if (err.response?.status === 401) {
             this.$router.push('/login');
-            }
-            throw err;
+          }
+          throw err;
         }
-        },
+      },
       
       async toggleAdminStatus(user) {
         if (this.isCurrentUser(user.email) || this.processing) return;
@@ -174,38 +291,55 @@
       clearAlerts() {
         this.error = null;
         this.successMessage = null;
+      },
+      
+      // Change the current page
+      changePage(page) {
+        // Don't do anything if page is an ellipsis
+        if (page === '...') return;
+        
+        // Make sure page is within valid range
+        if (page >= 1 && page <= this.totalPages) {
+          this.currentPage = page;
+          
+          // Scroll to top of table
+          const tableEl = document.querySelector('.users-table');
+          if (tableEl) {
+            tableEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }
       }
     },
+    
     async created() {
-        console.log('AdminStatus component created');
-        this.loading = true;
+      console.log('AdminStatus component created');
+      this.loading = true;
+      
+      try {
+        // First fetch the current user
+        await this.fetchCurrentUser();
         
-        try {
-            // First fetch the current user
-            await this.fetchCurrentUser();
-            
-            // Check if user is an admin
-            if (!this.currentUser?.is_admin) {
-            console.log('User is not admin, redirecting');
-            this.$router.push('/');
-            return;
-            }
-            
-            // Only fetch users if the current user is an admin
-            await this.fetchUsers();
-        } catch (error) {
-            console.error('Error initializing component:', error);
-            this.error = 'Failed to initialize the admin panel. Please try again.';
-        } finally {
-            this.loading = false;
+        // Check if user is an admin
+        if (!this.currentUser?.is_admin) {
+          console.log('User is not admin, redirecting');
+          this.$router.push('/');
+          return;
         }
-        },
+        
+        // Only fetch users if the current user is an admin
+        await this.fetchUsers();
+      } catch (error) {
+        console.error('Error initializing component:', error);
+        this.error = 'Failed to initialize the admin panel. Please try again.';
+      } finally {
+        this.loading = false;
+      }
+    },
     
     beforeUnmount() {
       this.clearAlerts();
     },
   }
-  
   </script>
   
   <style scoped>
@@ -369,5 +503,67 @@
     padding: 2rem;
     background-color: #f5f5f5;
     border-radius: 4px;
+  }
+  
+  /* Pagination Controls Styles */
+  .pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1.5rem;
+    gap: 0.5rem;
+  }
+  
+  .pagination-button {
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .pagination-button:hover:not(:disabled) {
+    background-color: #e0e0e0;
+  }
+  
+  .pagination-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .page-numbers {
+    display: flex;
+    gap: 0.25rem;
+  }
+  
+  .page-number {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f5f5f5;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .page-number:hover:not(.active) {
+    background-color: #e0e0e0;
+  }
+  
+  .page-number.active {
+    background-color: #3949ab;
+    color: white;
+    border-color: #3949ab;
+  }
+  
+  .pagination-info {
+    text-align: center;
+    margin-top: 1rem;
+    color: #666;
+    font-size: 0.875rem;
   }
   </style>
