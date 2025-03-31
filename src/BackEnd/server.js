@@ -241,7 +241,7 @@ app.get('/articles', async (req, res) => {
     console.log('Received GET request to /articles');
     try {
         console.log('Attempting to query database');
-        const { rows } = await pool.query('SELECT * FROM articles ORDER BY date DESC');
+        const { rows } = await pool.query('SELECT * FROM "Articles" ORDER BY date DESC');
         console.log(`Query successful. Retrieved ${rows.length} articles`);
         res.json(rows);
     } catch (error) {
@@ -257,7 +257,7 @@ app.get('/articles/top', async (req, res) => {
     console.log('Received GET request to /articles/top');
     try {
         console.log('Attempting to query database for top stories');
-        const { rows } = await pool.query('SELECT * FROM articles WHERE "TopStory" = TRUE ORDER BY date DESC');
+        const { rows } = await pool.query('SELECT * FROM "Articles" WHERE "TopStory" = TRUE ORDER BY date DESC');
         console.log(`Query successful. Retrieved ${rows.length} top stories`);
         res.json(rows);
     } catch (error) {
