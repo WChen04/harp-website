@@ -7,7 +7,7 @@
           type="text"
           placeholder="Browse..."
           v-model="searchQuery"
-          @input="filterArticles"
+          @keyup.enter="filterArticles"
         />
         <button @click="filterArticles">
           <span class="arrow">→</span>
@@ -97,6 +97,107 @@ export default {
     loadMore() {
       this.articlesToShow += 3;
     },
+    handleImageUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      this.newArticle.image = file;
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.imagePreview = e.target.result;
+        this.newArticle.imageBase64 = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    },
+    async submitArticle() {
+      if (!this.newArticle.title || !this.newArticle.intro || !this.newArticle.image) {
+        this.error = 'Please fill out all required fields';
+        return;
+      }
+      
+      this.submitting = true;
+      this.error = null;
+      
+      try {
+        // Create FormData for multipart/form-data submission
+        const formData = new FormData();
+        formData.append('title', this.newArticle.title);
+        formData.append('intro', this.newArticle.intro);
+        formData.append('date', this.newArticle.date);
+        formData.append('read_time', this.newArticle.read_time);
+        formData.append('link', this.newArticle.link);
+        formData.append('TopStory', this.newArticle.TopStory);
+        formData.append('image', this.newArticle.image);
+        
+        // Submit to API
+        const result = await articleAPI.addArticle(formData);
+        
+        // Close modal and refresh articles
+        this.showAddModal = false;
+        this.resetNewArticle();
+        await this.fetchArticles();
+        
+        // Optionally show success message
+        alert('Article added successfully!');
+        
+      } catch (error) {
+        this.error = 'Failed to add article. Please try again.';
+        console.error('Error:', error);
+      } finally {
+        this.submitting = false;
+      }
+    },
+    resetNewArticle() {
+      this.newArticle = {
+        title: '',
+        intro: '',
+        date: new Date().toISOString().split('T')[0],
+        read_time: '',
+        link: '',
+        TopStory: false,
+        image: null,
+        imageBase64: ''
+      };
+      this.imagePreview = null;
+    },
+    filterArticles: async function() {
+      this.loading = true;
+      this.error = null;
+      
+      try {
+        if (!this.searchQuery || this.searchQuery.trim() === '') {
+          // If search query is empty, fetch all articles
+          await this.fetchArticles();
+          return;
+        }
+        
+        // Get search results from API
+        const articles = await articleAPI.searchArticles(this.searchQuery);
+        
+        // Fetch images for search results
+        const articlesWithImages = await Promise.all(
+          articles.map(async (article) => {
+            try {
+              const imageUrl = await articleAPI.getArticleImage(article.id);
+              return { ...article, imageUrl };
+            } catch (error) {
+              console.warn(`Could not fetch image for article ${article.id}:`, error);
+              return { ...article, imageUrl: null };
+            }
+          })
+        );
+        
+        this.filteredArticles = articlesWithImages;
+        this.articlesToShow = 3; // Reset pagination
+      } catch (error) {
+        this.error = 'Search failed. Please try again.';
+        console.error('Search error:', error);
+      } finally {
+        this.loading = false;
+      }
+    }
   },
   async mounted() {
     await this.fetchArticles();

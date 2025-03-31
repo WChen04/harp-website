@@ -81,29 +81,41 @@ const initializeDatabase = async () => {
         `;
         await pool.query(createLoginTableQuery);
         
-        // Make sure articles table exists too
-        const checkArticlesTableQuery = `
-            SELECT EXISTS (
-                SELECT FROM information_schema.tables 
-                WHERE table_schema = 'public' 
-                AND table_name = 'articles'
+        // Articles table (existing code)
+        const createArticlesTableQuery = `
+            CREATE TABLE IF NOT EXISTS "public"."Articles" (
+                id SERIAL PRIMARY KEY,
+                title TEXT NOT NULL,
+                intro TEXT,
+                content TEXT,
+                date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                read_time TEXT,
+                link TEXT,
+                "TopStory" BOOLEAN DEFAULT FALSE
+                search_vector TSVECTOR GENERATED ALWAYS AS (to_tsvector('english'::regconfig, (((title)::text || ' '::text) || intro))) STORED;
             );
         `;
-        const tableExists = await pool.query(checkArticlesTableQuery);
-        
-        if (!tableExists.rows[0].exists) {
-            const createArticlesTableQuery = `
-                CREATE TABLE IF NOT EXISTS "public"."articles" (
-                    id SERIAL PRIMARY KEY,
-                    title TEXT NOT NULL,
-                    intro TEXT,
-                    content TEXT,
-                    date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                    "TopStory" BOOLEAN DEFAULT FALSE
-                );
-            `;
-            await pool.query(createArticlesTableQuery);
-        }
+        await pool.query(createArticlesTableQuery);
+
+        // New ArticleImages table
+        const createArticleImagesTableQuery = `
+            CREATE TABLE IF NOT EXISTS "public"."ArticleImages" (
+                id SERIAL PRIMARY KEY,
+                article_id INTEGER NOT NULL,
+                image_data BYTEA NOT NULL,
+                image_mimetype VARCHAR(100) NOT NULL,
+                uploaded_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (article_id) REFERENCES "public"."Articles"(id) ON DELETE CASCADE
+            );
+        `;
+        await pool.query(createArticleImagesTableQuery);
+
+        // Create index on article_id in ArticleImages table
+        const createArticleImagesIndexQuery = `
+            CREATE INDEX IF NOT EXISTS idx_article_images_article_id 
+            ON "public"."ArticleImages"(article_id);
+        `;
+        await pool.query(createArticleImagesIndexQuery);
         
         console.log('Database initialized successfully');
     } catch (error) {
@@ -260,50 +272,82 @@ app.get('/articles/top', async (req, res) => {
 app.get('/articles/search', async (req, res) => {
     try {
         const { query } = req.query;
+        
+        if (!query || query.trim() === '') {
+            // Return all articles if no query provided
+            const { rows } = await pool.query(
+                'SELECT id, title, intro, date, read_time, link, "TopStory" FROM "Articles" ORDER BY date DESC'
+            );
+            return res.json(rows);
+        }
+        
+        // Using the search_vector for full-text search
         const { rows } = await pool.query(
-            `SELECT * FROM articles 
-            WHERE title ILIKE $1 OR intro ILIKE $1
-            ORDER BY date DESC`,
-            [`%${query}%`]
+            `SELECT id, title, intro, date, read_time, link, "TopStory" 
+             FROM "Articles" 
+             WHERE search_vector @@ plainto_tsquery('english', $1)
+             ORDER BY ts_rank(search_vector, plainto_tsquery('english', $1)) DESC, 
+                      date DESC`,
+            [query]
         );
+        
+        console.log(`Search for "${query}" returned ${rows.length} results`);
         res.json(rows);
     } catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ error: 'Search failed' });
+        console.error('Search error:', error);
+        res.status(500).json({ 
+            error: 'Search failed', 
+            details: error.message 
+        });
+    }
+});
+//Admin only Routes:
+
+import multer from 'multer';
+import path from 'path';
+const upload = multer({ 
+    storage: multer.memoryStorage(),
+    fileFilter: (req, file, cb) => {
+        if (!file.originalname.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+            return cb(new Error('Only image files are allowed!'), false);
+        }
+        cb(null, true);
+    },
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5MB file size limit
     }
 });
 
-// API Endpoint to fetch all team members from the team_members table (organized by role)
-app.get("/api/team-members", async (req, res) => {
+app.post('/admin/articles/add', upload.single('image'), async (req, res) => {
+    const client = await pool.connect();
+    
     try {
-      let query = `SELECT * FROM team_members`;
-      const queryParams = [];
-      
-      if (req.query.semester) {
-        // Handle both cases: member_type filter or semester filter
-        if (req.query.semester === 'Developer' || req.query.semester === 'Researcher') {
-          query += ` WHERE member_type = $1`;
-          queryParams.push(req.query.semester);
-        } else if (req.query.semester === 'Fall 2024' || req.query.semester === 'Spring 2025') {
-          query += ` WHERE semester = $1`;
-          queryParams.push(req.query.semester);
+        // Start a transaction
+        await client.query('BEGIN');
+
+        // Extract article data
+        const { title, intro, date, read_time, link, TopStory } = req.body;
+        
+        // Insert article first
+        const articleResult = await client.query(
+            'INSERT INTO "Articles" (title, intro, date, read_time, link, "TopStory") VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
+            [title, intro, date, read_time, link, TopStory === 'true' || TopStory === true]
+        );
+        
+        const articleId = articleResult.rows[0].id;
+
+        // Handle image if uploaded
+        if (req.file) {
+            await client.query(
+                'INSERT INTO "ArticleImages" (article_id, image_data, image_mimetype) VALUES ($1, $2, $3)',
+                [articleId, req.file.buffer, req.file.mimetype]
+            );
         }
-      }
-      
-      query += ` ORDER BY 
-        CASE WHEN founder = true THEN 0 ELSE 1 END,
-        CASE 
-          WHEN role = 'CEO, Vice President of Core Research' THEN 1
-          WHEN role LIKE 'Vice President%' THEN 2
-          WHEN role = 'Marketing Manager' THEN 3
-          WHEN role LIKE 'Project Manager%' THEN 4
-          ELSE 5
-        END, 
-        role ASC,
-        name ASC`;
-      
-      const result = await pool.query(query, queryParams);
-      res.json(result.rows);
+
+        // Commit the transaction
+        await client.query('COMMIT');
+
+        res.status(201).json({ id: articleId, message: 'Article added successfully' });
     } catch (error) {
       console.error('Error fetching team members:', error);
       res.status(500).json({ error: error.message });
