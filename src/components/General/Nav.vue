@@ -2,8 +2,13 @@
 import GetStarted from "./GetStarted.vue";
 import ProfileButton from "../Profile/ProfileButton.vue";
 import axios from "axios";
+import { useAuthStore } from '../../stores/auth.js';
 
 export default {
+  setup() {
+    const authStore = useAuthStore();
+    return { authStore };
+  },
   name: "Nav",
   components: {
     GetStarted,
@@ -14,6 +19,7 @@ export default {
       showProductsDropdown: false,
       isScrolled: false,
       currentUser: null,
+      isAdmin: false,
     };
   },
 
@@ -23,6 +29,16 @@ export default {
 
     // Check URL parameters for OAuth redirect with userData
     this.checkOAuthRedirect();
+  },
+
+  computed: {
+    userIsAdmin() {
+      console.log("Nav.vue isAdmin check: ", this.authStore.isAdmin);
+      return this.authStore.isAdmin;
+    },
+    currentUserFromStore() {
+      return this.authStore.user;
+    } 
   },
 
   methods: {
@@ -78,42 +94,9 @@ export default {
     },
 
     async checkAuthStatus() {
-      // First check localStorage (for regular login)
-      try {
-        const userData = localStorage.getItem("user");
-        if (userData) {
-          this.currentUser = JSON.parse(userData);
-          return;
-        }
-      } catch (error) {
-        console.error("Error checking auth status from localStorage:", error);
-      }
-
-      // If no user in localStorage, check session (for OAuth)
-      try {
-        const response = await axios.get("http://localhost:3000/api/user", {
-          withCredentials: true, // Important for cookies/session
-        });
-
-        if (response.data && response.data.email) {
-          // We have a logged-in user via session
-          this.currentUser = response.data;
-
-          // Store in localStorage for consistency
-          localStorage.setItem("user", JSON.stringify(response.data));
-          console.log("User found from session:", this.currentUser);
-        } else {
-          this.currentUser = null;
-          console.log("No authenticated user found");
-        }
-      } catch (error) {
-        // 401 error is expected if not authenticated
-        if (error.response && error.response.status !== 401) {
-          console.error("Error checking session auth status:", error);
-        }
-        this.currentUser = null;
-      }
-    },
+      await this.authStore.checkAuthStatus();
+      this.currentUser = this.authStore.user;
+    }
   },
 
   mounted() {
@@ -155,6 +138,9 @@ export default {
         </div>
         <!-- <router-link class="navLink" to="/projects">Projects</router-link>-->
         <router-link class="navLink" to="/articles">Articles</router-link>
+        <div v-if="userIsAdmin">
+          <router-link class="navLink" to="/admin/users">Admin Status</router-link>
+        </div>
       </div>
       <div class="nav-right">
         <router-link class="navLink" to="/contact">Contact Us</router-link>

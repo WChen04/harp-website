@@ -366,7 +366,10 @@ app.get('/articles/search', async (req, res) => {
 //Admin only Routes:
 
 import multer from 'multer';
-import path from 'path';
+import adminRoutes from '../components/Admin/AdminAPI.js';
+
+app.use('/api', adminRoutes(pool));
+
 const upload = multer({ 
     storage: multer.memoryStorage(),
     fileFilter: (req, file, cb) => {

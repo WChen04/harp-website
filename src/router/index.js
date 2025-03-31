@@ -11,6 +11,7 @@ import ForgotPassword from '@/views/ForgotPassword.vue';
 import ResetPassword from '@/views/ResetPassword.vue';
 import Profile from '@/views/ProfilePictureUpload.vue';
 import { useAuthStore } from "@/stores/auth";
+import AdminStatus from '../views/AdminStatus.vue';
 import OpenSourceProject from "@/components/Projects/OpenSourceProject/OpenSourceProject.vue";
 import ResearchProject from "@/components/Projects/ResearchProject/ResearchProject.vue";
 import AASReroute from "@/views/AASReroute.vue";
@@ -20,6 +21,15 @@ const routes = [
     path: "/",
     name: "Home",
     component: Home,
+  },
+  {
+    path: '/admin/users',
+    name: 'AdminStatus',
+    component: AdminStatus,
+    meta: { 
+      requiresAuth: true,
+      requiresAdmin: true
+    }
   },
   {
     path: "/about",
@@ -104,16 +114,34 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
   
-  // If going to admin routes, check if user is admin
-  if (to.meta.requiresAdmin && !authStore.isAdmin) {
-    return next('/');
+  // If route requires authentication
+  if (to.meta.requiresAuth) {
+    // Force a fresh check by calling fetchCurrentUser directly
+    await authStore.fetchCurrentUser();
+    
+    console.log('Route guard for:', to.path);
+    console.log('Auth state:', {
+      isAuthenticated: authStore.isAuthenticated,
+      isAdmin: authStore.isAdmin,
+      user: authStore.user
+    });
+    
+    // Not authenticated
+    if (!authStore.isAuthenticated) {
+      return next({
+        path: '/login',
+        query: { redirect: to.fullPath }
+      });
+    }
+    
+    // Route requires admin but user is not admin
+    if (to.meta.requiresAdmin && !authStore.isAdmin) {
+      console.log('Admin required but user is not admin, redirecting to home');
+      return next({ path: '/' });
+    }
   }
   
-  // If going to authenticated routes, check if user is authenticated
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    return next('/login');
-  }
-  
+  // Everything checks out, proceed to the route
   next();
 });
 
