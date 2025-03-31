@@ -100,6 +100,21 @@ const router = createRouter({
     return { top: 0 };
   },
 });
+router.beforeEach(async (to, from, next) => {
+  const authStore = useAuthStore();
+  
+  // If going to admin routes, check if user is admin
+  if (to.meta.requiresAdmin && !authStore.isAdmin) {
+    return next('/');
+  }
+  
+  // If going to authenticated routes, check if user is authenticated
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    return next('/login');
+  }
+  
+  next();
+});
 
 
 export default router;
