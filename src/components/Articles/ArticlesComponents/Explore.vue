@@ -7,7 +7,7 @@
           type="text"
           placeholder="Browse..."
           v-model="searchQuery"
-          @input="filterArticles"
+          @keyup.enter="filterArticles"
         />
         <button @click="filterArticles">
           <span class="arrow">→</span>
@@ -276,6 +276,42 @@ export default {
       };
       this.imagePreview = null;
     },
+    filterArticles: async function() {
+      this.loading = true;
+      this.error = null;
+      
+      try {
+        if (!this.searchQuery || this.searchQuery.trim() === '') {
+          // If search query is empty, fetch all articles
+          await this.fetchArticles();
+          return;
+        }
+        
+        // Get search results from API
+        const articles = await articleAPI.searchArticles(this.searchQuery);
+        
+        // Fetch images for search results
+        const articlesWithImages = await Promise.all(
+          articles.map(async (article) => {
+            try {
+              const imageUrl = await articleAPI.getArticleImage(article.id);
+              return { ...article, imageUrl };
+            } catch (error) {
+              console.warn(`Could not fetch image for article ${article.id}:`, error);
+              return { ...article, imageUrl: null };
+            }
+          })
+        );
+        
+        this.filteredArticles = articlesWithImages;
+        this.articlesToShow = 3; // Reset pagination
+      } catch (error) {
+        this.error = 'Search failed. Please try again.';
+        console.error('Search error:', error);
+      } finally {
+        this.loading = false;
+      }
+    }
   },
   async mounted() {
     await this.fetchArticles();

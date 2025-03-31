@@ -104,6 +104,7 @@ const initializeDatabase = async () => {
                 read_time TEXT,
                 link TEXT,
                 "TopStory" BOOLEAN DEFAULT FALSE
+                search_vector TSVECTOR GENERATED ALWAYS AS (to_tsvector('english'::regconfig, (((title)::text || ' '::text) || intro))) STORED;
             );
         `;
         await pool.query(createArticlesTableQuery);
@@ -333,19 +334,35 @@ app.get('/articles/top', async (req, res) => {
 app.get('/articles/search', async (req, res) => {
     try {
         const { query } = req.query;
+        
+        if (!query || query.trim() === '') {
+            // Return all articles if no query provided
+            const { rows } = await pool.query(
+                'SELECT id, title, intro, date, read_time, link, "TopStory" FROM "Articles" ORDER BY date DESC'
+            );
+            return res.json(rows);
+        }
+        
+        // Using the search_vector for full-text search
         const { rows } = await pool.query(
-            `SELECT * FROM articles 
-            WHERE title ILIKE $1 OR intro ILIKE $1
-            ORDER BY date DESC`,
-            [`%${query}%`]
+            `SELECT id, title, intro, date, read_time, link, "TopStory" 
+             FROM "Articles" 
+             WHERE search_vector @@ plainto_tsquery('english', $1)
+             ORDER BY ts_rank(search_vector, plainto_tsquery('english', $1)) DESC, 
+                      date DESC`,
+            [query]
         );
+        
+        console.log(`Search for "${query}" returned ${rows.length} results`);
         res.json(rows);
     } catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ error: 'Search failed' });
+        console.error('Search error:', error);
+        res.status(500).json({ 
+            error: 'Search failed', 
+            details: error.message 
+        });
     }
 });
-
 //Admin only Routes:
 
 import multer from 'multer';
