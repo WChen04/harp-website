@@ -1,40 +1,16 @@
 import express from 'express';
 import cors from 'cors';
 import passport from 'passport';
-import session from 'express-session';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import pg from 'pg';
+import session from 'express-session';
+import connectPgSimple from 'connect-pg-simple';
 import dotenv from 'dotenv';
  dotenv.config({ path: '../../.env' });
 
 const app = express();
 const port = process.env.PORT || 5000;
 const { Pool } = pg;
-
-// Middleware
-app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}));
-app.use(express.json());
-
-// Session configuration
-app.use(session({
-    secret: process.env.SESSION_SECRET || 'your-secret-key',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        secure: process.env.NODE_ENV === 'production',
-        httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000,
-        sameSite: 'lax'
-    }
-}));
-
-app.use(passport.initialize());
-app.use(passport.session());
 
 // Database configuration
 const dbConnectionString = process.env.DATABASE_URL;
@@ -50,6 +26,41 @@ const pool = new Pool({
     }
 });
 
+const pgSession = connectPgSimple(session);
+
+// Middleware
+app.use(cors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+app.use(express.json());
+
+// Session configuration
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'your-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    admin: false,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000,
+        sameSite: 'lax'
+    },
+    store: new pgSession({
+        pool: pool,                // Use the PostgreSQL pool
+        tableName: 'session',      // Use a custom session table name (default is "session")
+        createTableIfMissing: true // Automatically creates the session table if it doesn't exist
+      })
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+
 // Database connection verification
 pool.query('SELECT NOW()', (err, res) => {
     console.log("Verifying database connection...");
@@ -64,7 +75,7 @@ pool.query('SELECT NOW()', (err, res) => {
 // Initialize database
 const initializeDatabase = async () => {
     try {
-        // Login table
+        // Login table (existing code)
         const createLoginTableQuery = `
             CREATE TABLE IF NOT EXISTS "public"."Login" (
                 email TEXT PRIMARY KEY,
@@ -76,7 +87,8 @@ const initializeDatabase = async () => {
                 reset_token TEXT,
                 reset_token_expiry TIMESTAMP WITH TIME ZONE,
                 google_id TEXT,
-                profile_picture TEXT
+                profile_picture TEXT,
+                is_admin BOOLEAN DEFAULT false
             );
         `;
         await pool.query(createLoginTableQuery);
@@ -138,6 +150,8 @@ passport.deserializeUser(async (user, done) => {
             console.log("User not found in DB");
             return done(null, false);
         }
+        
+        // Include admin status in the user object
         done(null, rows[0]);
     } catch (error) {
         console.error("Deserialization error:", error);
@@ -159,7 +173,7 @@ passport.use(new GoogleStrategy({
             );
 
             if (rows.length) {
-                // Update existing user
+                // Update existing user but preserve admin status
                 await pool.query(
                     'UPDATE "Login" SET last_login = CURRENT_TIMESTAMP, google_id = $1, is_active = true WHERE email = $2',
                     [profile.id, profile.emails[0].value]
@@ -167,9 +181,9 @@ passport.use(new GoogleStrategy({
                 return done(null, rows[0]);
             }
 
-            // Create new user
+            // Create new user (non-admin by default)
             const newUser = await pool.query(
-                'INSERT INTO "Login" (email, full_name, google_id, is_active) VALUES ($1, $2, $3, true) RETURNING *',
+                'INSERT INTO "Login" (email, full_name, google_id, is_active, is_admin) VALUES ($1, $2, $3, true, false) RETURNING *',
                 [profile.emails[0].value, profile.displayName, profile.id]
             );
 
@@ -200,15 +214,8 @@ app.get('/auth/google/callback',
         failureFlash: true 
     }),
     (req, res) => {
-        // Include user data in the redirect URL
-        const userData = encodeURIComponent(JSON.stringify({
-            email: req.user.email,
-            full_name: req.user.full_name,
-            profile_picture: req.user.profile_picture
-        }));
-        
         // Redirect to frontend with user data as URL parameter
-        res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5174'}/?userData=${userData}`);
+        res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5174'}`);
     }
 );
 
@@ -218,12 +225,29 @@ app.get('/api/user', (req, res) => {
         res.json({
             email: req.user.email,
             full_name: req.user.full_name,
-            profile_picture: req.user.profile_picture
+            profile_picture: req.user.profile_picture,
+            is_admin: req.user.is_admin
         });
     } else {
         res.status(401).json({ error: 'Not authenticated' });
     }
 });
+
+app.get('/api/me', (req, res) => {
+    // Check if user is authenticated
+    if (!req.isAuthenticated() || !req.user) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+  
+    // Return user data (omit sensitive info)
+    return res.json({
+      id: req.user.id,
+      email: req.user.email,
+      full_name: req.user.full_name,
+      profile_picture: req.user.profile_picture,
+      is_admin: req.user.is_admin || false
+    });
+  });
 
 // Logout route
 app.get('/api/logout', (req, res) => {
@@ -241,9 +265,11 @@ app.get('/articles', async (req, res) => {
     console.log('Received GET request to /articles');
     try {
         console.log('Attempting to query database');
-        const { rows } = await pool.query('SELECT * FROM "Articles" ORDER BY date DESC');
-        console.log(`Query successful. Retrieved ${rows.length} articles`);
-        res.json(rows);
+        const articlesResult = await pool.query(
+            'SELECT id, title, intro, date, read_time, link, "TopStory" FROM "Articles"'
+        );
+        console.log(`Query successful. Retrieved ${articlesResult.rows.length} articles`);
+        res.json(articlesResult.rows);
     } catch (error) {
         console.error('Detailed error in /articles route:', error);
         res.status(500).json({
@@ -253,13 +279,49 @@ app.get('/articles', async (req, res) => {
     }
 });
 
+//Retrieve Articles Image
+app.get('/articles/:id/image', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        // Fetch image for specific article
+        const result = await pool.query(
+            'SELECT image_data, image_mimetype FROM "ArticleImages" WHERE article_id = $1',
+            [id]
+        );
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'No image found' });
+        }
+        
+        const { image_data, image_mimetype } = result.rows[0];
+        
+        res.contentType(image_mimetype);
+        res.send(image_data);
+    } catch (error) {
+        console.error('Error retrieving image:', error);
+        res.status(500).json({ error: 'Failed to retrieve image', details: error.message });
+    }
+});
+
 app.get('/articles/top', async (req, res) => {
     console.log('Received GET request to /articles/top');
     try {
-        console.log('Attempting to query database for top stories');
-        const { rows } = await pool.query('SELECT * FROM "Articles" WHERE "TopStory" = TRUE ORDER BY date DESC');
-        console.log(`Query successful. Retrieved ${rows.length} top stories`);
-        res.json(rows);
+        console.log('Executing query: SELECT * FROM "Articles" WHERE "TopStory" = TRUE ORDER BY date DESC');
+        
+        const topStoriesResult = await pool.query(
+            'SELECT * FROM "Articles" WHERE "TopStory" = TRUE ORDER BY date DESC'
+        );
+        
+        // Log full details of each row
+        topStoriesResult.rows.forEach((row, index) => {
+            console.log(`Top Story ${index + 1}:`, JSON.stringify(row, null, 2));
+            console.log(`TopStory value type: ${typeof row.TopStory}, value: ${row.TopStory}`);
+        });
+        
+        console.log(`Retrieved ${topStoriesResult.rows.length} top stories`);
+        
+        res.json(topStoriesResult.rows);
     } catch (error) {
         console.error('Detailed error in /articles/top route:', error);
         res.status(500).json({
@@ -349,10 +411,14 @@ app.post('/admin/articles/add', upload.single('image'), async (req, res) => {
 
         res.status(201).json({ id: articleId, message: 'Article added successfully' });
     } catch (error) {
-      console.error('Error fetching team members:', error);
-      res.status(500).json({ error: error.message });
+        // Rollback the transaction in case of error
+        await client.query('ROLLBACK');
+        console.error('Error adding article:', error);
+        res.status(500).json({ error: 'Failed to add article', details: error.message });
+    } finally {
+        client.release();
     }
-  });
+});
 
 app.get('/', (req, res) => {
     res.json({ message: 'Backend is running' });
