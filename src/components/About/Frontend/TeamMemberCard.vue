@@ -3,10 +3,10 @@
     <div class="member-card">
       <div class="card front">
         <img
-          :src="`${member.image_path}`"
+          :src="member.imageData || defaultImagePath"
           :alt="`${member.name}'s profile image`"
-          id=""
-        />
+@error="handleImageError"
+                  />
 
         <div class="member-box"></div>
       </div>
@@ -42,13 +42,21 @@
 </template>
 
 <script setup>
+import { ref } from "vue";
+import { defineProps } from "vue";
+
 const props = defineProps({
-  member: {
-    type: Object,
-    required: true,
-  },
+  member: Object
 });
+
+const defaultImagePath = '/path/to/default/image.png'; // Add a default image path
+
+const handleImageError = (e) => {
+  console.error('Image failed to load:', props.member.imageData);
+  e.target.src = defaultImagePath;
+};
 </script>
+
 
 <style lang="css" scoped>
 .member {
