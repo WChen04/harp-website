@@ -2,11 +2,11 @@ import os
 import psycopg2
 from datetime import datetime
 import urllib.parse
+from PIL import Image
+import io
 
 def get_team_member_image_paths(cursor):
-    """
-    Get mapping of team member IDs to their image paths from the team_members table.
-    """
+    """Get mapping of team member IDs to their image paths from the team_members table."""
     cursor.execute("SELECT id, image_path FROM team_members")
     return {row[1]: row[0] for row in cursor.fetchall() if row[1]}
 
@@ -20,10 +20,37 @@ def get_db_params_from_url(database_url):
         "user": parsed.username,
         "password": parsed.password,
         "port": parsed.port or 5432,
-        "sslmode": "require"  # For secure connections
+        "sslmode": "require"
     }
 
+def compress_image(image_path, max_size=(1000, 1000), quality=85):
+    """
+    Compress image to reduce storage size.
+    
+    - Resizes large images (max 1000px width/height)
+    - Uses lossless compression for PNG
+    - Uses lossy compression (85% quality) for JPEG
+    """
+    with Image.open(image_path) as img:
+        if img.mode in ("RGBA", "P"):
+            img = img.convert("RGB")  # Convert to RGB to avoid transparency issues
+        
+        img.thumbnail(max_size)  # Resize while maintaining aspect ratio
+        
+        img_io = io.BytesIO()
+        file_ext = os.path.splitext(image_path)[1].lower()
+        
+        if file_ext in [".jpg", ".jpeg"]:
+            img.save(img_io, format="JPEG", quality=quality, optimize=True)
+        elif file_ext == ".png":
+            img.save(img_io, format="PNG", optimize=True)
+        else:
+            img.save(img_io, format="JPEG", quality=quality, optimize=True)  # Default to JPEG
+        
+        return img_io.getvalue()
+
 def insert_team_member_images(database_url, base_dir):
+    """Insert team member images into PostgreSQL database with compression."""
     db_params = get_db_params_from_url(database_url)
     conn = psycopg2.connect(**db_params)
     cursor = conn.cursor()
@@ -41,9 +68,9 @@ def insert_team_member_images(database_url, base_dir):
                 continue
                 
             try:
-                with open(full_path, 'rb') as file:
-                    image_data = file.read()
-                    
+                # Compress image before storing
+                image_data = compress_image(full_path)
+
                 filename = os.path.basename(image_path)
                 extension = filename.split('.')[-1].lower()
                 mime_types = {
@@ -70,7 +97,6 @@ def insert_team_member_images(database_url, base_dir):
                 )
 
                 conn.commit()  # Commit per image
-
                 success_count += 1
                 print(f"Processed: {filename} for member ID {team_member_id}")
 
@@ -96,6 +122,6 @@ def insert_team_member_images(database_url, base_dir):
 
 
 if __name__ == "__main__":
-    database_url = os.environ.get("DATABASE_URL", "") # Fill in Database URL (leaving it empty for security reasons)
-    base_dir = ""
+    database_url = os.environ.get("DATABASE_URL", "postgresql://neondb_owner:npg_Smk0xKOUh5TH@ep-green-dream-a51jl7mj-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require")  # Use environment variable
+    base_dir = ""  # Set your base directory here
     insert_team_member_images(database_url, base_dir)
