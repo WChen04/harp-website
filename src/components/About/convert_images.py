@@ -120,6 +120,6 @@ def insert_team_member_images(database_url, base_dir):
 
 
 if __name__ == "__main__":
-    database_url = os.environ.get("DATABASE_URL", "postgresql://neondb_owner:npg_Smk0xKOUh5TH@ep-green-dream-a51jl7mj-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require")  # Use environment variable
+    database_url = os.environ.get("DATABASE_URL", "")  # Place the database URL here before running the script
     base_dir = ""  # Set your base directory here
     insert_team_member_images(database_url, base_dir)
