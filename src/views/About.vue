@@ -221,6 +221,19 @@
         </form>
       </div>
   </div>
+  <!-- Confirmation Modal -->
+  <div v-if="showConfirmModal" class="modal-overlay">
+      <div class="modal-content confirm-modal">
+        <h2>Confirm Deletion</h2>
+        <p>Are you sure you want to delete this team member? This action cannot be undone.</p>
+        <div class="modal-actions">
+          <button @click="showConfirmModal = false" class="cancel-btn">Cancel</button>
+          <button @click="confirmDeleteMember" class="delete-btn" :disabled="deleting">
+            {{ deleting ? 'Deleting...' : 'Delete' }}
+          </button>
+        </div>
+      </div>
+    </div>
 </template>
 
 <script setup>
@@ -276,21 +289,25 @@ const userIsAdmin = computed(() => {
 // Methods
 async function fetchTeamMembers() {
   try {
-    let url = "http://localhost:3000/api/team-members";
+    // Update the URL to use environment variable for API URL
+    let url = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/team-members`;
+    
     if (
       selectedFilter.value === "Developer" ||
       selectedFilter.value === "Researcher" ||
       selectedFilter.value === "Fall 2024" ||
       selectedFilter.value === "Spring 2025"
     ) {
-      url = `http://localhost:3000/api/team-members?semester=${selectedFilter.value}`;
+      url = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/team-members?semester=${selectedFilter.value}`;
     }
+    
     const response = await axios.get(url);
     teamMembers.value = response.data;
   } catch (error) {
     console.error("Error fetching team members:", error);
   }
 }
+
 
 function handleDropdownChange(event) {
   selectedFilter.value = event.target.value;
@@ -315,12 +332,17 @@ async function submitTeamMember() {
       formData.append(key, newMember.value[key]);
     }
     
-    // Submit to API
-    await axios.post('http://localhost:3000/api/team-members', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
+    // Submit to API using environment variable for API URL
+    await axios.post(
+      `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/team-members`, 
+      formData, 
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        withCredentials: true // Ensure cookies are sent for authentication
       }
-    });
+    );
     
     // Reset form after successful submission
     newMember.value = {
@@ -341,7 +363,7 @@ async function submitTeamMember() {
     
   } catch (error) {
     console.error('Error submitting team member:', error);
-    // You might want to show an error message here
+    alert('Failed to add team member. Please try again.');
   } finally {
     submitting.value = false;
   }

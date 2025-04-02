@@ -38,18 +38,47 @@
     </div>
     <h4 class="member-name">{{ member.name }}</h4>
     <h5 class="member-role">{{ member.role }}</h5>
+    <div v-if="userIsAdmin" class="team-card-actions">
+      <button @click="editMember" class="edit-btn">Edit</button>
+      <button @click="confirmDelete" class="delete-btn">Delete</button>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { computed, ref, onMounted } from "vue";
 import axios from "axios";
+import { useAuthStore } from '../../../stores/auth.js';
 
 const props = defineProps({
-  member: Object, // member should have an 'id' field
+  member: {
+    type: Object,
+    required: true
+  }
 });
 
-const memberImage = ref("");
+const emit = defineEmits(['edit', 'delete']);
+
+const authStore = useAuthStore();
+
+const userIsAdmin = computed(() => {
+  return authStore.isAdmin;
+});
+
+const memberImage = computed(() => {
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+  return `${apiUrl}/api/team-member-image/${props.member.id}`;
+});
+
+function editMember() {
+  emit('edit', props.member);
+}
+
+function confirmDelete() {
+  if (confirm(`Are you sure you want to remove ${props.member.name} from the team?`)) {
+    emit('delete', props.member.id);
+  }
+}
 
 // Fetch the team member image
 async function fetchMemberImage() {
