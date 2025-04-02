@@ -1,0 +1,97 @@
+.search-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+  }
+  
+  .search-bar-wrapper {
+    display: flex;
+    align-items: center;
+    width: 50%;
+    padding: 15px;
+    border: 3px solid #5c99cb;
+    border-radius: 50px;
+    background-color: white;
+  }
+  
+  .search-icon {
+    margin-right: 10px;
+    color: gray;
+  }
+  
+  .search-bar {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 16px;
+  }
+  
+  .tags-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .tags-container button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 20px;
+    background-color: #5c99cb;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .tags-container button.active {
+    background-color: #054e8d;
+    color: white;
+  }
+  
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(200px, 1fr)); /* More responsive */
+    row-gap: 10px; /* Reduce both column and row spacing */
+    column-gap: 2px;
+    padding: 10px; /* Reduce padding */
+  }
+  
+  .grid-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%; /* Ensure full width usage */
+  }
+  
+  
+  .project-link {
+    text-decoration: none;
+  }
+  
+  .project-card {
+    width: 15rem;
+    height: 15rem;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10%;
+    padding: 1rem;
+    background: linear-gradient(to bottom, #54204d 0%, #7db9e8 100%);
+    color: white;
+    text-align: center;
+    font-weight: bold;
+    transition: transform 0.3s;
+  }
+  
+  .project-card:hover {
+    transform: scale(1.05);
+  }
+  
+  .project-name {
+    font-size: 1.1rem;
+  }
+  
+  .tags {
+   display: none;
+  }
