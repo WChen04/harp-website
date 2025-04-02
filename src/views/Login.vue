@@ -2,11 +2,11 @@
   <div class="page-container">
     <div class="login-container">
       <h1 class="login-title">Login</h1>
-      
+
       <!-- Social Login Buttons -->
       <div class="social-buttons">
-        <button 
-          class="social-btn google" 
+        <button
+          class="social-btn google"
           aria-label="Sign in with Google"
           @click="handleSocialLogin('google')"
         ></button>
@@ -17,41 +17,53 @@
       <!-- Login Form -->
       <form class="login-form" @submit="handleLogin">
         <label for="email" class="sr-only">Email Address</label>
-        <input 
-          id="email" 
-          type="email" 
-          v-model="email" 
-          placeholder="Email Address" 
+        <input
+          id="email"
+          type="email"
+          v-model="email"
+          placeholder="Email Address"
           class="input-field"
         />
-        
+
         <label for="password" class="sr-only">Password</label>
-        <input 
-          id="password" 
-          type="password" 
-          v-model="password" 
-          placeholder="Password" 
+        <input
+          id="password"
+          type="password"
+          v-model="password"
+          placeholder="Password"
           class="input-field"
         />
-        
-        <a href="#" class="forgot-password" @click.prevent="$router.push('/forgot-password')">
+
+        <a
+          href="#"
+          class="forgot-password"
+          @click.prevent="$router.push('/forgot-password')"
+        >
           Forgot password?
-        </a>  
+        </a>
         <button type="submit" class="sign-in-btn">Sign In</button>
       </form>
 
       <!-- Sign Up Link -->
       <p class="signup-text">
-        Don't have an account yet? <a href="#" class="signup-link" @click.prevent="$router.push('/register')">Sign Up</a>
+        Don't have an account yet?
+        <a
+          href="#"
+          class="signup-link"
+          @click.prevent="$router.push('/register')"
+          >Sign Up</a
+        >
       </p>
 
       <!-- Response Message -->
-      <p v-if="responseMessage" class="response-message">{{ responseMessage }}</p>
+      <p v-if="responseMessage" class="response-message">
+        {{ responseMessage }}
+      </p>
 
       <!-- Join AAS Button -->
       <button class="join-btn" @click="redirectToAAS">
         <img
-          src="../assets/HARPResearchLockUps/AAS/AAS Logo.svg"
+          src="../assets/HARPResearchLockUps/AAS/AASLogo.svg"
           alt="AAS Logo"
           class="aas-logo"
         />
@@ -62,16 +74,16 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 export default {
-  name: 'LoginPage',
-  
+  name: "LoginPage",
+
   data() {
     return {
-      email: '',
-      password: '',
-      responseMessage: ''
+      email: "",
+      password: "",
+      responseMessage: "",
     };
   },
 
@@ -80,42 +92,46 @@ export default {
       event.preventDefault();
 
       try {
-        const response = await axios.post('http://localhost:3000/api/login', {
+        const response = await axios.post(
+          "http://localhost:3000/api/login",
+          {
             email: this.email,
-            password: this.password
-        }, {
-            withCredentials: true 
-        });
+            password: this.password,
+          },
+          {
+            withCredentials: true,
+          }
+        );
 
         // Store user data in localStorage
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-        
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+
         // Emit a custom event that we'll listen for
-        window.dispatchEvent(new Event('userLoggedIn'));
-        
+        window.dispatchEvent(new Event("userLoggedIn"));
+
         this.responseMessage = response.data.message;
         //console.log('User Info:', response.data.user);
-        this.$router.push('/');
+        this.$router.push("/");
       } catch (error) {
-        this.responseMessage = error.response?.data?.error || 'Login failed.';
-        console.error('Login error:', error);
+        this.responseMessage = error.response?.data?.error || "Login failed.";
+        console.error("Login error:", error);
       }
     },
 
     handleSocialLogin(provider) {
-        if (provider === 'google') {
-          window.location.href = 'http://localhost:3000/auth/google';
-          return;
-        }
-      
-        // For other providers (temporary)
-        this.responseMessage = `${provider} login not implemented yet`;
+      if (provider === "google") {
+        window.location.href = "http://localhost:3000/auth/google";
+        return;
+      }
+
+      // For other providers (temporary)
+      this.responseMessage = `${provider} login not implemented yet`;
     },
 
     redirectToAAS() {
-      window.location.href = 'https://aas.org/membership/join';
-    }
-  }
+      window.location.href = "https://aas.org/membership/join";
+    },
+  },
 };
 </script>
 
@@ -160,7 +176,8 @@ export default {
 }
 
 .apple {
-  background: url("../assets/SocialMediaIcons/apple-logo-transparent.png") no-repeat center;
+  background: url("../assets/SocialMediaIcons/apple-logo-transparent.png")
+    no-repeat center;
   background-size: 50%;
   background-color: #ffffff;
   border: 1px solid #ddd;
@@ -177,7 +194,8 @@ export default {
 }
 
 .microsoft {
-  background: url("../assets/SocialMediaIcons/Microsoft_Logo_512px.png") no-repeat center;
+  background: url("../assets/SocialMediaIcons/Microsoft_Logo_512px.png")
+    no-repeat center;
   background-size: 50%;
   background-color: #f3f3f3;
   border: 1px solid #ddd;
@@ -194,7 +212,8 @@ export default {
 }
 
 .google {
-  background: url("../assets/SocialMediaIcons/Google_Icons-09-512.webp") no-repeat center;
+  background: url("../assets/SocialMediaIcons/Google_Icons-09-512.webp")
+    no-repeat center;
   background-size: 50%;
   background-color: #ffffff;
   border: 1px solid #ddd;
