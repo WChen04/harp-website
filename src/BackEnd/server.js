@@ -6,7 +6,6 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import pg from 'pg';
 import dotenv from 'dotenv';
  dotenv.config({ path: '../../.env' });
-dotenv.config({ path: '../../.env' });;
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -320,17 +319,18 @@ app.get("/api/team-member-image/:id", async (req, res) => {
         console.log(`Fetching image for team_member_id: ${memberId}`);
 
         const result = await pool.query(
-            "SELECT image_data FROM team_member_images WHERE team_member_id = $1",
+            "SELECT image_data, mime_type FROM team_member_images WHERE team_member_id = $1",
             [memberId]
         );
-
+        
         if (result.rows.length > 0) {
-            const imageBuffer = result.rows[0].image_data;
-            res.setHeader("Content-Type", "image/png"); // Ensure PNG format is sent
-            res.send(imageBuffer);
+            const { image_data, mime_type } = result.rows[0];
+            res.setHeader("Content-Type", mime_type || "image/png");
+            res.send(image_data);
         } else {
             res.status(404).json({ error: "Image not found" });
         }
+        
     } catch (error) {
         console.error("Error fetching image:", error);
         res.status(500).json({ error: "Internal server error" });

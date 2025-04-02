@@ -2,11 +2,11 @@
   <div class="member">
     <div class="member-card">
       <div class="card front">
-        <<img
+        <img
           :src="`${memberImage}`"
           :alt="`${member.name}'s profile image`"
           id=""
-        />>
+        />
 
         <div class="member-box"></div>
       </div>
@@ -54,15 +54,17 @@ const memberImage = ref("");
 // Fetch the team member image
 async function fetchMemberImage() {
   try {
-    const response = await axios.get(`http://localhost:3000/api/team-member-image/${props.member.id}`);
-    if (response.data.image_data) {
-      // Convert Base64 string into an image source
-      memberImage.value = `data:image/png;base64,${response.data.image_data}`;
-    }
+    const response = await axios.get(`http://localhost:3000/api/team-member-image/${props.member.id}`, {
+      responseType: 'blob' // Ensure binary data is received
+    });
+    
+    // Convert Blob into a URL and set as the image source
+    memberImage.value = URL.createObjectURL(response.data);
   } catch (error) {
     console.error("Error fetching team member image:", error);
   }
 }
+
 
 onMounted(() => {
   fetchMemberImage();
