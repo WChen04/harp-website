@@ -28,15 +28,15 @@ export default {
         <h1 id="intro">HARP Research Inc.</h1>
         <div class="founderphotos">
           <img
-            src="../assets/HARPResearchLockUps/TeamMember/ManagementTeam/HarperChisari/HARP Research Chisari Harper.webp"
+            src="../assets/HARPResearchLockUps/Founder/Harper.webp"
             alt="Founder 1"
           />
           <img
-            src="../assets/HARPResearchLockUps/TeamMember/ManagementTeam/KevinScott/HARP research Scott Kevin1.webp"
+            src="../assets/HARPResearchLockUps/Founder/Kevin.webp"
             alt="Founder 2"
           />
           <img
-            src="../assets/HARPResearchLockUps/TeamMember/ManagementTeam/YuvalShimoni/Shimoni Yuval about.webp"
+            src="../assets/HARPResearchLockUps/Founder/Yuval.webp"
             alt="Founder 3"
           />
         </div>
@@ -86,8 +86,8 @@ export default {
       <div class="vertical-line"></div>
       <div class="productsinfo">
         <h1 class="harpproductsinfo">
-          With years of AI expertise, we’ve created Polymorphic AI—an
-          efficient, open-source framework anyone can use,<br />
+          With years of AI expertise, we’ve created Polymorphic AI—an efficient,
+          open-source framework anyone can use,<br />
           <span class="product-text">no super computer needed.</span>
         </h1>
         <!-- <ProductsButton></ProductsButton> -->
