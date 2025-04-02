@@ -3,7 +3,7 @@
     <div class="member-card">
       <div class="card front">
         <img
-          :src="`${member.image_path}`"
+          :src="`${memberImage}`"
           :alt="`${member.name}'s profile image`"
           id=""
         />
@@ -42,11 +42,32 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from "vue";
+import axios from "axios";
+
 const props = defineProps({
-  member: {
-    type: Object,
-    required: true,
-  },
+  member: Object, // member should have an 'id' field
+});
+
+const memberImage = ref("");
+
+// Fetch the team member image
+async function fetchMemberImage() {
+  try {
+    const response = await axios.get(`http://localhost:3000/api/team-member-image/${props.member.id}`, {
+      responseType: 'blob' // Ensure binary data is received
+    });
+    
+    // Convert Blob into a URL and set as the image source
+    memberImage.value = URL.createObjectURL(response.data);
+  } catch (error) {
+    console.error("Error fetching team member image:", error);
+  }
+}
+
+
+onMounted(() => {
+  fetchMemberImage();
 });
 </script>
 

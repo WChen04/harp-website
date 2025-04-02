@@ -357,7 +357,6 @@ app.get("/articles/top", async (req, res) => {
 app.get("/articles/search", async (req, res) => {
   try {
     const { query } = req.query;
-
     if (!query || query.trim() === "") {
       // Return all articles if no query provided
       const { rows } = await pool.query(
@@ -384,6 +383,74 @@ app.get("/articles/search", async (req, res) => {
       error: "Search failed",
       details: error.message,
     });
+  }
+});
+// API Endpoint to fetch all team member information from the team_members table (organized by role)
+app.get("/api/team-members", async (req, res) => {
+  try {
+    let query = `SELECT * FROM team_members`;
+    const queryParams = [];
+
+    if (req.query.semester) {
+      // Handle both cases: member_type filter or semester filter
+      if (
+        req.query.semester === "Developer" ||
+        req.query.semester === "Researcher"
+      ) {
+        query += ` WHERE member_type = $1`;
+        queryParams.push(req.query.semester);
+      } else if (
+        req.query.semester === "Fall 2024" ||
+        req.query.semester === "Spring 2025"
+      ) {
+        query += ` WHERE semester = $1`;
+        queryParams.push(req.query.semester);
+      }
+    }
+
+    query += ` ORDER BY 
+      CASE WHEN founder = true THEN 0 ELSE 1 END,
+      CASE 
+        WHEN role = 'CEO, Vice President of Core Research' THEN 1
+        WHEN role LIKE 'Vice President%' THEN 2
+        WHEN role = 'Marketing Manager' THEN 3
+        WHEN role LIKE 'Project Manager%' THEN 4
+        ELSE 5
+      END, 
+      role ASC,
+      name ASC`;
+
+    const result = await pool.query(query, queryParams);
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error fetching team members:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API endpoint to fetch team member profile images from the team_member_images table
+// Note: This assumes that the images are stored as binary data in the database.
+// Refer to convert_images.py to see how images are converted to binary data and stored in the database.
+app.get("/api/team-member-image/:id", async (req, res) => {
+  try {
+    const memberId = req.params.id;
+    console.log(`Fetching image for team_member_id: ${memberId}`);
+
+    const result = await pool.query(
+      "SELECT image_data, mime_type FROM team_member_images WHERE team_member_id = $1",
+      [memberId]
+    );
+
+    if (result.rows.length > 0) {
+      const { image_data, mime_type } = result.rows[0];
+      res.setHeader("Content-Type", mime_type || "image/png");
+      res.send(image_data);
+    } else {
+      res.status(404).json({ error: "Image not found" });
+    }
+  } catch (error) {
+    console.error("Error fetching image:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 //Admin only Routes:
