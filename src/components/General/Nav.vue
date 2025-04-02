@@ -2,7 +2,7 @@
 import GetStarted from "./GetStarted.vue";
 import ProfileButton from "../Profile/ProfileButton.vue";
 import axios from "axios";
-import { useAuthStore } from '../../stores/auth.js';
+import { useAuthStore } from "../../stores/auth.js";
 
 export default {
   setup() {
@@ -38,7 +38,7 @@ export default {
     },
     currentUserFromStore() {
       return this.authStore.user;
-    } 
+    },
   },
 
   methods: {
@@ -96,7 +96,7 @@ export default {
     async checkAuthStatus() {
       await this.authStore.checkAuthStatus();
       this.currentUser = this.authStore.user;
-    }
+    },
   },
 
   mounted() {
@@ -122,7 +122,7 @@ export default {
       <div class="nav-left">
         <router-link class="navLink" to="/">
           <img
-            src="../../assets/HARPResearchLockUps/LogoLockups/HARP Logo Shirt Res.svg"
+            src="../../assets/HARPResearchLockUps/LogoLockups/HARPLogoShirtRes.svg"
             alt="HARP Logo"
             class="logo"
           />
@@ -139,7 +139,9 @@ export default {
         <!-- <router-link class="navLink" to="/projects">Projects</router-link>-->
         <router-link class="navLink" to="/articles">Articles</router-link>
         <div v-if="userIsAdmin">
-          <router-link class="navLink" to="/admin/users">Admin Status</router-link>
+          <router-link class="navLink" to="/admin/users"
+            >Admin Status</router-link
+          >
         </div>
       </div>
       <div class="nav-right">
