@@ -74,7 +74,7 @@ export default {
 
         <div>
           <img
-            src="../assets/HARPResearchLockUps/Photos/HARP Research Chip.webp"
+            src="../assets/HARPResearchLockUps/Photos/Chip.webp"
             alt=""
             id="chipimg"
           />
