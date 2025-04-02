@@ -29,7 +29,7 @@
             wide range of fields converge to shape the future. From leading
             researchers and core innovators to visionaries in technology and
             beyond, we bring together expertise and passion to push the
-            boundaries of what’s possible, driving innovation and creating
+            boundaries of what's possible, driving innovation and creating
             meaningful impact on a global scale.
           </h6>
         </div>
@@ -43,10 +43,10 @@
           </h2>
           <h6 id="missiontext">
             After years of developing our virtual lithography technology, we
-            refocused our efforts on AI. After testing our framework developing
-            software tools for the FDA's Summer Food Service Program, we began
+            refocused our efforts on AI. After testing our framework developing
+            software tools for the FDA's Summer Food Service Program, we began
             developing the Simplified Semantic System Synthesis Framework, or
-            S4, our proprietary polymorphic AI language, built from the ground
+            S4, our proprietary polymorphic AI language, built from the ground
             up for planning. From here, HARP research hopes to expand its
             capabilities, allowing anyone to create anything.
           </h6>
@@ -60,6 +60,9 @@
     </div>
     <div class="team">
       <h2 class="team-foundersHeader">Founders & Management</h2>
+      <button v-if="userIsAdmin" @click="showAddModal = true" class="add-team-btn">
+        Add Management
+      </button>
       <div class="team-foundersCards">
         <TeamMember
           v-for="member in teamMembers.filter((member) => member.founder)"
@@ -68,7 +71,6 @@
         />
       </div>
       <h2 class="team-membersHeader">Team Members</h2>
-      <!-- Dropdown for filtering team members -->
       <div class="team-dropdown">
         <select @change="handleDropdownChange($event)">
           <option value="all">View All</option>
@@ -78,6 +80,9 @@
           <option value="Spring 2025">Spring 2025</option>
         </select>
       </div>
+      <button v-if="userIsAdmin" @click="showAddModal = true" class="add-team-btn">
+        Add Team Member
+      </button>
       <div class="team-membersCards">
         <TeamMember
           v-for="member in filteredTeamMembers"
@@ -92,8 +97,8 @@
         <h2>Join our team</h2>
         <p>
           After years of developing our virtual lithography technology, we
-          refocused our efforts on AI. After testing our framework developing
-          software  tools for the FDA's Summer Food Service Program, we began
+          refocused our efforts on AI. After testing our framework developing
+          software  tools for the FDA's Summer Food Service Program, we began
           developing the Simplified Semantic System Syn
         </p>
         <div class="button-wrapper">
@@ -103,18 +108,152 @@
     </div> -->
     <Footer />
   </div>
+  
+  <!-- Team Member Add Modal -->
+  <div v-if="showAddModal" class="modal-overlay">
+      <div class="modal-content">
+        <h2>Add New Team Member</h2>
+        <form @submit.prevent="submitTeamMember" class="team-form">
+          <!-- Name -->
+          <div class="form-group">
+            <label for="name">Full Name</label>
+            <input 
+              type="text" 
+              id="name" 
+              v-model="newMember.name" 
+              required
+            />
+          </div>
+          
+          <!-- Role -->
+          <div class="form-group">
+            <label for="role">Role/Position</label>
+            <input 
+              type="text" 
+              id="role" 
+              v-model="newMember.role" 
+              required
+            />
+          </div>
+          
+          <!-- GitHub Link -->
+          <div class="form-group">
+            <label for="github">GitHub Link</label>
+            <input 
+              type="url" 
+              id="github" 
+              v-model="newMember.github_link" 
+              placeholder="https://github.com/username"
+            />
+          </div>
+          
+          <!-- LinkedIn Link -->
+          <div class="form-group">
+            <label for="linkedin">LinkedIn Link</label>
+            <input 
+              type="url" 
+              id="linkedin" 
+              v-model="newMember.linkedin_link" 
+              placeholder="https://linkedin.com/in/username"
+            />
+          </div>
+          
+          <!-- Semester -->
+          <div class="form-group">
+            <label for="semester">Semester</label>
+            <select 
+              id="semester" 
+              v-model="newMember.semester" 
+              required
+            >
+              <option value="">Select a semester</option>
+              <option value="Fall 2024">Fall 2024</option>
+              <option value="Spring 2025">Spring 2025</option>
+            </select>
+          </div>
+          
+          <!-- Member Type -->
+          <div class="form-group">
+            <label for="memberType">Member Type</label>
+            <select 
+              id="memberType" 
+              v-model="newMember.member_type" 
+              required
+            >
+              <option value="">Select a type</option>
+              <option value="Developer">Developer</option>
+              <option value="Admin">Admin</option>
+              <option value="Researcher">Researcher</option>
+            </select>
+          </div>
+          
+          <!-- Founder Status -->
+          <div class="form-group checkbox">
+            <input 
+              type="checkbox" 
+              id="founder" 
+              v-model="newMember.founder"
+            />
+            <label for="founder">Founder/Management</label>
+          </div>
+          
+          <!-- Profile Image Upload -->
+          <div class="form-group">
+            <label for="image">Profile Image</label>
+            <input 
+              type="file" 
+              id="image" 
+              @change="handleImageUpload" 
+              accept="image/*" 
+              required
+            />
+            <div v-if="imagePreview" class="image-preview">
+              <img :src="imagePreview" alt="Preview" />
+            </div>
+          </div>
+          
+          <div class="modal-actions">
+            <button type="button" @click="showAddModal = false" class="cancel-btn">Cancel</button>
+            <button type="submit" class="submit-btn" :disabled="submitting">
+              {{ submitting ? 'Submitting...' : 'Add Team Member' }}
+            </button>
+          </div>
+        </form>
+      </div>
+  </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import TeamMember from "@/components/About/Frontend/TeamMemberCard.vue";
+import { useAuthStore } from '../stores/auth.js';
 import Header from "@/components/General/Header.vue";
 import Footer from "@/components/General/Footer.vue";
 import axios from "axios";
 
+// Access the auth store
+const authStore = useAuthStore();
+
+// Reactive state
 const selectedFilter = ref("all");
 const teamMembers = ref([]);
+const showAddModal = ref(false);
+const submitting = ref(false);
+const imagePreview = ref(null);
 
+// New team member object
+const newMember = ref({
+  name: '',
+  role: '',
+  github_link: '',
+  linkedin_link: '',
+  semester: '',
+  member_type: '',
+  founder: false,
+  image: null
+});
+
+// Computed property for filtered team members
 const filteredTeamMembers = computed(() => {
   if (selectedFilter.value === "all") {
     return teamMembers.value.filter((member) => !member.founder);
@@ -129,6 +268,12 @@ const filteredTeamMembers = computed(() => {
   );
 });
 
+// Computed property for admin check
+const userIsAdmin = computed(() => {
+  return authStore.isAdmin;
+});
+
+// Methods
 async function fetchTeamMembers() {
   try {
     let url = "http://localhost:3000/api/team-members";
@@ -152,6 +297,57 @@ function handleDropdownChange(event) {
   fetchTeamMembers();
 }
 
+function handleImageUpload(event) {
+  const file = event.target.files[0];
+  if (file) {
+    newMember.value.image = file;
+    imagePreview.value = URL.createObjectURL(file);
+  }
+}
+
+async function submitTeamMember() {
+  submitting.value = true;
+  try {
+    const formData = new FormData();
+    
+    // Append all member data to FormData
+    for (const key in newMember.value) {
+      formData.append(key, newMember.value[key]);
+    }
+    
+    // Submit to API
+    await axios.post('http://localhost:3000/api/team-members', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    
+    // Reset form after successful submission
+    newMember.value = {
+      name: '',
+      role: '',
+      github_link: '',
+      linkedin_link: '',
+      semester: '',
+      member_type: '',
+      founder: false,
+      image: null
+    };
+    imagePreview.value = null;
+    showAddModal.value = false;
+    
+    // Refresh team members list
+    fetchTeamMembers();
+    
+  } catch (error) {
+    console.error('Error submitting team member:', error);
+    // You might want to show an error message here
+  } finally {
+    submitting.value = false;
+  }
+}
+
+// Hook that runs when the component is mounted
 onMounted(() => {
   fetchTeamMembers();
 });

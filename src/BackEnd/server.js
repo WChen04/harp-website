@@ -457,8 +457,10 @@ app.get("/api/team-member-image/:id", async (req, res) => {
 
 import multer from "multer";
 import adminRoutes from "../components/Admin/AdminAPI.js";
+//import AboutAPI from "../components/About/Frontend/AboutAPI.js"
 
 app.use("/api", adminRoutes(pool));
+//app.use("/api", AboutAPI(pool));
 
 const upload = multer({
   storage: multer.memoryStorage(),
