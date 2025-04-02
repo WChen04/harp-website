@@ -6,6 +6,7 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import pg from 'pg';
 import dotenv from 'dotenv';
  dotenv.config({ path: '../../.env' });
+dotenv.config({ path: '../../.env' });;
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -273,7 +274,7 @@ app.get('/articles/search', async (req, res) => {
     }
 });
 
-// API Endpoint to fetch all team members from the team_members table (organized by role)
+// API Endpoint to fetch all team member information from the team_members table (organized by role)
 app.get("/api/team-members", async (req, res) => {
     try {
       let query = `SELECT * FROM team_members`;
@@ -308,7 +309,35 @@ app.get("/api/team-members", async (req, res) => {
       console.error('Error fetching team members:', error);
       res.status(500).json({ error: error.message });
     }
-  });
+});
+
+// API endpoint to fetch team member profile images from the team_member_images table
+// Note: This assumes that the images are stored as binary data in the database.
+// Refer to convert_images.py to see how images are converted to binary data and stored in the database.
+app.get("/api/team-member-image/:id", async (req, res) => {
+    try {
+        const memberId = req.params.id;
+        console.log(`Fetching image for team_member_id: ${memberId}`);
+
+        const result = await pool.query(
+            "SELECT image_data FROM team_member_images WHERE team_member_id = $1",
+            [memberId]
+        );
+
+        if (result.rows.length > 0) {
+            const imageBuffer = result.rows[0].image_data;
+            res.setHeader("Content-Type", "image/png"); // Ensure PNG format is sent
+            res.send(imageBuffer);
+        } else {
+            res.status(404).json({ error: "Image not found" });
+        }
+    } catch (error) {
+        console.error("Error fetching image:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+
 
 app.get('/', (req, res) => {
     res.json({ message: 'Backend is running' });

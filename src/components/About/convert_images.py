@@ -32,18 +32,16 @@ def compress_image(image_path, max_size=(1000, 1000), quality=85):
     - Uses lossy compression (85% quality) for JPEG
     """
     with Image.open(image_path) as img:
-        if img.mode in ("RGBA", "P"):
-            img = img.convert("RGB")  # Convert to RGB to avoid transparency issues
-        
         img.thumbnail(max_size)  # Resize while maintaining aspect ratio
-        
+
         img_io = io.BytesIO()
         file_ext = os.path.splitext(image_path)[1].lower()
-        
+
         if file_ext in [".jpg", ".jpeg"]:
+            img = img.convert("RGB")  # Required for JPEG
             img.save(img_io, format="JPEG", quality=quality, optimize=True)
         elif file_ext == ".png":
-            img.save(img_io, format="PNG", optimize=True)
+            img.save(img_io, format="PNG", optimize=True)  # Keep original transparency
         else:
             img.save(img_io, format="JPEG", quality=quality, optimize=True)  # Default to JPEG
         

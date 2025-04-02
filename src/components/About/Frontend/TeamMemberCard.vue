@@ -2,11 +2,11 @@
   <div class="member">
     <div class="member-card">
       <div class="card front">
-        <img
-          :src="member.imageData || defaultImagePath"
+        <<img
+          :src="`${memberImage}`"
           :alt="`${member.name}'s profile image`"
-@error="handleImageError"
-                  />
+          id=""
+        />>
 
         <div class="member-box"></div>
       </div>
@@ -42,21 +42,32 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { defineProps } from "vue";
+import { ref, onMounted } from "vue";
+import axios from "axios";
 
 const props = defineProps({
-  member: Object
+  member: Object, // member should have an 'id' field
 });
 
-const defaultImagePath = '/path/to/default/image.png'; // Add a default image path
+const memberImage = ref("");
 
-const handleImageError = (e) => {
-  console.error('Image failed to load:', props.member.imageData);
-  e.target.src = defaultImagePath;
-};
+// Fetch the team member image
+async function fetchMemberImage() {
+  try {
+    const response = await axios.get(`http://localhost:3000/api/team-member-image/${props.member.id}`);
+    if (response.data.image_data) {
+      // Convert Base64 string into an image source
+      memberImage.value = `data:image/png;base64,${response.data.image_data}`;
+    }
+  } catch (error) {
+    console.error("Error fetching team member image:", error);
+  }
+}
+
+onMounted(() => {
+  fetchMemberImage();
+});
 </script>
-
 
 <style lang="css" scoped>
 .member {
