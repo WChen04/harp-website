@@ -58,7 +58,7 @@ const props = defineProps({
 const emit = defineEmits(['edit', 'delete']);
 
 const authStore = useAuthStore();
-const memberImageUrl = ref(''); // Use ref instead of computed for mutable state
+const memberImageUrl = ref('');
 
 const userIsAdmin = computed(() => {
   return authStore.isAdmin;
@@ -69,9 +69,7 @@ function editMember() {
 }
 
 function confirmDelete() {
-  if (confirm(`Are you sure you want to remove ${props.member.name} from the team?`)) {
-    emit('delete', props.member.id);
-  }
+  emit('delete', props.member.id);
 }
 
 // Fetch the team member image
@@ -102,6 +100,7 @@ onMounted(() => {
 </script>
 
 <style lang="css" scoped>
+/* Style remains the same */
 .member {
   margin-bottom: 3%;
   margin-top: 3%;
@@ -163,5 +162,39 @@ onMounted(() => {
 .member-name {
   font-weight: bold;
   font-size: 1.1rem;
+}
+
+/* Add styles for the action buttons */
+.team-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.edit-btn, .delete-btn {
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background-color 0.2s;
+}
+
+.edit-btn {
+  background-color: #4a90e2;
+  color: white;
+}
+
+.edit-btn:hover {
+  background-color: #3a7bc8;
+}
+
+.delete-btn {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #c0392b;
 }
 </style>

@@ -26,18 +26,6 @@ function AboutAPI(pool) {
   // Middleware to check if user is authenticated and is admin
   const isAdmin = (req, res, next) => {
     try {
-      console.log("Auth check - request headers:", req.headers);
-      console.log("Auth check - cookies:", req.cookies);
-      console.log("Auth check - is authenticated:", req.isAuthenticated ? req.isAuthenticated() : "isAuthenticated not defined");
-      console.log("Auth check - user:", req.user);
-      
-      // Temporarily bypass authentication for debugging
-      // REMOVE THIS AFTER DEBUGGING!
-      console.log("WARNING: Authentication check bypassed for debugging");
-      return next();
-      
-      // Uncomment this when ready to enforce authentication
-      /*
       if (!req.isAuthenticated || !req.isAuthenticated()) {
         console.log("Failed authentication check");
         return res.status(401).json({ error: "Not authenticated" });
@@ -51,7 +39,6 @@ function AboutAPI(pool) {
       
       console.log("Auth checks passed");
       next();
-      */
     } catch (error) {
       console.error("Error in auth middleware:", error);
       return res.status(500).json({ error: "Authentication error" });
@@ -98,6 +85,30 @@ function AboutAPI(pool) {
       res.json(result.rows);
     } catch (error) {
       console.error("Error fetching team members:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+  router.get("/team-member-image/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const result = await pool.query(
+        "SELECT image_data, mime_type FROM team_member_images WHERE team_member_id = $1",
+        [id]
+      );
+  
+      if (result.rows.length === 0) {
+        return res.status(404).json({ error: "Image not found" });
+      }
+  
+      const { image_data, mime_type } = result.rows[0];
+      
+      // Set the content type
+      res.setHeader('Content-Type', mime_type);
+      
+      // Convert Buffer data to send as response
+      res.send(image_data);
+    } catch (error) {
+      console.error("Error fetching team member image:", error);
       res.status(500).json({ error: error.message });
     }
   });
