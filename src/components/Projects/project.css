@@ -74,25 +74,46 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     border-radius: 10%;
-    padding: 1rem;
     background: linear-gradient(to bottom, #54204d 0%, #7db9e8 100%);
     color: white;
     text-align: center;
     font-weight: bold;
     transition: transform 0.3s;
+    overflow: hidden;
+    padding: 0; /* Remove padding to allow image to fill edges */
   }
   
   .project-card:hover {
     transform: scale(1.05);
   }
   
-  .project-name {
-    font-size: 1.1rem;
+  .card.front {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
   }
   
-  .tags {
-   display: none;
+  .project-image {
+    width: 100%;
+    height: 50%;
+    object-fit: cover;
+    object-position: center;
+    margin-bottom: 0; /* Remove margin to allow image to touch edges */
   }
+  
+  .member-box {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 1rem; /* Add padding here instead of on the card */
+  }
+  
+  .project-name {
+    font-size: 1.1rem;
+    text-align: center;
+}

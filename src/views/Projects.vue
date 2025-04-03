@@ -36,6 +36,11 @@
         <router-link :to="project.link" class="project-link">
           <div class="project-card">
             <div class="card front">
+              <img
+              src="@/assets/HARPResearchLockUps/Photos/prometheus.webp" 
+                alt="Project Image"
+                class="project-image"
+                />
               <div class="member-box"></div>
               <h4 class="project-name">{{ project.name }}</h4>
               <div class="tags" v-if="selectedTags.length">
