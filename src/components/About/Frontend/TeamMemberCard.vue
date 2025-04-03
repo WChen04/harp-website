@@ -3,11 +3,9 @@
     <div class="member-card">
       <div class="card front">
         <img
-          :src="`${memberImage}`"
+          :src="memberImageUrl"
           :alt="`${member.name}'s profile image`"
-          id=""
         />
-
         <div class="member-box"></div>
       </div>
       <div class="card back">
@@ -60,14 +58,10 @@ const props = defineProps({
 const emit = defineEmits(['edit', 'delete']);
 
 const authStore = useAuthStore();
+const memberImageUrl = ref(''); // Use ref instead of computed for mutable state
 
 const userIsAdmin = computed(() => {
   return authStore.isAdmin;
-});
-
-const memberImage = computed(() => {
-  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-  return `${apiUrl}/api/team-member-image/${props.member.id}`;
 });
 
 function editMember() {
@@ -83,17 +77,24 @@ function confirmDelete() {
 // Fetch the team member image
 async function fetchMemberImage() {
   try {
-    const response = await axios.get(`http://localhost:3000/api/team-member-image/${props.member.id}`, {
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    const initialUrl = `${apiUrl}/api/team-member-image/${props.member.id}`;
+    
+    // Set initial URL before fetch completes
+    memberImageUrl.value = initialUrl;
+    
+    const response = await axios.get(initialUrl, {
       responseType: 'blob' // Ensure binary data is received
     });
     
-    // Convert Blob into a URL and set as the image source
-    memberImage.value = URL.createObjectURL(response.data);
+    // Convert Blob into a URL and update the ref
+    memberImageUrl.value = URL.createObjectURL(response.data);
   } catch (error) {
     console.error("Error fetching team member image:", error);
+    // Fallback to a default image if fetch fails
+    memberImageUrl.value = '../../../assets/default-profile.png';
   }
 }
-
 
 onMounted(() => {
   fetchMemberImage();
@@ -132,7 +133,6 @@ onMounted(() => {
   padding: 1rem;
   color: white;
 }
-
 
 /* Changes the gradient of each team members' card */
 .front {

@@ -68,6 +68,8 @@
           v-for="member in teamMembers.filter((member) => member.founder)"
           :key="member.id"
           :member="member"
+          @edit="editMember"
+          @delete="deleteMember"
         />
       </div>
       <h2 class="team-membersHeader">Team Members</h2>
@@ -88,6 +90,8 @@
           v-for="member in filteredTeamMembers"
           :key="member.id"
           :member="member"
+          @edit="editMember"
+          @delete="deleteMember"
         />
       </div>
     </div>
@@ -251,8 +255,11 @@ const authStore = useAuthStore();
 const selectedFilter = ref("all");
 const teamMembers = ref([]);
 const showAddModal = ref(false);
+const showConfirmModal = ref(false); // Add this line to define the missing property
 const submitting = ref(false);
 const imagePreview = ref(null);
+const deleting = ref(false); // Also add this since it's used in the template
+const memberToDelete = ref(null); // Add this to track which member to delete
 
 // New team member object
 const newMember = ref({
@@ -308,7 +315,6 @@ async function fetchTeamMembers() {
   }
 }
 
-
 function handleDropdownChange(event) {
   selectedFilter.value = event.target.value;
   fetchTeamMembers();
@@ -322,6 +328,45 @@ function handleImageUpload(event) {
   }
 }
 
+// Add this function to handle delete confirmation
+function openDeleteConfirmation(member) {
+  memberToDelete.value = member;
+  showConfirmModal.value = true;
+}
+function editMember(member) {
+  console.log('Edit requested for member:', member);
+  // Implement edit functionality or reuse your existing modal
+}
+
+// Add this function to handle the actual deletion
+async function confirmDeleteMember() {
+  if (!memberToDelete.value) return;
+  
+  deleting.value = true;
+  try {
+    // Submit to API using environment variable for API URL
+    await axios.delete(
+      `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/team-members/${memberToDelete.value.id}`, 
+      {
+        withCredentials: true // Ensure cookies are sent for authentication
+      }
+    );
+    
+    // Refresh team members list
+    fetchTeamMembers();
+    
+    // Reset state
+    showConfirmModal.value = false;
+    memberToDelete.value = null;
+    
+  } catch (error) {
+    console.error('Error deleting team member:', error);
+    alert('Failed to delete team member. Please try again.');
+  } finally {
+    deleting.value = false;
+  }
+}
+
 async function submitTeamMember() {
   submitting.value = true;
   try {
@@ -329,12 +374,22 @@ async function submitTeamMember() {
     
     // Append all member data to FormData
     for (const key in newMember.value) {
-      formData.append(key, newMember.value[key]);
+      if (key === 'image' && newMember.value[key]) {
+        formData.append('image', newMember.value[key]);
+      } else if (newMember.value[key] !== null && newMember.value[key] !== undefined) {
+        formData.append(key, newMember.value[key]);
+      }
+    }
+    
+    // Log the FormData contents for debugging
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
     }
     
     // Submit to API using environment variable for API URL
-    await axios.post(
-      `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/team-members`, 
+    console.log("Submitting team member data...");
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/team-members-put`, 
       formData, 
       {
         headers: {
@@ -343,6 +398,8 @@ async function submitTeamMember() {
         withCredentials: true // Ensure cookies are sent for authentication
       }
     );
+    
+    console.log("API response:", response.data);
     
     // Reset form after successful submission
     newMember.value = {
@@ -363,9 +420,43 @@ async function submitTeamMember() {
     
   } catch (error) {
     console.error('Error submitting team member:', error);
-    alert('Failed to add team member. Please try again.');
+    console.error('Error details:', error.response ? error.response.data : 'No response data');
+    alert(`Failed to add team member: ${error.response ? error.response.data.error : error.message}`);
   } finally {
     submitting.value = false;
+  }
+}
+
+async function deleteMember(memberId) {
+  console.log('Delete requested for member ID:', memberId);
+  
+  // Set loading state
+  deleting.value = true;
+  try {
+    // Make sure to use the correct API URL format
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    console.log(`Sending delete request to: ${apiUrl}/api/team-members/${memberId}`);
+    
+    // Make the delete request
+    const response = await axios.delete(
+      `${apiUrl}/api/team-members/${memberId}`, 
+      { withCredentials: true }
+    );
+    
+    console.log('Delete response:', response.data);
+    
+    // Refresh the team members list
+    await fetchTeamMembers();
+    
+    // Show success message
+    alert('Team member deleted successfully!');
+    
+  } catch (error) {
+    console.error('Error deleting team member:', error);
+    console.error('Error details:', error.response ? error.response.data : 'No response data');
+    alert(`Failed to delete team member: ${error.response ? error.response.data.error : error.message}`);
+  } finally {
+    deleting.value = false;
   }
 }
 
