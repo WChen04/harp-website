@@ -15,6 +15,7 @@
   }
   
   .search-icon {
+    height: 3vh;
     margin-right: 10px;
     color: gray;
   }

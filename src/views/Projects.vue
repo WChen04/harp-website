@@ -7,8 +7,12 @@
 
     <div class="search-container">
       <div class="search-bar-wrapper">
-        <span class="search-icon">&#128269;</span>
-        <input v-model="searchQuery" type="text" placeholder="Search by title or category" class="search-bar" />
+        <img 
+          src="https://img.icons8.com/?size=100&id=DZe3wFKTc8IK&format=png&color=000000" 
+          alt="Search Icon" 
+          class="search-icon"
+        />        
+        <input v-model="searchQuery" type="text" placeholder="Search by name or category" class="search-bar" />
       </div>
     </div>
 
@@ -56,7 +60,7 @@ import Footer from "@/components/General/Footer.vue";
 
 const searchQuery = ref("");
 const selectedTags = ref([]);
-const availableTags = ["AI", "Open Source", "Web", "Data Science"];
+const availableTags = ["Open Source", "Research"];
 
 const ProjectCards = [
   { id: 1, name: "Vox-Intuitus", link: "/open-source-project", tags: ["AI", "Open Source"] },
