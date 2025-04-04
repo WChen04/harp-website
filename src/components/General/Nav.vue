@@ -1,3 +1,49 @@
+<template>
+  <div>
+    <nav :class="{ scrolled: isScrolled }">
+      <div class="nav-left">
+        <router-link class="navLink" to="/">
+          <img
+            src="../../assets/HARPResearchLockUps/LogoLockups/HARPLogoShirtRes.svg"
+            alt="HARP Logo"
+            class="logo"
+          />
+        </router-link>
+        <router-link class="navLink" to="/about">About</router-link>
+        <div class="dropdown-container">
+          <div class="navLink products" @mouseenter="showProductsDropdown = true" @mouseleave="showProductsDropdown = false">
+            Products
+            <span class="dropdown-arrow">▼</span>
+            <div v-show="showProductsDropdown" class="dropdown">
+              <router-link class="dropdown-link" to="/viewpoint">ViewPoint</router-link>
+              <!-- Future products will be added here -->
+            </div>
+          </div>
+        </div>
+        <router-link class="navLink" to="/articles">Articles</router-link>
+        <div v-if="userIsAdmin">
+          <router-link class="navLink" to="/admin/users">Admin Status</router-link>
+        </div>
+      </div>
+      <div class="nav-right">
+        <router-link class="navLink" to="/contact">Contact Us</router-link>
+        <template v-if="currentUser && currentUser.full_name">
+          <profile-button
+            :fullName="currentUser.full_name"
+            :profilePicture="currentUser.profile_picture"
+            @update:profilePicture="onProfilePictureUpdate"
+          />
+        </template>
+        <template v-else>
+          <router-link class="navLink" to="/login">
+            <get-started></get-started>
+          </router-link>
+        </template>
+      </div>
+    </nav>
+  </div>
+</template>
+
 <script>
 import GetStarted from "./GetStarted.vue";
 import ProfileButton from "../Profile/ProfileButton.vue";
@@ -41,9 +87,6 @@ export default {
   },
 
   methods: {
-    toggleProductsDropdown() {
-      this.showProductsDropdown = !this.showProductsDropdown;
-    },
     handleScroll() {
       this.isScrolled = window.scrollY > 100;
     },
@@ -114,51 +157,6 @@ export default {
   },
 };
 </script>
-
-<template>
-  <div>
-    <nav :class="{ scrolled: isScrolled }">
-      <div class="nav-left">
-        <router-link class="navLink" to="/">
-          <img
-            src="../../assets/HARPResearchLockUps/LogoLockups/HARPLogoShirtRes.svg"
-            alt="HARP Logo"
-            class="logo"
-          />
-        </router-link>
-        <router-link class="navLink" to="/about">About</router-link>
-        <div class="navLink products" @click="toggleProductsDropdown">
-          Products
-          <div v-if="showProductsDropdown" class="dropdown">
-            <router-link class="dropdown-link" to="/viewpoint">ViewPoint</router-link>
-          </div>
-        </div>
-        <!-- <router-link class="navLink" to="/projects">Projects</router-link>-->
-        <router-link class="navLink" to="/articles">Articles</router-link>
-        <div v-if="userIsAdmin">
-          <router-link class="navLink" to="/admin/users"
-            >Admin Status</router-link
-          >
-        </div>
-      </div>
-      <div class="nav-right">
-        <router-link class="navLink" to="/contact">Contact Us</router-link>
-        <template v-if="currentUser && currentUser.full_name">
-          <profile-button
-            :fullName="currentUser.full_name"
-            :profilePicture="currentUser.profile_picture"
-            @update:profilePicture="onProfilePictureUpdate"
-          />
-        </template>
-        <template v-else>
-          <router-link class="navLink" to="/login">
-            <get-started></get-started>
-          </router-link>
-        </template>
-      </div>
-    </nav>
-  </div>
-</template>
 
 <style lang="css" scoped>
 @import "./nav.css";

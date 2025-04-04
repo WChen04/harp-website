@@ -1,4 +1,3 @@
-/* Base Styles */
 nav {
   width: 100%;
   position: fixed;
@@ -33,33 +32,46 @@ nav.scrolled {
   margin: 0.5em;
 }
 
+/* Dropdown container to create proper positioning context */
+.dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+/* Products link with dropdown */
+.products {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+/* Dropdown arrow */
+.dropdown-arrow {
+  font-size: 0.6em;
+  margin-left: 0.3em;
+  vertical-align: middle;
+}
+
+/* Dropdown menu */
 .dropdown {
   position: absolute;
+  top: 100%;
+  left: 0;
   background-color: #222;
   border-radius: 8px;
   display: flex;
   flex-direction: column;
-  padding: 0;
+  padding: 0.5em 0;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  opacity: 0;
-  visibility: hidden; /* Hide it completely when not visible */
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-  font-size: 0.9em;
+  min-width: 150px;
   z-index: 1000;
-  top: 100%; /* Position directly below the parent */
-  left: 50%; /* Center it horizontally */
-  transform: translateX(-50%); /* Perfect centering trick */
-  min-width: 120px; /* Give it a minimum width so it's easy to click */
+  animation: fadeIn 0.2s ease-in-out;
 }
 
-.products {
-  position: relative; /* Make this the positioning context for the dropdown */
-  cursor: pointer;
-}
-
-.products:hover .dropdown {
-  opacity: 1;
-  visibility: visible;
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* Dropdown Links */
@@ -68,8 +80,9 @@ nav.scrolled {
   text-decoration: none;
   padding: 0.75em 1.5em;
   transition: background-color 0.3s ease, color 0.3s ease;
-  border-radius: 4px;
-  text-align: center;
+  white-space: nowrap;
+  text-align: left;
+  display: block;
 }
 
 .dropdown-link:hover {
@@ -91,30 +104,6 @@ nav.scrolled {
     flex-direction: row;
     gap: 1.5em;
   }
-
-  .dropdown-link {
-    padding: 1em 2em;
-    font-size: 0.9em;
-  }
-
-  .dropdown {
-    top: 120%;
-    left: 50%;
-  }
-}
-
-@media (min-width: 390px) {
-  .dropdown {
-    top: 110%;
-    left: 42%;
-  }
-}
-
-@media (min-width: 412px) {
-  .dropdown {
-    top: 110%;
-    left: 40%;
-  }
 }
 
 @media (min-width: 768px) {
@@ -130,41 +119,12 @@ nav.scrolled {
   .logo {
     margin: 0.65em;
   }
-
-  .dropdown-link {
-    padding: 0.75em 2em;
-    font-size: 0.9em;
-  }
-
-  .dropdown {
-    top: 110%;
-    left: 44%;
-  }
 }
 
-@media (min-width: 820px) {
-  .dropdown {
-    top: 110%;
-    left: 42%;
-  }
-}
-
-@media (min-width: 961px) {
-  .dropdown {
-    top: 105%;
-    left: 35%;
-  }
-}
-
-@media (min-width: 1440px) and (max-width: 2559px) {
+@media (min-width: 1440px) {
   nav {
     padding: 2% 5%;
     font-size: 1.5em;
-  }
-  .dropdown{
-    top: 60%;
-    left: 18%;
-   
   }
 }
 
@@ -176,20 +136,5 @@ nav.scrolled {
 
   .nav-left, .nav-right {
     gap: 2em;
-  }
-
-  .dropdown-link {
-    padding: 0.75em 2em;
-    font-size: 0.9em;
-  }
-
-  .dropdown {
-    top: 110%;
-    left: 44%;
-  }
-
-  .products:hover .dropdown {
-    /* transform: translate(-150%, -150%); */
-    border-radius: 0.5em;
   }
 }
