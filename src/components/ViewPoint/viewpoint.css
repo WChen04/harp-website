@@ -1,366 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;400;700&display=swap");
 
-@media (min-width: 320px) {
-  .displaymain {
-    margin-top: 10vh;
-  }
-  .introduction {
-    margin-bottom: 0.75em;
-  }
-  .logo {
-    width: 2em;
-  }
-  .product-name {
-    margin-left: 0.5em;
-  }
-  .product-name h1 {
-    font-size: 1rem;
-  }
-  .product-name h3 {
-    font-size: 0.5rem;
-  }
-  .text-block {
-    gap: 1em;
-  }
-  .text-block h1 {
-    font-size: 0.75em;
-  }
-  .blue-button {
-    padding: 0.5em 1em;
-    font-size: 0.5em;
-  }
-
-  .blue-button:hover {
-    background: linear-gradient(45deg, #0056b3, #00aaff);
-    border-color: #00aaff;
-  }
-  .product {
-    width: 85%;
-    margin: 5vh;
-  }
-
-  .product img {
-    width: 50%;
-    border-radius: 2em;
-  }
-
-  .product:hover::before {
-    filter: blur(1em);
-    opacity: 1;
-  }
-  .product:hover img {
-    transform: scale(1.1);
-  }
-  .product-images {
-    gap: 1em;
-  }
-  .product-card {
-    width: 15em;
-    padding: 1em;
-  }
-  .product-card h1 {
-    margin-bottom: 0.5em;
-    font-size: 1em;
-  }
-
-  .product-card p {
-    font-size: 0.75em;
-    line-height: 1.5;
-  }
-  .product-card img {
-    width: 100%;
-  }
-  .info {
-    margin: -25vh 0 10vh 0;
-  }
-
-  .description-block {
-    margin-top: 3em;
-  }
-  .description-block h1 {
-    font-size: 1em;
-  }
-  .description-block h3 {
-    width: 90%;
-    font-size: 0.75em;
-    margin: 0.5em;
-  }
-  .automation-title h2 {
-    font-size: 0.5em;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1024px) {
-  .displaymain {
-    margin-top: 10vh;
-  }
-  .introduction {
-    margin-bottom: 0.75em;
-  }
-  .logo {
-    width: 5em;
-  }
-  .product-name {
-    margin-left: 0.75em;
-  }
-  .product-name h1 {
-    font-size: 2em;
-  }
-  .product-name h3 {
-    font-size: 1em;
-  }
-  .text-block {
-    gap: 0.75em;
-  }
-  .text-block h1 {
-    font-size: 1.5em;
-  }
-  .blue-button {
-    padding: 0.5em 1em;
-    font-size: 1em;
-  }
-
-  .blue-button:hover {
-    background: linear-gradient(45deg, #0056b3, #00aaff);
-    border-color: #00aaff;
-  }
-  .product {
-    width: 85%;
-    margin: 5vh;
-  }
-
-  .product img {
-    width: 60%;
-    border-radius: 2em;
-  }
-
-  .product:hover::before {
-    filter: blur(1em);
-    opacity: 1;
-  }
-  .product:hover img {
-    transform: scale(1.1);
-  }
-  .product-images {
-    gap: 1em;
-  }
-  .product-card {
-    width: 15em;
-    padding: 1em;
-  }
-  .product-card h1 {
-    margin-bottom: 0.5em;
-    font-size: 1em;
-  }
-
-  .product-card p {
-    font-size: 1em;
-    line-height: 1.5;
-  }
-  .product-card img {
-    width: 100%;
-  }
-  .info {
-    margin: -25vh 0 10vh 0;
-  }
-
-  .description-block {
-    margin-top: 3em;
-  }
-  .description-block h1 {
-    font-size: 1.5em;
-  }
-  .description-block h3 {
-    width: 90%;
-    font-size: 1em;
-    margin: 0.5em;
-  }
-  .automation-title h2 {
-    font-size: 0.5em;
-  }
-}
-@media (min-width: 961px) {
-  /* tablet, landscape iPad, lo-res laptops ands desktops */
-}
-@media (min-width: 1440px) and (max-width: 2055px) {
-  .displaymain {
-    margin-top: 20vh;
-  }
-  .introduction {
-    margin-bottom: 0.75em;
-  }
-  .logo {
-    width: 6em;
-  }
-  .product-name {
-    margin-left: 0.75em;
-  }
-  .product-name h1 {
-    font-size: 2em;
-  }
-  .product-name h3 {
-    font-size: 1em;
-  }
-  .text-block {
-    gap: 2em;
-  }
-  .text-block h1 {
-    font-size: 2em;
-  }
-  .blue-button {
-    padding: 0.5em 1em;
-    font-size: 1.5em;
-  }
-
-  .blue-button:hover {
-    background: linear-gradient(45deg, #0056b3, #00aaff);
-    border-color: #00aaff;
-  }
-  .product {
-    width: 85%;
-    margin: 25vh;
-  }
-
-  .product img {
-    width: 100%;
-    border-radius: 2em;
-  }
-
-  .product:hover::before {
-    filter: blur(1em);
-    opacity: 1;
-  }
-  .product:hover img {
-    transform: scale(1.1);
-  }
-  .product-images {
-    gap: 1em;
-  }
-  .product-card {
-    width: 30em;
-    padding: 2em;
-  }
-  .product-card h1 {
-    margin-bottom: 0.5em;
-    font-size: 1.75em;
-  }
-
-  .product-card p {
-    font-size: 1.5em;
-    line-height: 1.5;
-  }
-  .product-card img {
-    width: 100%;
-  }
-  .info {
-    margin: -25vh 0 10vh 0;
-  }
-
-  .description-block {
-    margin-top: 1.5em;
-  }
-  .description-block h1 {
-    font-size: 3em;
-  }
-  .description-block h3 {
-    width: 90%;
-    font-size: 1.5em;
-    margin: 0.75em;
-  }
-  .automation-title h2 {
-    font-size: 0.75em;
-  }
-}
-@media (min-width: 2056px) {
-  .displaymain {
-    margin-top: 20vh;
-  }
-  .introduction {
-    margin-bottom: 0.75em;
-  }
-  .logo {
-    width: 10em;
-  }
-  .product-name {
-    margin-left: 0.75em;
-  }
-  .product-name h1 {
-    font-size: 5em;
-  }
-  .product-name h3 {
-    font-size: 2em;
-  }
-  .text-block {
-    gap: 2em;
-  }
-  .text-block h1 {
-    font-size: 3.5em;
-  }
-  .blue-button {
-    padding: 0.5em 1em;
-    font-size: 2.5em;
-  }
-
-  .blue-button:hover {
-    background: linear-gradient(45deg, #0056b3, #00aaff);
-    border-color: #00aaff;
-  }
-  .product {
-    width: 85%;
-    margin: 11vh;
-  }
-
-  .product img {
-    width: 100%;
-    border-radius: 2em;
-  }
-
-  .product:hover::before {
-    filter: blur(1em);
-    opacity: 1;
-  }
-  .product:hover img {
-    transform: scale(1.1);
-  }
-  .product-images {
-    gap: 1em;
-  }
-  .product-card {
-    width: 53em;
-    padding: 3em;
-  }
-  .product-card h1 {
-    margin-bottom: 0.5em;
-    font-size: 3em;
-  }
-
-  .product-card p {
-    font-size: 3em;
-    line-height: 1.5;
-  }
-  .product-card img {
-    width: 100%;
-  }
-  .info {
-    margin: -25vh 0 10vh 0;
-  }
-
-  .description-block {
-    margin-top: 3em;
-  }
-  .description-block h1 {
-    font-size: 5em;
-  }
-  .description-block h3 {
-    width: 90%;
-    font-size: 2.5em;
-    margin: 0.75em;
-  }
-  .automation-title h2 {
-    font-size: 0.5em;
-  }
-}
-
 .viewpoint-container {
   font-family: Arial, sans-serif;
   color: #fff;
@@ -795,4 +434,364 @@
   color: white;
 }
 @media (min-width: 320px) and (max-width: 768px) {
+}
+@media (min-width: 320px) {
+  .displaymain {
+    margin-top: 10vh;
+  }
+  .introduction {
+    margin-bottom: 0.75em;
+  }
+  .logo {
+    width: 2em;
+  }
+  .product-name {
+    margin-left: 0.5em;
+  }
+  .product-name h1 {
+    font-size: 1rem;
+  }
+  .product-name h3 {
+    font-size: 0.5rem;
+  }
+  .text-block {
+    gap: 1em;
+  }
+  .text-block h1 {
+    font-size: 0.75em;
+  }
+  .blue-button {
+    padding: 0.5em 1em;
+    font-size: 0.5em;
+  }
+
+  .blue-button:hover {
+    background: linear-gradient(45deg, #0056b3, #00aaff);
+    border-color: #00aaff;
+  }
+  .product {
+    width: 85%;
+    margin: 5vh;
+  }
+
+  .product img {
+    width: 50%;
+    border-radius: 2em;
+  }
+
+  .product:hover::before {
+    filter: blur(1em);
+    opacity: 1;
+  }
+  .product:hover img {
+    transform: scale(1.1);
+  }
+  .product-images {
+    gap: 1em;
+  }
+  .product-card {
+    width: 15em;
+    padding: 1em;
+  }
+  .product-card h1 {
+    margin-bottom: 0.5em;
+    font-size: 1em;
+  }
+
+  .product-card p {
+    font-size: 0.75em;
+    line-height: 1.5;
+  }
+  .product-card img {
+    width: 100%;
+  }
+  .info {
+    margin: -25vh 0 10vh 0;
+  }
+
+  .description-block {
+    margin-top: 3em;
+  }
+  .description-block h1 {
+    font-size: 1em;
+  }
+  .description-block h3 {
+    width: 90%;
+    font-size: 0.75em;
+    margin: 0.5em;
+  }
+  .automation-title h2 {
+    font-size: 0.5em;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .displaymain {
+    margin-top: 10vh;
+  }
+  .introduction {
+    margin-bottom: 0.75em;
+  }
+  .logo {
+    width: 5em;
+  }
+  .product-name {
+    margin-left: 0.75em;
+  }
+  .product-name h1 {
+    font-size: 2em;
+  }
+  .product-name h3 {
+    font-size: 1em;
+  }
+  .text-block {
+    gap: 0.75em;
+  }
+  .text-block h1 {
+    font-size: 1.5em;
+  }
+  .blue-button {
+    padding: 0.5em 1em;
+    font-size: 1em;
+  }
+
+  .blue-button:hover {
+    background: linear-gradient(45deg, #0056b3, #00aaff);
+    border-color: #00aaff;
+  }
+  .product {
+    width: 85%;
+    margin: 5vh;
+  }
+
+  .product img {
+    width: 60%;
+    border-radius: 2em;
+  }
+
+  .product:hover::before {
+    filter: blur(1em);
+    opacity: 1;
+  }
+  .product:hover img {
+    transform: scale(1.1);
+  }
+  .product-images {
+    gap: 1em;
+  }
+  .product-card {
+    width: 15em;
+    padding: 1em;
+  }
+  .product-card h1 {
+    margin-bottom: 0.5em;
+    font-size: 1em;
+  }
+
+  .product-card p {
+    font-size: 1em;
+    line-height: 1.5;
+  }
+  .product-card img {
+    width: 100%;
+  }
+  .info {
+    margin: -25vh 0 10vh 0;
+  }
+
+  .description-block {
+    margin-top: 3em;
+  }
+  .description-block h1 {
+    font-size: 1.5em;
+  }
+  .description-block h3 {
+    width: 90%;
+    font-size: 1em;
+    margin: 0.5em;
+  }
+  .automation-title h2 {
+    font-size: 0.5em;
+  }
+}
+@media (min-width: 961px) {
+  /* tablet, landscape iPad, lo-res laptops ands desktops */
+}
+@media (min-width: 1440px) and (max-width: 2055px) {
+  .displaymain {
+    margin-top: 20vh;
+  }
+  .introduction {
+    margin-bottom: 0.75em;
+  }
+  .logo {
+    width: 6em;
+  }
+  .product-name {
+    margin-left: 0.75em;
+  }
+  .product-name h1 {
+    font-size: 2em;
+  }
+  .product-name h3 {
+    font-size: 1em;
+  }
+  .text-block {
+    gap: 2em;
+  }
+  .text-block h1 {
+    font-size: 2em;
+  }
+  .blue-button {
+    padding: 0.5em 1em;
+    font-size: 1.5em;
+  }
+
+  .blue-button:hover {
+    background: linear-gradient(45deg, #0056b3, #00aaff);
+    border-color: #00aaff;
+  }
+  .product {
+    width: 85%;
+    margin: 25vh;
+  }
+
+  .product img {
+    width: 100%;
+    border-radius: 2em;
+  }
+
+  .product:hover::before {
+    filter: blur(1em);
+    opacity: 1;
+  }
+  .product:hover img {
+    transform: scale(1.1);
+  }
+  .product-images {
+    gap: 1em;
+  }
+  .product-card {
+    width: 30em;
+    padding: 2em;
+  }
+  .product-card h1 {
+    margin-bottom: 0.5em;
+    font-size: 1.75em;
+  }
+
+  .product-card p {
+    font-size: 1.5em;
+    line-height: 1.5;
+  }
+  .product-card img {
+    width: 100%;
+  }
+  .info {
+    margin: -25vh 0 10vh 0;
+  }
+
+  .description-block {
+    margin-top: 1.5em;
+  }
+  .description-block h1 {
+    font-size: 3em;
+  }
+  .description-block h3 {
+    width: 90%;
+    font-size: 1.5em;
+    margin: 0.75em;
+  }
+  .automation-title h2 {
+    font-size: 0.75em;
+  }
+}
+@media (min-width: 2056px) {
+  .displaymain {
+    margin-top: 20vh;
+  }
+  .introduction {
+    margin-bottom: 0.75em;
+  }
+  .logo {
+    width: 10em;
+  }
+  .product-name {
+    margin-left: 0.75em;
+  }
+  .product-name h1 {
+    font-size: 5em;
+  }
+  .product-name h3 {
+    font-size: 2em;
+  }
+  .text-block {
+    gap: 2em;
+  }
+  .text-block h1 {
+    font-size: 3.5em;
+  }
+  .blue-button {
+    padding: 0.5em 1em;
+    font-size: 2.5em;
+  }
+
+  .blue-button:hover {
+    background: linear-gradient(45deg, #0056b3, #00aaff);
+    border-color: #00aaff;
+  }
+  .product {
+    width: 85%;
+    margin: 11vh;
+  }
+
+  .product img {
+    width: 100%;
+    border-radius: 2em;
+  }
+
+  .product:hover::before {
+    filter: blur(1em);
+    opacity: 1;
+  }
+  .product:hover img {
+    transform: scale(1.1);
+  }
+  .product-images {
+    gap: 1em;
+  }
+  .product-card {
+    width: 53em;
+    padding: 3em;
+  }
+  .product-card h1 {
+    margin-bottom: 0.5em;
+    font-size: 3em;
+  }
+
+  .product-card p {
+    font-size: 3em;
+    line-height: 1.5;
+  }
+  .product-card img {
+    width: 100%;
+  }
+  .info {
+    margin: -25vh 0 10vh 0;
+  }
+
+  .description-block {
+    margin-top: 3em;
+  }
+  .description-block h1 {
+    font-size: 5em;
+  }
+  .description-block h3 {
+    width: 90%;
+    font-size: 2.5em;
+    margin: 0.75em;
+  }
+  .automation-title h2 {
+    font-size: 0.5em;
+  }
 }

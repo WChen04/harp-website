@@ -1,3 +1,19 @@
+.get-started-btn {
+  background: rgb(18, 65, 136);
+  background: linear-gradient(
+    90deg,
+    rgba(18, 65, 136, 1) 0%,
+    rgba(67, 164, 229, 1) 100%
+  );
+  border: none;
+  cursor: pointer;
+  border-radius: 2em;
+  color: white;
+}
+
+.get-started-btn:hover {
+  background-color: #add8e6;
+}
 @media (min-width: 320px) {
   .get-started-btn {
     padding: 1em 1.1em;
@@ -23,20 +39,4 @@
 }
 @media (min-width: 1281px) {
   /* hi-res laptops and desktops */
-}
-.get-started-btn {
-  background: rgb(18, 65, 136);
-  background: linear-gradient(
-    90deg,
-    rgba(18, 65, 136, 1) 0%,
-    rgba(67, 164, 229, 1) 100%
-  );
-  border: none;
-  cursor: pointer;
-  border-radius: 2em;
-  color: white;
-}
-
-.get-started-btn:hover {
-  background-color: #add8e6;
 }
