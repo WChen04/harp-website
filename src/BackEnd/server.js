@@ -9,7 +9,7 @@ import dotenv from "dotenv";
 dotenv.config({ path: "../../.env" });
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3000;
 const { Pool } = pg;
 
 // Database configuration
@@ -33,7 +33,11 @@ const pgSession = connectPgSimple(session);
 // Middleware
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "https://harp-website.vercel.app/",
+    origin: [
+      process.env.FRONTEND_URL || "https://harp-website.vercel.app/",
+      "https://harp-website-git-production-bugs-wchen04s-projects.vercel.app",
+      "http://localhost:5173"
+    ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],

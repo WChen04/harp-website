@@ -42,24 +42,34 @@ nav.scrolled {
   padding: 0;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   opacity: 0;
-  /* transform: translate(-50%, 10px); */
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  visibility: hidden; /* Hide it completely when not visible */
+  transition: opacity 0.3s ease, visibility 0.3s ease;
   font-size: 0.9em;
   z-index: 1000;
-  top: 100%; /* Place the dropdown directly below */
+  top: 100%; /* Position directly below the parent */
   left: 50%; /* Center it horizontally */
+  transform: translateX(-50%); /* Perfect centering trick */
+  min-width: 120px; /* Give it a minimum width so it's easy to click */
+}
+
+.products {
+  position: relative; /* Make this the positioning context for the dropdown */
+  cursor: pointer;
 }
 
 .products:hover .dropdown {
   opacity: 1;
+  visibility: visible;
 }
 
 /* Dropdown Links */
 .dropdown-link {
   color: white;
   text-decoration: none;
+  padding: 0.75em 1.5em;
   transition: background-color 0.3s ease, color 0.3s ease;
   border-radius: 4px;
+  text-align: center;
 }
 
 .dropdown-link:hover {

@@ -1,7 +1,6 @@
 <script>
 import GetStarted from "./GetStarted.vue";
 import ProfileButton from "../Profile/ProfileButton.vue";
-import axios from "axios";
 import { useAuthStore } from "../../stores/auth.js";
 
 export default {
@@ -131,9 +130,7 @@ export default {
         <div class="navLink products" @click="toggleProductsDropdown">
           Products
           <div v-if="showProductsDropdown" class="dropdown">
-            <router-link class="dropdown-link" to="/viewpoint"
-              >ViewPoint</router-link
-            >
+            <router-link class="dropdown-link" to="/viewpoint">ViewPoint</router-link>
           </div>
         </div>
         <!-- <router-link class="navLink" to="/projects">Projects</router-link>-->
