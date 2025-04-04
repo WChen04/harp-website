@@ -202,7 +202,7 @@ img {
   border-color: rgb(128, 68, 248);
   box-shadow: 0 0 0 2px rgba(128, 68, 248, 0.25);
 }
-@media (min-width: 390px) {
+@media (min-width: 200px) {
   .info-container {
     padding: 0 1em 0 1em;
   }
