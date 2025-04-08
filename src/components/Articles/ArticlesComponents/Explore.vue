@@ -211,19 +211,127 @@ export default {
     loadMore() {
       this.articlesToShow += 3;
     },
-    handleImageUpload(event) {
+    async handleImageUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
-      
-      this.newArticle.image = file;
-      
-      // Create preview
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.imagePreview = e.target.result;
-        this.newArticle.imageBase64 = e.target.result;
-      };
-      reader.readAsDataURL(file);
+
+      // Check if file is an image
+      if (!file.type.startsWith('image/')) {
+        this.error = 'Please select an image file';
+        return;
+      }
+
+      try {
+        // Create preview for immediate feedback
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.imagePreview = e.target.result;
+        };
+        reader.readAsDataURL(file);
+
+        // Compress the image
+        const compressedFile = await this.compressImage(file, {
+          maxWidth: 1200,      // Maximum width of the image
+          maxHeight: 800,      // Maximum height of the image
+          quality: 0.8,        // Image quality (0.1 to 1.0)
+          format: 'jpeg'       // Output format
+        });
+
+        console.log(`Original size: ${(file.size / 1024).toFixed(2)} KB, Compressed size: ${(compressedFile.size / 1024).toFixed(2)} KB`);
+        console.log(`Compression ratio: ${(compressedFile.size / file.size * 100).toFixed(2)}%`);
+
+        // Store compressed file for upload
+        this.newArticle.image = compressedFile;
+        
+        // Create base64 representation for preview and storage if needed
+        const compressedReader = new FileReader();
+        compressedReader.onload = (e) => {
+          this.newArticle.imageBase64 = e.target.result;
+        };
+        compressedReader.readAsDataURL(compressedFile);
+        
+      } catch (error) {
+        console.error('Error compressing image:', error);
+        this.error = 'Failed to process image. Please try again.';
+        
+        // Fallback to original file if compression fails
+        this.newArticle.image = file;
+      }
+    },
+
+    /**
+     * Compress an image file
+     * @param {File} file - The image file to compress
+     * @param {Object} options - Compression options
+     * @returns {Promise<File>} - A promise that resolves with the compressed file
+     */
+    compressImage(file, options = {}) {
+      const {
+        maxWidth = 1200,
+        maxHeight = 800,
+        quality = 0.8,
+        format = 'jpeg'
+      } = options;
+
+      return new Promise((resolve, reject) => {
+        // Create image element to load the file
+        const img = new Image();
+        img.onload = function() {
+          // Calculate new dimensions while maintaining aspect ratio
+          let width = img.width;
+          let height = img.height;
+          
+          if (width > maxWidth) {
+            height = Math.round(height * (maxWidth / width));
+            width = maxWidth;
+          }
+          
+          if (height > maxHeight) {
+            width = Math.round(width * (maxHeight / height));
+            height = maxHeight;
+          }
+          
+          // Create canvas for resizing
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          
+          // Draw resized image on canvas
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // Convert to desired format
+          const mimeType = format === 'png' ? 'image/png' : 'image/jpeg';
+          
+          // Get compressed data as Blob
+          canvas.toBlob((blob) => {
+            if (!blob) {
+              reject(new Error('Canvas to Blob conversion failed'));
+              return;
+            }
+            
+            // Create a new File with the compressed data
+            const compressedFile = new File(
+              [blob],
+              // Keep original name but ensure correct extension
+              file.name.replace(/\.[^/.]+$/, `.${format}`),
+              {
+                type: mimeType,
+                lastModified: Date.now()
+              }
+            );
+            
+            resolve(compressedFile);
+          }, mimeType, quality);
+        };
+        
+        img.onerror = function() {
+          reject(new Error('Failed to load image'));
+        };
+        
+        // Load image from file
+        img.src = URL.createObjectURL(file);
+      });
     },
     async submitArticle() {
       if (!this.newArticle.title || !this.newArticle.intro || !this.newArticle.image) {
