@@ -7,6 +7,7 @@ import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
 import dotenv from "dotenv";
 dotenv.config({ path: "../../.env" });
+import jwt from 'jsonwebtoken';
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -64,6 +65,35 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Add JWT authentication middleware
+const authenticateJWT = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  
+  if (authHeader) {
+    const token = authHeader.split(' ')[1];
+    
+    jwt.verify(token, process.env.JWT_SECRET || "your-jwt-secret", (err, user) => {
+      if (err) {
+        // Token validation failed, but continue to next middleware
+        // This allows session-based auth to still work
+        return next();
+      }
+      
+      // Add JWT user to request
+      req.jwtUser = user;
+      next();
+    });
+  } else {
+    // No token provided, continue to next middleware
+    next();
+  }
+};
+
+// Use JWT authentication middleware for protected routes
+app.use('/api/me', authenticateJWT);
+app.use('/api/user', authenticateJWT);
+app.use('/admin', authenticateJWT);
 
 // Database connection verification
 pool.query("SELECT NOW()", (err, res) => {
@@ -249,30 +279,102 @@ app.get("/api/user", (req, res) => {
 });
 
 app.get("/api/me", (req, res) => {
-  // Check if user is authenticated
-  if (!req.isAuthenticated() || !req.user) {
-    return res.status(401).json({ error: "Not authenticated" });
+  // First check JWT authentication
+  if (req.jwtUser) {
+    return res.json({
+      email: req.jwtUser.email,
+      full_name: req.jwtUser.full_name,
+      profile_picture: req.jwtUser.profile_picture,
+      is_admin: req.jwtUser.is_admin || false,
+    });
   }
+  
+  // Fall back to session authentication
+  if (req.isAuthenticated() && req.user) {
+    return res.json({
+      email: req.user.email,
+      full_name: req.user.full_name,
+      profile_picture: req.user.profile_picture,
+      is_admin: req.user.is_admin || false,
+    });
+  }
+  
+  // Not authenticated via either method
+  return res.status(401).json({ error: "Not authenticated" });
+});
 
-  // Return user data (omit sensitive info)
-  return res.json({
-    id: req.user.id,
-    email: req.user.email,
-    full_name: req.user.full_name,
-    profile_picture: req.user.profile_picture,
-    is_admin: req.user.is_admin || false,
-  });
+// Add a login endpoint that returns JWT tokens
+app.post("/api/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    // Find user in database
+    const { rows } = await pool.query(
+      'SELECT * FROM "Login" WHERE email = $1',
+      [email]
+    );
+    
+    if (rows.length === 0) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+    
+    const user = rows[0];
+    
+    // In a real app, you'd compare hashed passwords here
+    // This is just a placeholder
+    if (password !== user.password) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+    
+    // Generate JWT token
+    const token = jwt.sign(
+      { 
+        email: user.email,
+        full_name: user.full_name,
+        is_admin: user.is_admin || false
+      },
+      process.env.JWT_SECRET || "your-jwt-secret",
+      { expiresIn: '24h' }
+    );
+    
+    // Update last login
+    await pool.query(
+      'UPDATE "Login" SET last_login = CURRENT_TIMESTAMP WHERE email = $1',
+      [email]
+    );
+    
+    // Return user info and token
+    res.json({
+      token,
+      user: {
+        email: user.email,
+        full_name: user.full_name,
+        profile_picture: user.profile_picture,
+        is_admin: user.is_admin || false
+      }
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ error: "Authentication failed" });
+  }
 });
 
 // Logout route
-app.get("/api/logout", (req, res) => {
-  req.logout(function (err) {
-    if (err) {
-      return res.status(500).json({ error: "Failed to logout" });
-    }
-    // Return JSON instead of redirecting
+app.post("/api/logout", (req, res) => {
+  // Handle session logout if session exists
+  if (req.session) {
+    req.logout(function (err) {
+      if (err) {
+        return res.status(500).json({ error: "Failed to logout" });
+      }
+      // For JWT, we don't need to do anything server-side
+      // The client will discard the token
+      return res.status(200).json({ message: "Logged out successfully" });
+    });
+  } else {
+    // If no session (JWT-only), just return success
     return res.status(200).json({ message: "Logged out successfully" });
-  });
+  }
 });
 
 // Article routes
