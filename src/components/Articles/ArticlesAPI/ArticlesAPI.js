@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3000'; // Adjust URL based on your backend
+const API_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://harp-research/api' 
+  : 'http://localhost:3000'; // Adjust URL based on your backend
 
 export const articleAPI = {
     async getArticles() {
