@@ -16,11 +16,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    // For serverless functions, we don't have access to Express sessions
-    // In a JWT authentication system, the logout is primarily handled client-side
-    // by removing the token from storage
-    
-    // We still return a success response to maintain API consistency
+    // For serverless, don't forget to remove token from storage(client side)
     return res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
     console.error("Logout error:", error);
