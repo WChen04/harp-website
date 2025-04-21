@@ -87,44 +87,78 @@ export default {
     };
   },
 
+  computed: {
+    authStore() {
+      return useAuthStore();
+    }
+  },
+
+  // Watch for auth store errors and update response message
+  watch: {
+    'authStore.error': function(newError) {
+      if (newError) {
+        this.responseMessage = newError;
+      }
+    }
+  },
+
+  mounted() {
+    // Check for query parameters in case of OAuth return
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    const userData = urlParams.get('user');
+    const error = urlParams.get('error');
+    
+    if (token && userData) {
+      try {
+        const user = JSON.parse(decodeURIComponent(userData));
+        this.authStore.setUser(user, token);
+        window.dispatchEvent(new Event("userLoggedIn"));
+        this.$router.push("/");
+      } catch (error) {
+        this.responseMessage = "Error processing authentication data.";
+        console.error("Error processing OAuth return:", error);
+      }
+    } else if (error) {
+      this.responseMessage = decodeURIComponent(error);
+    }
+  },
+
   methods: {
     async handleLogin(event) {
       event.preventDefault();
+      
+      if (!this.email || !this.password) {
+        this.responseMessage = "Please enter both email and password";
+        return;
+      }
 
       try {
-        const response = await axios.post(
-          "http://localhost:3000/api/login",
-          {
-            email: this.email,
-            password: this.password,
-          },
-          {
-            withCredentials: true,
-          }
-        );
-
-        // Store user data in localStorage
-        localStorage.setItem("user", JSON.stringify(response.data.user));
-
-        // Emit a custom event that we'll listen for
-        window.dispatchEvent(new Event("userLoggedIn"));
-
-        this.responseMessage = response.data.message;
-        //console.log('User Info:', response.data.user);
-        this.$router.push("/");
+        const success = await this.authStore.login({
+          email: this.email,
+          password: this.password,
+        });
+        
+        if (success) {
+          window.dispatchEvent(new Event("userLoggedIn"));
+          this.$router.push("/");
+        } else {
+          this.responseMessage = this.authStore.error || "Login failed";
+        }
       } catch (error) {
-        this.responseMessage = error.response?.data?.error || "Login failed.";
+        this.responseMessage = "An unexpected error occurred";
         console.error("Login error:", error);
       }
     },
 
     handleSocialLogin(provider) {
+      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
       if (provider === "google") {
-        window.location.href = "http://localhost:3000/auth/google";
+        window.location.href = `${apiUrl}/api/auth/google`;
         return;
       }
 
-      // For other providers (temporary)
       this.responseMessage = `${provider} login not implemented yet`;
     },
 

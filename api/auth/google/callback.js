@@ -18,7 +18,7 @@ export default async function handler(req, res) {
 
   try {
     // Get authorization code from query params
-    const { code, state } = req.query;
+    const { code } = req.query;
     
     if (!code) {
       console.error('No code provided in Google callback');
@@ -26,83 +26,77 @@ export default async function handler(req, res) {
     }
     
     // Exchange the authorization code for tokens
-    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        code,
-        client_id: process.env.GOOGLE_CLIENT_ID,
-        client_secret: process.env.GOOGLE_CLIENT_SECRET,
-        redirect_uri: process.env.GOOGLE_CALLBACK_URL || 'https://your-vercel-domain.vercel.app/api/auth/google/callback',
-        grant_type: 'authorization_code',
-      }),
+    const tokenUrl = 'https://oauth2.googleapis.com/token';
+    const tokenResponse = await axios.post(tokenUrl, {
+      code,
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      client_secret: process.env.GOOGLE_CLIENT_SECRET,
+      redirect_uri: `${process.env.API_URL || 'http://localhost:3000'}/api/auth/google/callback`,
+      grant_type: 'authorization_code'
     });
-    
-    if (!tokenResponse.ok) {
-      const errorData = await tokenResponse.json();
-      console.error('Google token exchange error:', errorData);
-      return res.redirect(`${process.env.FRONTEND_URL || 'https://harp-website.vercel.app'}/login?error=token_exchange`);
-    }
-    
-    const tokenData = await tokenResponse.json();
-    const { access_token } = tokenData;
     
     // Fetch user data from Google
-    const userResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+    const userInfoUrl = 'https://www.googleapis.com/oauth2/v2/userinfo';
+    const userResponse = await axios.get(userInfoUrl, {
       headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
+        Authorization: `Bearer ${tokenResponse.data.access_token}`
+      }
     });
-    
-    if (!userResponse.ok) {
-      console.error('Failed to fetch user data from Google');
-      return res.redirect(`${process.env.FRONTEND_URL || 'https://harp-website.vercel.app'}/login?error=user_data`);
-    }
-    
-    const userData = await userResponse.json();
-    
-    // Check if user exists in the database
-    const { rows } = await pool.query(
-      'SELECT * FROM "Login" WHERE email = $1 OR google_id = $2',
-      [userData.email, userData.id]
-    );
+
+    const googleUser = userResponse.data;
     
     let user;
+    const { rows } = await pool.query(
+      'SELECT * FROM "Login" WHERE email = $1',
+      [googleUser.email]
+    );
     
-    if (rows.length) {
-      // Update existing user
-      user = rows[0];
-      await pool.query(
-        'UPDATE "Login" SET last_login = CURRENT_TIMESTAMP, google_id = $1, is_active = true WHERE email = $2',
-        [userData.id, userData.email]
-      );
-    } else {
-      // Create new user
+    if (rows.length === 0) {
+      // Create a new user if not found
       const newUserResult = await pool.query(
-        'INSERT INTO "Login" (email, full_name, google_id, is_active, is_admin, profile_picture) VALUES ($1, $2, $3, true, false, $4) RETURNING *',
-        [userData.email, userData.name, userData.id, userData.picture]
+        'INSERT INTO "Login" (email, full_name, profile_picture, oauth_provider) VALUES ($1, $2, $3, $4) RETURNING *',
+        [googleUser.email, googleUser.name, googleUser.picture, 'google']
       );
       user = newUserResult.rows[0];
+    } else {
+      user = rows[0];
+      
+      // Update user info and last login
+      await pool.query(
+        'UPDATE "Login" SET last_login = CURRENT_TIMESTAMP, profile_picture = $1 WHERE email = $2',
+        [googleUser.picture, googleUser.email]
+      );
     }
     
     // Generate JWT token
     const token = jwt.sign(
-      {
+      { 
         email: user.email,
         full_name: user.full_name,
-        is_admin: user.is_admin || false,
-        profile_picture: user.profile_picture || userData.picture
+        is_admin: user.is_admin || false
       },
-      process.env.JWT_SECRET || 'your-jwt-secret',
+      process.env.JWT_SECRET || "your-jwt-secret",
       { expiresIn: '24h' }
     );
     
+    // Prepare user data for frontend
+    const userData = {
+      email: user.email,
+      full_name: user.full_name || googleUser.name,
+      profile_picture: user.profile_picture || googleUser.picture,
+      is_admin: user.is_admin || false
+    };
+    
+    // Encode user data for URL transmission
+    const userDataParam = encodeURIComponent(JSON.stringify(userData));
+    
     // Redirect to frontend with token
-    return res.redirect(`${process.env.FRONTEND_URL || 'https://harp-website.vercel.app'}?token=${token}`);
+    const frontendUrl = process.env.FRONTEND_URL || "https://harp-website.vercel.app";
+    return res.redirect(`${frontendUrl}/login?token=${token}&user=${userDataParam}`);
+    
   } catch (error) {
-    console.error('Error during Google OAuth callback:', error);
-    return res.redirect(`${process.env.FRONTEND_URL || 'https://harp-website.vercel.app'}/login?error=server_error`);
+    console.error("Google OAuth callback error:", error);
+    const frontendUrl = process.env.FRONTEND_URL || "https://harp-website.vercel.app";
+    return res.redirect(`${frontendUrl}/login?error=Authentication%20failed`);
   }
 }

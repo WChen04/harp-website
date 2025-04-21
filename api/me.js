@@ -17,20 +17,24 @@ export default async function handler(req, res) {
 
   try {
     // Check JWT authentication
-    const jwtUser = await authenticateJWT(req);
-    
-    if (jwtUser) {
-      // If JWT authentication successful, return user data
-      return res.status(200).json({
-        email: jwtUser.email,
-        full_name: jwtUser.full_name,
-        profile_picture: jwtUser.profile_picture,
-        is_admin: jwtUser.is_admin || false,
-      });
+    const user = await authenticateJWT(req);
+
+    if (!user) {
+      return res.status(401).json({ error: "Unauthorized" });
     }
     
-    // If no JWT or JWT invalid, return unauthorized
-    return res.status(401).json({ error: "Not authenticated" });
+    const { rows } = await pool.query(
+      'SELECT email, full_name, profile_picture, is_admin FROM "Login" WHERE email = $1',
+      [user.email]
+    );
+    
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    
+    // Return user data
+    return res.status(200).json(rows[0]);
+    
   } catch (error) {
     console.error("Authentication error:", error);
     return res.status(500).json({ error: "Authentication failed" });

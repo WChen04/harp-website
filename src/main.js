@@ -7,8 +7,14 @@ import App from "./App.vue";
 
 const app = createApp(App);
 const pinia = createPinia();
-
-app.use(router);
 app.use(pinia)
+
+import { useAuthStore } from './stores/auth'
+const authStore = useAuthStore()
+authStore.checkAuthStatus().finally(() => {
+  // Mount app after checking auth
+  app.use(router)
+  app.mount('#app')
+})
 
 app.mount("#app");
