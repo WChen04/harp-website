@@ -15,6 +15,7 @@ import AdminStatus from '../views/AdminStatus.vue';
 import OpenSourceProject from "@/components/Projects/OpenSourceProject/OpenSourceProject.vue";
 import ResearchProject from "@/components/Projects/ResearchProject/ResearchProject.vue";
 import AASReroute from "@/views/AASReroute.vue";
+import Intellifabric from "../components/Projects/OpenSourceProject/Intellifabric.vue";
 
 const routes = [
   {
@@ -87,6 +88,11 @@ const routes = [
     component: OpenSourceProject,
   },
   {
+    path: "/intellifabric-cad",
+    name: "Intellifabric",
+    component: Intellifabric,
+  },
+  {
     path: "/research-project",
     name:"ResearchProject",
     component: ResearchProject,
@@ -96,7 +102,6 @@ const routes = [
     name:"AASreroute",
     component: AASReroute,
   },
- 
 ];
 
 const router = createRouter({

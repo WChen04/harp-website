@@ -4,7 +4,7 @@
       title="Projects"
       subtitle="We deliver next-gen AI solutions that drive innovation and unlock new possibilities"
     />
-
+    <!-- Search Bar -->
     <div class="search-container">
       <div class="search-bar-wrapper">
         <img 
@@ -15,7 +15,7 @@
         <input v-model="searchQuery" type="text" placeholder="Search by name or category" class="search-bar" />
       </div>
     </div>
-
+    <!-- Tags and Filter -->
     <div class="tags-container">
       <button 
         v-for="tag in availableTags" 
@@ -33,22 +33,7 @@
         v-for="project in filteredProjects" 
         :key="project.id"
       >
-        <router-link :to="project.link" class="project-link">
-          <div class="project-card">
-            <div class="card front">
-              <img
-              src="@/assets/HARPResearchLockUps/Photos/prometheus.webp" 
-                alt="Project Image"
-                class="project-image"
-                />
-              <div class="member-box"></div>
-              <h4 class="project-name">{{ project.name }}</h4>
-              <div class="tags" v-if="selectedTags.length">
-                <span v-for="tag in project.tags" :key="tag" v-show="selectedTags.includes(tag)">{{ tag }}</span>
-              </div>
-            </div>
-          </div>
-        </router-link>
+        <ProjectCard :project="project" />
       </div>
     </div>
 
@@ -58,41 +43,51 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
+import axios from 'axios';
 import Header from "@/components/General/Header.vue";
 import StayInTheLoop from "@/components/General/StayInTheLoop.vue";
 import Footer from "@/components/General/Footer.vue";
+import ProjectCard from "@/components/Projects/ProjectCard.vue";
 
 const searchQuery = ref("");
 const selectedTags = ref([]);
 const availableTags = ["Open Source", "Research"];
+const projects = ref([]);
 
-const ProjectCards = [
-  { id: 1, name: "Vox-Intuitus", link: "/open-source-project", tags: ["AI", "Open Source"] },
-  { id: 2, name: "GenGraph", link: "/open-source-project", tags: ["Web", "Data Science"] },
-  { id: 3, name: "Xavier-One", link: "/open-source-project", tags: ["AI", "Data Science"] },
-  { id: 4, name: "IntelliFabric", link: "/open-source-project", tags: ["Open Source", "Web"] },
-  { id: 5, name: "DSP-OS 2", link: "/open-source-project", tags: ["AI", "Open Source"] },
-  { id: 7, name: "Ad Apt", link: "/open-source-project", tags: ["Web", "AI"] },
-];
+async function fetchProjects() {
+  try {
+    const response = await axios.get(`http://localhost:3000/api/projects`);
+    console.log("Fetched projects:", response.data); // Log fetched data
+    projects.value = response.data;
+  } catch (error) {
+    console.error("Error fetching projects:", error);
+  }
+}
+
+onMounted(() => {
+  fetchProjects();
+});
 
 const filteredProjects = computed(() => {
-  return ProjectCards.filter((project) => {
+  const filtered = projects.value.filter((project) => {
     const query = searchQuery.value.toLowerCase();
     
-    // Check if search query matches the project name or any of its tags
+    // Check if search query matches the project name or type
     const matchesSearch =
       project.name.toLowerCase().includes(query) ||
-      project.tags.some(tag => tag.toLowerCase().includes(query));
+      (project.type && project.type.toLowerCase().includes(query));
 
     // Check if project matches selected tags
     const matchesTags = selectedTags.value.length === 0 || 
-      project.tags.some(tag => selectedTags.value.includes(tag));
+      (project.type && selectedTags.value.includes(project.type));
 
     return matchesSearch && matchesTags;
   });
-});
 
+  console.log("Filtered projects:", filtered); // Log filtered projects
+  return filtered;
+});
 
 const toggleTag = (tag) => {
   if (selectedTags.value.includes(tag)) {

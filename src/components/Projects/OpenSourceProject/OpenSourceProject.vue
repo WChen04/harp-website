@@ -18,8 +18,6 @@
 
 <script setup>
 import GradientButton from "@/components/Buttons/GradientButton.vue";
-import OpenSourceBlockLeftImage from "@/components/Projects/OpenSourceProject/OpenSourceBlockLeftImage.vue";
-import OpenSourceBlockRightImage from "@/components/Projects/OpenSourceProject/OpenSourceBlockRightImage.vue";
 import Footer from "@/components/General/Footer.vue";
 </script>
 
