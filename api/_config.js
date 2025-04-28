@@ -1,38 +1,6 @@
-import pg from "pg";
 import dotenv from "dotenv";
-import jwt from 'jsonwebtoken';
 dotenv.config();
 
-// Database configuration
-const { Pool } = pg;
-const dbConnectionString = process.env.DATABASE_URL;
-const pool = new Pool({
-  connectionString: dbConnectionString,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
-
-// JWT authentication middleware
-const authenticateJWT = (req) => {
-  return new Promise((resolve) => {
-    const authHeader = req.headers.authorization;
-    
-    if (authHeader) {
-      const token = authHeader.split(' ')[1];
-      
-      jwt.verify(token, process.env.JWT_SECRET || "your-jwt-secret", (err, user) => {
-        if (err) {
-          resolve(null);
-        } else {
-          resolve(user);
-        }
-      });
-    } else {
-      resolve(null);
-    }
-  });
-};
 
 // CORS headers
 const corsHeaders = {

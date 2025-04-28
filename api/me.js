@@ -1,4 +1,6 @@
-import { pool, authenticateJWT, corsHeaders, handleCors } from './_config';
+import { corsHeaders, handleCors } from './_config';
+import { query } from '../utils/db';
+import { authenticateJWT } from '../utils/auth';
 
 export default async function handler(req, res) {
   // Set CORS headers
@@ -23,7 +25,7 @@ export default async function handler(req, res) {
       return res.status(401).json({ error: "Unauthorized" });
     }
     
-    const { rows } = await pool.query(
+    const { rows } = await query(
       'SELECT email, full_name, profile_picture, is_admin FROM "Login" WHERE email = $1',
       [user.email]
     );

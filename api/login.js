@@ -1,4 +1,5 @@
-import { pool, corsHeaders, handleCors } from './_config';
+import { corsHeaders, handleCors } from './_config';
+import { query } from '../utils/db'
 import jwt from 'jsonwebtoken';
 
 export default async function handler(req, res) {
@@ -20,7 +21,7 @@ export default async function handler(req, res) {
     const { email, password } = req.body;
     
     // Find user in database
-    const { rows } = await pool.query(
+    const { rows } = await query(
       'SELECT * FROM "Login" WHERE email = $1',
       [email]
     );
@@ -48,7 +49,7 @@ export default async function handler(req, res) {
     );
     
     // Update last login
-    await pool.query(
+    await query(
       'UPDATE "Login" SET last_login = CURRENT_TIMESTAMP WHERE email = $1',
       [email]
     );

@@ -1,4 +1,5 @@
-import { pool, corsHeaders, handleCors } from '../../_config';
+import { corsHeaders, handleCors } from '../../_config';
+import { query } from '../../../utils/db';
 
 export default async function handler(req, res) {
   // Set CORS headers
@@ -18,8 +19,12 @@ export default async function handler(req, res) {
   try {
     const { id } = req.query;
 
+    if (!id || isNaN(Number(id))) {
+      return res.status(400).json({ success: false, error: 'Invalid article id' });
+    }
+
     // Fetch image for specific article
-    const result = await pool.query(
+    const result = await query(
       'SELECT image_data, image_mimetype FROM "ArticleImages" WHERE article_id = $1',
       [id]
     );

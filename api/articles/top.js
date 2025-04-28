@@ -1,4 +1,5 @@
-import { pool, corsHeaders, handleCors } from '../_config';
+import {  corsHeaders, handleCors } from '../_config';
+import { query } from '../../utils/db';
 
 export default async function handler(req, res) {
   // Set CORS headers
@@ -18,7 +19,7 @@ export default async function handler(req, res) {
   try {
     console.log('Executing query: SELECT * FROM "Articles" WHERE "TopStory" = TRUE ORDER BY date DESC');
 
-    const topStoriesResult = await pool.query(
+    const topStoriesResult = await query(
       'SELECT * FROM "Articles" WHERE "TopStory" = TRUE ORDER BY date DESC'
     );
 

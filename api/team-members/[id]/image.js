@@ -1,4 +1,5 @@
-import { pool, corsHeaders, handleCors } from '../../_config';
+import { corsHeaders, handleCors } from '../../_config';
+import { query } from '../../../utils/db';
 
 export default async function handler(req, res) {
   // Set CORS headers
@@ -19,7 +20,7 @@ export default async function handler(req, res) {
     const { id } = req.query;
     console.log(`Fetching image for team_member_id: ${id}`);
 
-    const result = await pool.query(
+    const result = await query(
       "SELECT image_data, mime_type FROM team_member_images WHERE team_member_id = $1",
       [id]
     );

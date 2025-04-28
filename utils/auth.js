@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import jwt from 'jsonwebtoken';
 import axios from 'axios';
 
 // Get API base URL from environment variable or use default for local development
@@ -192,3 +193,23 @@ export const useAuthStore = defineStore('auth', {
     }
   }
 });
+// JWT authentication middleware
+export const authenticateJWT = (req) => {
+  return new Promise((resolve) => {
+    const authHeader = req.headers.authorization;
+    
+    if (authHeader) {
+      const token = authHeader.split(' ')[1];
+      
+      jwt.verify(token, process.env.JWT_SECRET || "your-jwt-secret", (err, user) => {
+        if (err) {
+          resolve(null);
+        } else {
+          resolve(user);
+        }
+      });
+    } else {
+      resolve(null);
+    }
+  });
+};

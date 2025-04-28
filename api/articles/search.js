@@ -1,4 +1,5 @@
-import { pool, corsHeaders, handleCors } from '../_config';
+import { query } from '../../../utils/db.js';
+import { corsHeaders, handleCors } from '../../_config'; 
 
 export default async function handler(req, res) {
   // Set CORS headers
@@ -7,39 +8,42 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', corsHeaders['Access-Control-Allow-Methods']);
   res.setHeader('Access-Control-Allow-Headers', corsHeaders['Access-Control-Allow-Headers']);
   
-  // Handle CORS preflight request
   if (handleCors(req, res)) return;
 
-  // Only allow GET requests
   if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({ success: false, error: 'Method Not Allowed' });
   }
 
   try {
-    const { query } = req.query;
-    if (!query || query.trim() === "") {
-      // Return all articles if no query provided
-      const { rows } = await pool.query(
+    const { query: searchQuery } = req.query;
+
+    if (!searchQuery || searchQuery.trim() === "") {
+      // No search, return all articles
+      const { rows } = await query(
         'SELECT id, title, intro, date, read_time, link, "TopStory" FROM "Articles" ORDER BY date DESC'
       );
-      return res.status(200).json(rows);
+      return res.status(200).json({ success: true, data: rows });
     }
 
-    // Using the search_vector for full-text search
-    const { rows } = await pool.query(
-      `SELECT id, title, intro, date, read_time, link, "TopStory" 
-       FROM "Articles" 
+    // Full-text search
+    const { rows } = await query(
+      `SELECT id, title, intro, date, read_time, link, "TopStory"
+       FROM "Articles"
        WHERE search_vector @@ plainto_tsquery('english', $1)
-       ORDER BY ts_rank(search_vector, plainto_tsquery('english', $1)) DESC, 
-                date DESC`,
-      [query]
+       ORDER BY ts_rank(search_vector, plainto_tsquery('english', $1)) DESC, date DESC`,
+      [searchQuery]
     );
 
-    console.log(`Search for "${query}" returned ${rows.length} results`);
-    return res.status(200).json(rows);
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`Search for "${searchQuery}" returned ${rows.length} results`);
+    }
+
+    return res.status(200).json({ success: true, data: rows });
+
   } catch (error) {
     console.error("Search error:", error);
     return res.status(500).json({
+      success: false,
       error: "Search failed",
       details: error.message,
     });

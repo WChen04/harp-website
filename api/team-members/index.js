@@ -1,4 +1,5 @@
-import { pool, corsHeaders, handleCors } from '../_config';
+import { corsHeaders, handleCors } from '../_config';
+import { query } from '../../utils/db';
 
 export default async function handler(req, res) {
   // Set CORS headers
@@ -16,7 +17,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    let query = `SELECT * FROM team_members`;
+    let searchQuery = `SELECT * FROM team_members`;
     const queryParams = [];
 
     if (req.query.semester) {
@@ -25,18 +26,20 @@ export default async function handler(req, res) {
         req.query.semester === "Developer" ||
         req.query.semester === "Researcher"
       ) {
-        query += ` WHERE member_type = $1`;
+        searchQuery += ` WHERE member_type = $1`;
         queryParams.push(req.query.semester);
       } else if (
         req.query.semester === "Fall 2024" ||
         req.query.semester === "Spring 2025"
       ) {
-        query += ` WHERE semester = $1`;
+        searchQuery += ` WHERE semester = $1`;
         queryParams.push(req.query.semester);
+      } else {
+        return res.status(400).json({ success: false, error: "Invalid semester value" });
       }
     }
 
-    query += ` ORDER BY 
+    searchQuery += ` ORDER BY 
       CASE WHEN founder = true THEN 0 ELSE 1 END,
       CASE 
         WHEN role = 'CEO, Vice President of Core Research' THEN 1
@@ -48,7 +51,7 @@ export default async function handler(req, res) {
       role ASC,
       name ASC`;
 
-    const result = await pool.query(query, queryParams);
+    const result = await query(searchQuery, queryParams);
     return res.status(200).json(result.rows);
   } catch (error) {
     console.error("Error fetching team members:", error);

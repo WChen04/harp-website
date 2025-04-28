@@ -1,4 +1,5 @@
-import { pool, corsHeaders, handleCors } from '../../_config';
+import { corsHeaders, handleCors } from '../../_config';
+import { query } from '../../../utils/db'
 import jwt from 'jsonwebtoken';
 
 export default async function handler(req, res) {
@@ -46,14 +47,14 @@ export default async function handler(req, res) {
     const googleUser = userResponse.data;
     
     let user;
-    const { rows } = await pool.query(
+    const { rows } = await query(
       'SELECT * FROM "Login" WHERE email = $1',
       [googleUser.email]
     );
     
     if (rows.length === 0) {
       // Create a new user if not found
-      const newUserResult = await pool.query(
+      const newUserResult = await query(
         'INSERT INTO "Login" (email, full_name, profile_picture, oauth_provider) VALUES ($1, $2, $3, $4) RETURNING *',
         [googleUser.email, googleUser.name, googleUser.picture, 'google']
       );
@@ -62,7 +63,7 @@ export default async function handler(req, res) {
       user = rows[0];
       
       // Update user info and last login
-      await pool.query(
+      await query(
         'UPDATE "Login" SET last_login = CURRENT_TIMESTAMP, profile_picture = $1 WHERE email = $2',
         [googleUser.picture, googleUser.email]
       );

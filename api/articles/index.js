@@ -1,4 +1,5 @@
-import { pool, corsHeaders, handleCors } from '../_config';
+import { corsHeaders, handleCors } from '../_config';
+import { query } from '../../utils/db';
 
 export default async function handler(req, res) {
   // Set CORS headers
@@ -16,7 +17,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const articlesResult = await pool.query(
+    const articlesResult = await query(
       'SELECT id, title, intro, date, read_time, link, "TopStory" FROM "Articles"'
     );
     return res.status(200).json(articlesResult.rows);

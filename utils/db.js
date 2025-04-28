@@ -1,7 +1,15 @@
 // utils/db.js
 import { Pool } from 'pg';
 
-let pool;
+// Database configuration
+const { Pool } = pg;
+const dbConnectionString = process.env.DATABASE_URL;
+const pool = new Pool({
+  connectionString: dbConnectionString,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+});
 
 function getPool() {
   if (!pool) {
@@ -28,5 +36,6 @@ export async function query(text, params) {
     client.release();
   }
 }
+
 
 export default { query };
