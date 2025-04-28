@@ -95,10 +95,9 @@ export default {
   
   methods: {
     async fetchUserProfile() {
+      const baseURL = import.meta.env.VITE_API_URL || '';
       try {
-        const response = await fetch('http://localhost:3000/api/user', {
-          credentials: 'include'
-        });
+        const response = await fetch(`${baseURL}/api/user`);
       
         if (response.ok) {
           // Try to check content type before parsing
@@ -172,6 +171,7 @@ export default {
     },
     
     async uploadPicture() {
+      const baseURL = import.meta.env.VITE_API_URL || '';
       if (!this.selectedFile) return;
       
       this.uploading = true;
@@ -183,7 +183,7 @@ export default {
         formData.append('profilePicture', this.selectedFile);
         
         console.log('Starting upload...');
-        const response = await fetch('http://localhost:3000/api/upload-profile-picture', {
+        const response = await fetch(`${baseURL}/api/upload-profile-picture`, {
             method: 'POST',
             body: formData,
             credentials: 'include'

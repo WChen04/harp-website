@@ -136,8 +136,6 @@ import { useAuthStore } from '../stores/auth.js';
 import Header from "@/components/General/Header.vue";
 import Footer from "@/components/General/Footer.vue";
 
-axios.defaults.baseURL = 'http://localhost:3000';
-
 export default {
   components: {
     Header,
@@ -262,11 +260,12 @@ export default {
   
   methods: {
     async fetchUsers() {
+      const baseURL = import.meta.env.VITE_API_URL || '';
       this.loading = true;
       this.error = null;
       
       try {
-        const response = await axios.get('http://localhost:3000/api/admin/users', {
+        const response = await axios.get(`${baseURL}/api/admin/users`, {
           withCredentials: true
         });
         
@@ -293,8 +292,9 @@ export default {
     },
     
     async fetchCurrentUser() {
+      const baseURL = import.meta.env.VITE_API_URL || '';
       try {
-        const response = await axios.get('http://localhost:3000/api/me', {
+        const response = await axios.get(`${baseURL}:3000/api/me`, {
           withCredentials: true
         });
         this.currentUser = response.data;
@@ -311,6 +311,7 @@ export default {
     },
     
     async toggleAdminStatus(user) {
+      const baseURL = import.meta.env.VITE_API_URL || '';
       if (this.isCurrentUser(user.email) || this.processing) return;
       
       this.processing = true;
@@ -318,7 +319,7 @@ export default {
       this.successMessage = null;
       
       try {
-        const response = await axios.put(`http://localhost:3000/api/admin/users/${user.email}/toggle-admin`, {}, {
+        const response = await axios.put(`${baseURL}/api/admin/users/${user.email}/toggle-admin`, {}, {
           withCredentials: true
         });
         

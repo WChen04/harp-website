@@ -103,6 +103,7 @@ export default {
 
   methods: {
     async handleRegister(event) {
+      const baseURL = import.meta.env.VITE_API_URL || '';
       event.preventDefault();
 
       if (this.password !== this.confirmPassword) {
@@ -113,7 +114,7 @@ export default {
       console.log("before response");
       try {
         const response = await axios.post(
-          "http://localhost:3000/api/register",
+          `${baseURL}/api/register`,
           {
             fullName: this.fullName,
             email: this.email,
@@ -135,7 +136,7 @@ export default {
     async handleSocialRegister(provider) {
       try {
         const response = await axios.post(
-          `http://localhost:3000/api/social-register/${provider}`
+          `${baseURL}/api/social-register/${provider}`
         );
         if (response.data) {
           this.$router.push("/");
@@ -150,10 +151,10 @@ export default {
       window.location.href = "https://aas.org/membership/join";
     },
 
-    initiateOAuth(provider) {
-      // Redirect to backend OAuth endpoint
-      window.location.href = `http://localhost:3000/auth/${provider}`;
-    },
+    // initiateOAuth(provider) {
+    //   // Redirect to backend OAuth endpoint
+    //   window.location.href = `${baseURL}/auth/${provider}`;
+    // },
   },
 };
 </script>

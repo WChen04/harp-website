@@ -130,15 +130,16 @@ const filteredTeamMembers = computed(() => {
 });
 
 async function fetchTeamMembers() {
+  const baseURL = import.meta.env.VITE_API_URL || '';
   try {
-    let url = "http://localhost:3000/api/team-members";
+    let url = `${baseURL}/api/team-members`;
     if (
       selectedFilter.value === "Developer" ||
       selectedFilter.value === "Researcher" ||
       selectedFilter.value === "Fall 2024" ||
       selectedFilter.value === "Spring 2025"
     ) {
-      url = `http://localhost:3000/api/team-members?semester=${selectedFilter.value}`;
+      url = `${baseURL}/api/team-members?semester=${selectedFilter.value}`;
     }
     const response = await axios.get(url);
     teamMembers.value = response.data;

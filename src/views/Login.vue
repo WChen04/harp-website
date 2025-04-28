@@ -152,10 +152,10 @@ export default {
     },
 
     handleSocialLogin(provider) {
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+      const baseURL = import.meta.env.VITE_API_URL || '';
 
       if (provider === "google") {
-        window.location.href = `${apiUrl}/api/auth/google`;
+        window.location.href = `${baseURL}/api/auth/google`;
         return;
       }
 

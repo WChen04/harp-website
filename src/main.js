@@ -17,4 +17,3 @@ authStore.checkAuthStatus().finally(() => {
   app.mount('#app')
 })
 
-app.mount("#app");

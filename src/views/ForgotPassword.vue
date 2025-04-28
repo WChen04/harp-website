@@ -58,11 +58,12 @@ export default {
   methods: {
     async handleSubmit(event) {
       event.preventDefault();
+      const baseURL = import.meta.env.VITE_API_URL || '';
 
       try {
         // First make the API call to generate token
         const response = await axios.post(
-          "http://localhost:3000/api/forgot-password",
+          `${baseURL}/api/forgot-password`,
           {
             email: this.email,
           }
