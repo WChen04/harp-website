@@ -54,7 +54,9 @@ const memberImage = ref("");
 // Fetch the team member image
 async function fetchMemberImage() {
   try {
-    const response = await axios.get(`http://localhost:3000/api/team-member-image/${props.member.id}`, {
+    const baseURL = import.meta.env.VITE_API_URL || '';
+
+    const response = await axios.get(`${baseURL}/api/team-member-image/${props.member.id}`, {
       responseType: 'blob' // Ensure binary data is received
     });
     

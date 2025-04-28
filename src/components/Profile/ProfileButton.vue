@@ -105,13 +105,13 @@ export default {
     window.removeEventListener('storage', this.loadUserData);
   },
   
+  
   methods: {
     async loadUserData() {
+      const baseURL = import.meta.env.VITE_API_URL || '';
       try {
         // First check if the user is logged in
-        const authCheckResponse = await fetch('http://localhost:3000/api/auth-check', {
-          credentials: 'include'
-        });
+        const authCheckResponse = await fetch(`${baseURL}/api/auth-check`);
         
         if (!authCheckResponse.ok) {
           console.log('User not authenticated, redirecting to login...');
@@ -120,7 +120,7 @@ export default {
         }
         
         // Now try to load the user data
-        const response = await fetch('http://localhost:3000/api/user', {
+        const response = await fetch(`${baseURL}/api/user`, {
           credentials: 'include'
         });
         
@@ -183,7 +183,7 @@ export default {
     
     async signOut() {
       try {
-        await axios.get('http://localhost:3000/api/logout', {
+        await axios.get(`${baseURL}/api/logout`, {
           withCredentials: true
         });
         console.log('Server logout successful');
