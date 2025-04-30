@@ -137,7 +137,7 @@
 <script>
 import PostCard from "./PostCard.vue";
 import { articleAPI } from '../ArticlesAPI/ArticlesAPI.js';
-import { useAuthStore } from '../../../stores/auth.js';
+import { useAuthStore } from '../../../../utils/auth.js';
 
 export default {
   setup() {

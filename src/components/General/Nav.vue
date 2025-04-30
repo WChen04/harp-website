@@ -1,7 +1,7 @@
 <script>
 import GetStarted from "./GetStarted.vue";
 import ProfileButton from "../Profile/ProfileButton.vue";
-import { useAuthStore } from "../../stores/auth.js";
+import { useAuthStore } from "../../../utils/auth.js";
 
 export default {
   setup() {
