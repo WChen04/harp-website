@@ -132,7 +132,7 @@
   
 <script>
 import axios from 'axios';
-import { useAuthStore } from '../../utils/auth.js';
+import { useAuthStore } from '../../utils/authClient.js';
 import Header from "@/components/General/Header.vue";
 import Footer from "@/components/General/Footer.vue";
 

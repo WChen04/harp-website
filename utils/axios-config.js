@@ -1,6 +1,6 @@
 // src/utils/axios-config.js
 import axios from 'axios';
-import { useAuthStore } from '/auth';
+import { useAuthStore } from '/authClient';
 
 // Create axios instance with base URL
 const apiClient = axios.create({

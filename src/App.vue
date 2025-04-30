@@ -1,6 +1,6 @@
 <script setup>
 import Nav from "./components/General/Nav.vue";
-import { useAuthStore } from '../utils/auth.js';
+import { useAuthStore } from '../utils/authClient.js';
 import { onMounted } from 'vue';
 
 const authStore = useAuthStore();

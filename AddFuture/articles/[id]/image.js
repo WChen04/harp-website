@@ -1,5 +1,6 @@
 import { corsHeaders, handleCors } from '../../../utils/cors';
 import { query } from '../../../utils/db';
+import { Buffer } from 'buffer';
 
 export default async function handler(req, res) {
   // Set CORS headers
