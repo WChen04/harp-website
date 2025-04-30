@@ -1,5 +1,5 @@
-import { query } from '@/utils/db';
-import { corsHeaders, handleCors } from './config';
+import { query } from '../utils/db';
+import { corsHeaders, handleCors } from '../utils/cors';
 import crypto from 'crypto';
 
 export default async function handler(req, res) {

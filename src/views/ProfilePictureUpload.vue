@@ -97,7 +97,7 @@ export default {
     async fetchUserProfile() {
       const baseURL = import.meta.env.VITE_API_URL || '';
       try {
-        const response = await fetch(`${baseURL}/api/user`);
+        const response = await fetch(`${baseURL}/api/me`);
       
         if (response.ok) {
           // Try to check content type before parsing

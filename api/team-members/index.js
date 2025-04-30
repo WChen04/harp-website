@@ -1,4 +1,4 @@
-import { corsHeaders, handleCors } from '../_config';
+import { corsHeaders, handleCors } from '../../utils/cors';
 import { query } from '../../utils/db';
 
 export default async function handler(req, res) {

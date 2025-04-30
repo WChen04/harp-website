@@ -1,4 +1,4 @@
-import { corsHeaders, handleCors } from '../_config';
+import { corsHeaders, handleCors } from '../../utils/cors';
 
 // This is a simple redirect to Google OAuth consent screen
 export default async function handler(req, res) {

@@ -120,7 +120,7 @@ export default {
         }
         
         // Now try to load the user data
-        const response = await fetch(`${baseURL}/api/user`, {
+        const response = await fetch(`${baseURL}/api/me`, {
           credentials: 'include'
         });
         

@@ -1,6 +1,6 @@
-import { query } from '@/utils/db';
-import { authenticateJWT, corsHeaders, handleCors } from '@/utils/auth';
-
+import { query } from '../../../../utils/db';
+import { authenticateJWT } from '../../../../utils/auth';
+import {corsHeaders, handleCors} from '../../../../utils/cors';
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', corsHeaders['Access-Control-Allow-Credentials']);
   res.setHeader('Access-Control-Allow-Origin', corsHeaders['Access-Control-Allow-Origin']);

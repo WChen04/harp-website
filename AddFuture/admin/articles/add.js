@@ -1,4 +1,4 @@
-import { corsHeaders, handleCors } from '../../_config';
+import { corsHeaders, handleCors } from '../../../utils/cors';
 import {authenticateJWT} from '../../../utils/auth';
 import { pool } from '../../../utils/db'; 
 import multer from 'multer';

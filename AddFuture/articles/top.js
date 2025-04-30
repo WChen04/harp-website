@@ -1,4 +1,4 @@
-import { corsHeaders, handleCors } from '../_config';
+import {  corsHeaders, handleCors } from '../../utils/cors';
 import { query } from '../../utils/db';
 
 export default async function handler(req, res) {
@@ -17,12 +17,18 @@ export default async function handler(req, res) {
   }
 
   try {
-    const articlesResult = await query(
-      'SELECT id, title, intro, date, read_time, link, "TopStory" FROM "Articles"'
+    console.log('Executing query: SELECT * FROM "Articles" WHERE "TopStory" = TRUE ORDER BY date DESC');
+
+    const topStoriesResult = await query(
+      'SELECT * FROM "Articles" WHERE "TopStory" = TRUE ORDER BY date DESC'
     );
-    return res.status(200).json(articlesResult.rows);
+
+    // Log details of retrieved top stories
+    console.log(`Retrieved ${topStoriesResult.rows.length} top stories`);
+
+    return res.status(200).json(topStoriesResult.rows);
   } catch (error) {
-    console.error("Error in /articles route:", error);
+    console.error("Detailed error in /articles/top route:", error);
     return res.status(500).json({
       error: "Database error",
       details: error.message,

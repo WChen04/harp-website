@@ -1,4 +1,4 @@
-import { corsHeaders, handleCors } from './_config';
+import { corsHeaders, handleCors } from '../utils/cors';
 import { query } from '../utils/db';
 import { authenticateJWT } from '../utils/auth';
 
