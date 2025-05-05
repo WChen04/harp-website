@@ -1,4 +1,4 @@
-import { corsHeaders, handleCors } from './_config';
+import { corsHeaders, handleCors } from '../utils/cors';
 import { authenticateJWT } from '../utils/auth';
 
 export default async function handler(req, res) {

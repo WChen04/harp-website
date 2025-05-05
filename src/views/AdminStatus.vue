@@ -294,7 +294,7 @@ export default {
     async fetchCurrentUser() {
       const baseURL = import.meta.env.VITE_API_URL || '';
       try {
-        const response = await axios.get(`${baseURL}:3000/api/me`, {
+        const response = await axios.get(`${baseURL}/api/me`, {
           withCredentials: true
         });
         this.currentUser = response.data;
