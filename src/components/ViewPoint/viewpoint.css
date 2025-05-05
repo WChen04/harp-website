@@ -421,9 +421,9 @@
   /* margin-top: 10vh; */
 }
 
-.logo {
-  /* width: 10vh; */
-}
+/* .logo {
+  width: 10vh; 
+} */
 
 .product-name {
   display: flex;
@@ -512,9 +512,9 @@
   transform: scale(1.1);
 }
 
-.info {
-  /* margin: 10vh 0 10vh 0; */
-}
+/* .info {
+   margin: 10vh 0 10vh 0; 
+} */
 
 .description-block {
   display: flex;

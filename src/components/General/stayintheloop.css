@@ -133,6 +133,45 @@
   opacity: 0;
   transition: opacity 0.5s;
 }
+#toast {
+  visibility: hidden;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 250px;
+  max-width: 300px;
+  background-color: #4caf50;
+  color: white;
+  text-align: left;
+  border-radius: 8px;
+  padding: 16px 20px;
+  position: fixed;
+  z-index: 9999;
+  bottom: 20px;
+  right: 20px;
+  font-size: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transform: translateX(100%);
+  transition: transform 0.4s ease, opacity 0.4s ease, visibility 0.4s;
+}
+
+#toast.show {
+  visibility: visible;
+  transform: translateX(0);
+  opacity: 1;
+}
+
+#toast .icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+#toast .message {
+  flex: 1;
+}
+
+
 
 #SecondaryText {
   color: white;

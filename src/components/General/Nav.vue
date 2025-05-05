@@ -122,7 +122,7 @@ export default {
       <div class="nav-left">
         <router-link class="navLink" to="/">
           <img
-            src="../../assets/HARPResearchLockUps/LogoLockups/HARPLogoShirtRes.svg"
+            src="../../assets/HARPResearchLockUps/LogoLockups/HARPRESEARCHLOGO.svg"
             alt="HARP Logo"
             class="logo"
           />

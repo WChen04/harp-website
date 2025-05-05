@@ -19,11 +19,19 @@
       </span>
       <div class="subscribe-form">
         <input type="email" placeholder="Enter your email..." />
-        <button>Subscribe</button>
+        <button type="submit" @click="handleSubscribe">Subscribe</button>
       </div>
     </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" :class="{ show: subscribed }">
+      <span class="icon">✅</span>
+      <span class="message">You've successfully subscribed!</span>
+    </div>
+
   </div>
 </template>
+
 
 <script>
 export default {
@@ -32,6 +40,7 @@ export default {
     return {
       firstTextVisible: false,
       secondaryTextVisible: false,
+      subscribed: false, // ✅ Define it here to avoid Vue warning
     };
   },
   mounted() {
@@ -43,22 +52,28 @@ export default {
         (entries) => {
           entries.forEach((entry) => {
             if (entry.isIntersecting) {
-              // When element is in view, add classes for animation
               this.firstTextVisible = true;
               this.secondaryTextVisible = true;
             }
           });
         },
         {
-          threshold: 0.5, // Trigger when 50% of the element is in view
+          threshold: 0.5,
         }
       );
 
       observer.observe(this.$refs.contentSection);
     },
+    handleSubscribe() {
+      this.subscribed = true;
+      setTimeout(() => {
+        this.subscribed = false;
+      }, 3000); // Hide toast after 3 seconds
+    },
   },
 };
 </script>
+
 <style scoped>
 @import "./stayintheloop.css";
 </style>

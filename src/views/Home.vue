@@ -27,18 +27,24 @@ export default {
       <div class="harp">
         <h1 id="intro">HARP Research Inc.</h1>
         <div class="founderphotos">
-          <img
-            src="../assets/HARPResearchLockUps/Founder/Harper.webp"
-            alt="Founder 1"
-          />
-          <img
-            src="../assets/HARPResearchLockUps/Founder/Kevin.webp"
-            alt="Founder 2"
-          />
-          <img
-            src="../assets/HARPResearchLockUps/Founder/Yuval.webp"
-            alt="Founder 3"
-          />
+          <a href="https://www.linkedin.com/in/harper-chisari-117169164/" target="_blank" rel="noopener noreferrer">
+            <img
+              src="../assets/HARPResearchLockUps/Founder/Harper.webp"
+              alt="Founder 1"
+            />
+          </a>
+          <a href="https://www.linkedin.com/in/kevinscott2000/" target="_blank" rel="noopener noreferrer">
+            <img
+              src="../assets/HARPResearchLockUps/Founder/Kevin.webp"
+              alt="Founder 2"
+            />
+          </a>
+          <a href="https://www.linkedin.com/in/yuvalshimoni/" target="_blank" rel="noopener noreferrer">
+            <img
+              src="../assets/HARPResearchLockUps/Founder/Yuval.webp"
+              alt="Founder 3"
+            />
+          </a>
         </div>
         <div class="founderinfo">
           <h1>FOUNDERS OF HARP</h1>
