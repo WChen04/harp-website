@@ -3,7 +3,7 @@
     <div class="member-card">
       <div class="card front">
         <img
-          :src="memberImageUrl"
+          :src="imageUrl"
           :alt="`${member.name}'s profile image`"
         />
         <div class="member-box"></div>
@@ -44,7 +44,7 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from "vue";
+import { computed, ref, onMounted, watch } from "vue";
 import axios from "axios";
 import { useAuthStore } from '../../../stores/auth.js';
 
@@ -58,7 +58,9 @@ const props = defineProps({
 const emit = defineEmits(['edit', 'delete']);
 
 const authStore = useAuthStore();
-const memberImageUrl = ref('');
+const imageUrl = ref('');
+// Add a timestamp to force image cache refresh when needed
+const imageTimestamp = ref(Date.now());
 
 const userIsAdmin = computed(() => {
   return authStore.isAdmin;
@@ -72,32 +74,48 @@ function confirmDelete() {
   emit('delete', props.member.id);
 }
 
+// Generate the URL with a cache-busting timestamp
+function generateImageUrl() {
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+  return `${apiUrl}/api/team-member-image/${props.member.id}?t=${imageTimestamp.value}`;
+}
+
 // Fetch the team member image
 async function fetchMemberImage() {
   try {
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-    const initialUrl = `${apiUrl}/api/team-member-image/${props.member.id}`;
+    // Set the URL with cache-busting parameter
+    imageUrl.value = generateImageUrl();
     
-    // Set initial URL before fetch completes
-    memberImageUrl.value = initialUrl;
-    
-    const response = await axios.get(initialUrl, {
-      responseType: 'blob' // Ensure binary data is received
+    // Fetch the image to ensure it's in browser cache
+    const response = await axios.get(imageUrl.value, {
+      responseType: 'blob'
     });
     
-    // Convert Blob into a URL and update the ref
-    memberImageUrl.value = URL.createObjectURL(response.data);
+    // If we want to use object URLs instead of direct linking (optional)
+    // imageUrl.value = URL.createObjectURL(response.data);
   } catch (error) {
     console.error("Error fetching team member image:", error);
     // Fallback to a default image if fetch fails
-    memberImageUrl.value = '../../../assets/default-profile.png';
+    imageUrl.value = '../../../assets/default-profile.png';
   }
 }
+
+// Watch for changes in member data to refresh the image when needed
+watch(() => props.member, (newVal, oldVal) => {
+  // Check if the member ID changed or if we're showing the same member but need to refresh
+  if (newVal.id !== oldVal?.id || newVal !== oldVal) {
+    // Update timestamp to bust cache
+    imageTimestamp.value = Date.now();
+    // Refresh the image
+    fetchMemberImage();
+  }
+}, { deep: true });
 
 onMounted(() => {
   fetchMemberImage();
 });
 </script>
+
 
 <style lang="css" scoped>
 /* Style remains the same */
