@@ -20,6 +20,7 @@
           class="story-image"
         />
         <div v-else class="placeholder-image">No Image Available</div>
+        <div class="delete-icon" v-if="isAdmin" @click.stop="toggleTopStory(articles[currentStoryIndex].id)">✖</div>
       </div>
     </div>
     <div v-else class="loading">Loading top stories...</div>
@@ -36,8 +37,13 @@
 
 <script>
 import { articleAPI } from '../ArticlesAPI/ArticlesAPI.js';
+import { useAuthStore } from '../../../stores/auth';
 
 export default {
+  setup() {
+    const authStore = useAuthStore();
+    return { authStore };
+  },
   data() {
     return {
       articles: [],
@@ -46,6 +52,11 @@ export default {
       loading: false,
       error: null
     };
+  },
+  computed: {
+    isAdmin() {
+      return this.authStore.isAdmin;
+    }
   },
   methods: {
     resolveImageUrl(article) {
@@ -86,6 +97,11 @@ export default {
         console.error('Error formatting date:', error);
         return 'Error formatting date';
       }
+    },
+    async toggleTopStory(id){
+      articleAPI.toggleTopStory(id)
+      this.fetchArticles()
+      console.log("Toggled Top Story")
     },
     navigateToArticle(article) {
       if (article && article.link) {
@@ -157,6 +173,10 @@ export default {
 </script>
 
 <style scoped>
+.delete-icon {
+  color: red
+  
+}
 .top-stories {
   position: relative;
   text-align: center;

@@ -35,7 +35,7 @@ app.use(
   cors({
     origin: process.env.FRONTEND_URL || "https://harp-website.vercel.app",
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
@@ -412,6 +412,29 @@ async function deleteArticleById(id) {
     throw error;
   }
 }
+
+app.patch('/articles/:id/toggle-top', async (req, res) => {
+  const articleId = req.params.id;
+
+  try {
+    const result = await pool.query(
+      `UPDATE "Articles"
+       SET "TopStory" = NOT "TopStory"
+       WHERE id = $1
+       RETURNING *`,
+      [articleId]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Article not found' });
+    }
+
+    res.status(200).json({ message: 'Top story status updated', article: result.rows[0] });
+  } catch (err) {
+    console.error('Error toggling topStory:', err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
 
 // API Endpoint to fetch all team member information from the team_members table (organized by role)
 app.get("/api/team-members", async (req, res) => {

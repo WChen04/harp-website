@@ -9,12 +9,14 @@
       <p class="post-intro">{{ intro }}</p>
     </div>
     <div class="delete-icon" v-if="isAdmin" @click.stop="deleteArticle">✖</div>
+    <div class="upgrade-top" v-if="isAdmin" @click.stop="toggleTopStory">⬆️</div>
   </div>
 </template>
 
 <script setup>
 import { computed, defineProps, defineEmits } from 'vue'
 import { useAuthStore } from '../../../stores/auth'; 
+import { articleAPI } from '../ArticlesAPI/ArticlesAPI.js';
 
 const authStore = useAuthStore();
 const emit = defineEmits(['delete-article'])
@@ -38,6 +40,15 @@ const isAdmin = computed(() => {
 const deleteArticle = () => {
   if (confirm("Are you sure you want to delete this article?")) {
     emit('delete-article', props.articleId)
+  }
+}
+async function toggleTopStory() {
+  try {
+    await articleAPI.toggleTopStory(props.articleId);
+    console.log("Toggled Top Story");
+    // You can also update local state here if needed
+  } catch (error) {
+    console.error('Failed to toggle top story:', error);
   }
 }
 const resolvedImageUrl = computed(() => {

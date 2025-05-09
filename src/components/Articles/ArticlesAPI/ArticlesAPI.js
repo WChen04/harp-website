@@ -64,5 +64,13 @@ export const articleAPI = {
         return fetch(`${API_URL}/articles/${id}`, {
             method: 'DELETE',
         });
+    },
+    async toggleTopStory(id){
+        const response = await axios.patch(`${API_URL}/articles/${id}/toggle-top`)
+        if (response.status !== 200) {
+            throw new Error('Failed to toggle top story');
+        }
+
+        return response.data;
     }
 }
