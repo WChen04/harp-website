@@ -31,6 +31,7 @@
         :image-url="post.imageUrl"
         :is-admin="isAdmin"
         @delete-article="handleDelete"
+        :refresh-top-stories="refreshTopStories"
       />
     </div>
     <button v-if="canLoadMore" @click="loadMore" class="load-more-btn">
@@ -142,11 +143,14 @@ import { articleAPI } from '../ArticlesAPI/ArticlesAPI.js';
 import { useAuthStore } from '../../../stores/auth.js';
 
 export default {
+  props: {
+    refreshTopStories: Function
+  },
   setup() {
     const authStore = useAuthStore();
     return { authStore };
   },
-  components: { PostCard },
+  components: { PostCard  },
   data() {
     return {
       searchQuery: "",
@@ -372,6 +376,7 @@ export default {
         this.showAddModal = false;
         this.resetNewArticle();
         await this.fetchArticles();
+        this.refreshTopStories();
 
         if (this.newArticle.TopStory) {
           this.$emit('article-added');

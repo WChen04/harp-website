@@ -33,6 +33,7 @@ const props = defineProps({
   link: String,
   topStory: Boolean,
   isAdmin: Boolean,
+  refreshTopStories: Function,
 })
 const isAdmin = computed(() => {
     return authStore.isAdmin;
@@ -45,6 +46,7 @@ const deleteArticle = () => {
 async function toggleTopStory() {
   try {
     await articleAPI.toggleTopStory(props.articleId);
+    props.refreshTopStories();
     console.log("Toggled Top Story");
     // You can also update local state here if needed
   } catch (error) {

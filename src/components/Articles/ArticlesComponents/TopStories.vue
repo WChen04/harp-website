@@ -5,6 +5,7 @@
         class="story" 
         @click="navigateToArticle(articles[currentStoryIndex])"
       >
+      <div class="delete-icon" v-if="isAdmin" @click.stop="toggleTopStory(articles[currentStoryIndex].id)">✖</div>
         <div class="story-info">
           <p class="story-date">
             {{ formatDate(articles[currentStoryIndex].date) }} •
@@ -20,7 +21,6 @@
           class="story-image"
         />
         <div v-else class="placeholder-image">No Image Available</div>
-        <div class="delete-icon" v-if="isAdmin" @click.stop="toggleTopStory(articles[currentStoryIndex].id)">✖</div>
       </div>
     </div>
     <div v-else class="loading">Loading top stories...</div>
@@ -175,9 +175,10 @@ export default {
 <style scoped>
 .delete-icon {
   position: absolute;
-  top: 1em;
-  right: 1em;
+  right: 3em;
   color: red;
+  padding-left: 1em;
+  z-index: 9999;
 }
 .delete-icon:hover {
   color: darkred;
@@ -214,6 +215,7 @@ export default {
   justify-content: space-between;
   cursor: pointer;
   gap: 2em;
+  z-index: 0;
 }
 
 .story:hover {
@@ -226,6 +228,8 @@ export default {
   object-fit: cover;
   border-radius: 8px;
   flex-shrink: 0;
+  pointer-events: none;
+  padding:2em;
 }
 
 .story-info {

@@ -1,7 +1,7 @@
 <template>
   <div>
-    <TopStories></TopStories>
-    <Explore />
+    <TopStories ref="topStoriesComponent"/>
+    <Explore :refresh-top-stories="refreshTopStories"/>
     <StayInTheLoop />
     <Footer />
   </div>
