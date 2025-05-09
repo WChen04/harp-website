@@ -94,7 +94,18 @@ const navigateToArticle = () => {
 
 <style scoped>
 .delete-icon {
-  color: red
+  color: red;
+  padding-right: .5em;
+}
+.delete-icon:hover {
+  color: darkred;
+  transform: scale(1.2);
+}
+.upgrade-top {
+  padding-left: .5em;
+}
+.upgrade-top:hover {
+  transform: scale(1.2);
 }
 .post-card {
   display: flex;

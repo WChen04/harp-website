@@ -174,8 +174,14 @@ export default {
 
 <style scoped>
 .delete-icon {
-  color: red
-  
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  color: red;
+}
+.delete-icon:hover {
+  color: darkred;
+  transform: scale(1.2);
 }
 .top-stories {
   position: relative;
@@ -198,6 +204,7 @@ export default {
 }
 
 .story {
+  position: relative;
   display: flex;
   align-items: center;
   flex-shrink: 0;
