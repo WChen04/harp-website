@@ -8,12 +8,16 @@
       <h3 class="post-title">{{ title }}</h3>
       <p class="post-intro">{{ intro }}</p>
     </div>
+    <div class="delete-icon" v-if="isAdmin" @click.stop="deleteArticle">✖</div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, defineProps, defineEmits } from 'vue'
+import { useAuthStore } from '../../../stores/auth'; 
 
+const authStore = useAuthStore();
+const emit = defineEmits(['delete-article'])
 const props = defineProps({
   articleId: Number,  // Changed from "Article ID"
   imageUrl: {
@@ -25,9 +29,17 @@ const props = defineProps({
   title: String,
   intro: String,
   link: String,
-  topStory: Boolean
+  topStory: Boolean,
+  isAdmin: Boolean,
 })
-
+const isAdmin = computed(() => {
+    return authStore.isAdmin;
+})
+const deleteArticle = () => {
+  if (confirm("Are you sure you want to delete this article?")) {
+    emit('delete-article', props.articleId)
+  }
+}
 const resolvedImageUrl = computed(() => {
   if (!props.image_url) {
     return ''; // Or a default image URL
@@ -70,6 +82,9 @@ const navigateToArticle = () => {
 </script>
 
 <style scoped>
+.delete-icon {
+  color: red
+}
 .post-card {
   display: flex;
   align-items: flex-start;

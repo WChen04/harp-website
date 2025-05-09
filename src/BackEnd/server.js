@@ -385,6 +385,34 @@ app.get("/articles/search", async (req, res) => {
     });
   }
 });
+
+app.delete('/articles/:id', async (req, res) => {
+  const articleId = req.params.id;
+
+  try {
+    const success = await deleteArticleById(articleId); // You define this function
+
+    if (!success) {
+      return res.status(404).json({ error: 'Article not found' });
+    }
+
+    res.status(200).json({ message: `Article ${articleId} deleted successfully.` });
+  } catch (err) {
+    console.error('Error deleting article:', err);
+    res.status(500).json({ error: 'Failed to delete article.' });
+  }
+});
+
+async function deleteArticleById(id) {
+  try {
+    const result = await pool.query('DELETE FROM "Articles" WHERE id = $1', [id]);
+    return result.rowCount > 0; // true if article was deleted
+  } catch (error) {
+    console.error('Error in deleteArticleById:', error);
+    throw error;
+  }
+}
+
 // API Endpoint to fetch all team member information from the team_members table (organized by role)
 app.get("/api/team-members", async (req, res) => {
   try {

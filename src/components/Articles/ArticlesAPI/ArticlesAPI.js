@@ -59,5 +59,10 @@ export const articleAPI = {
             console.error('Error searching articles:', error);
             throw error;
         }
+    },
+    async deleteArticle(id) {
+        return fetch(`${API_URL}/articles/${id}`, {
+            method: 'DELETE',
+        });
     }
 }

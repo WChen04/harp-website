@@ -15,6 +15,12 @@ import Footer from "@/components/General/Footer.vue";
 
 export default {
   components: { Explore, StayInTheLoop, TopStories, Footer },
+  methods: {
+    refreshTopStories() {
+      // Access the TopStories component via ref and call its method
+      this.$refs.topStoriesComponent.fetchArticles();
+    }
+  }
 };
 </script>
 

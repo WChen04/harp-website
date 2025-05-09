@@ -29,6 +29,8 @@
         :link="post.link"
         :top-story="post.TopStory"
         :image-url="post.imageUrl"
+        :is-admin="isAdmin"
+        @delete-article="handleDelete"
       />
     </div>
     <button v-if="canLoadMore" @click="loadMore" class="load-more-btn">
@@ -211,6 +213,16 @@ export default {
     loadMore() {
       this.articlesToShow += 3;
     },
+    async handleDelete(articleId) {
+      try {
+        await articleAPI.deleteArticle(articleId); // assumes you have a delete API call
+        this.filteredArticles = this.filteredArticles.filter(a => a.id !== articleId);
+        this.articles = this.articles.filter(a => a.id !== articleId);
+      } catch (err) {
+        this.error = 'Failed to delete article.';
+        console.error('Deletion error:', err);
+      }
+    },
     async handleImageUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -360,6 +372,10 @@ export default {
         this.showAddModal = false;
         this.resetNewArticle();
         await this.fetchArticles();
+
+        if (this.newArticle.TopStory) {
+          this.$emit('article-added');
+        }
         
         // Optionally show success message
         alert('Article added successfully!');
