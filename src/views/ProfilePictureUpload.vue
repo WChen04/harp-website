@@ -99,7 +99,7 @@ export default {
     async fetchUserProfile() {
       const baseURL = import.meta.env.VITE_API_URL || '';
       try {
-        const response = await apiClient.fetch(`${baseURL}/api/me`);
+        const response = await apiClient.get(`${baseURL}/api/me`);
       
         if (response.ok) {
           // Try to check content type before parsing
@@ -185,7 +185,7 @@ export default {
         formData.append('profilePicture', this.selectedFile);
         
         console.log('Starting upload...');
-        const response = await apiClient.fetch(`${baseURL}/api/upload-profile-picture`, {
+        const response = await apiClient.get(`${baseURL}/api/upload-profile-picture`, {
             method: 'POST',
             body: formData,
             credentials: 'include'
