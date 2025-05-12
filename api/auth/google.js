@@ -18,7 +18,7 @@ export default async function handler(req, res) {
 
   try {
     // Google OAuth2 configuration (use environment variables in production)
-    const googleClientId = process.env.GOOGLE_CLIENT_ID;
+    const googleClientId = process.env.GOOGLE_CLIENT_ID; 
     const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
     const redirectUri = process.env.GOOGLE_CALLBACK_URL;
 
