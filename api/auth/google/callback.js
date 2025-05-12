@@ -32,7 +32,7 @@ export default async function handler(req, res) {
       code,
       client_id: process.env.GOOGLE_CLIENT_ID,
       client_secret: process.env.GOOGLE_CLIENT_SECRET,
-      redirect_uri: `${process.env.API_URL || 'http://localhost:3000'}/api/auth/google/callback`,
+      redirect_uri: process.env.GOOGLE_CALLBACK_URL,
       grant_type: 'authorization_code'
     });
     
