@@ -1,6 +1,7 @@
 import { corsHeaders, handleCors } from '../utils/cors.js';
 import { query } from '../utils/db.js'
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrpyt'
 
 export default async function handler(req, res) {
   // CORS setup...
@@ -38,7 +39,12 @@ export default async function handler(req, res) {
       [email]
     );
 
-    if (rows.length === 0 || password !== rows[0].password) {
+    if (rows.length === 0) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, rows[0].password);
+    if (!isPasswordValid) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
