@@ -97,39 +97,27 @@ export default {
   
   methods: {
     async fetchUserProfile() {
-      const baseURL = import.meta.env.VITE_API_URL || '';
       try {
-        const response = await apiClient.get(`${baseURL}/api/me`);
-      
-        if (response.ok) {
-          // Try to check content type before parsing
-          const contentType = response.headers.get('content-type');
-          if (contentType && contentType.includes('application/json')) {
-            const userData = await response.data;
-            console.log('User data fetched:', userData);
-            console.log('User Picture:', userData.profile_picture);
-            
-            if (userData.profile_picture) {
-              this.currentPicture = userData.profile_picture;
-              
-              // Update localStorage
-              const storedData = JSON.parse(localStorage.getItem('userData') || '{}');
-              storedData.profile_picture = userData.profile_picture;
-              localStorage.setItem('userData', JSON.stringify(storedData));
-            }
-          } else {
-            // Log the actual response text for debugging
-            const text = await response.data;
-            console.error('Expected JSON but got:', text);
-          }
-        } else {
-          console.error('Failed to fetch user profile:', response.status);
-          // Log response text for more details
-          const text = await response.data;
-          console.error('Error response:', text);
+        const response = await apiClient.get('/api/me'); // no need for baseURL again
+        const userData = response.data;
+
+        console.log('User data fetched:', userData);
+        console.log('User Picture:', userData.profile_picture);
+
+        if (userData.profile_picture) {
+          this.currentPicture = userData.profile_picture;
+
+          // Update localStorage
+          const storedData = JSON.parse(localStorage.getItem('userData') || '{}');
+          storedData.profile_picture = userData.profile_picture;
+          localStorage.setItem('userData', JSON.stringify(storedData));
         }
       } catch (error) {
         console.error('Error fetching user profile:', error);
+        
+        if (error.response) {
+          console.error('Error response:', error.response.data);
+        }
       }
     },
     
@@ -173,78 +161,61 @@ export default {
     },
     
     async uploadPicture() {
-      const baseURL = import.meta.env.VITE_API_URL || '';
       if (!this.selectedFile) return;
-      
+
       this.uploading = true;
       this.error = null;
       this.success = null;
-      
+
       try {
         const formData = new FormData();
         formData.append('profilePicture', this.selectedFile);
-        
+
         console.log('Starting upload...');
-        const response = await apiClient.get(`${baseURL}/api/upload-profile-picture`, {
-            method: 'POST',
-            body: formData,
-            credentials: 'include'
+
+        const response = await apiClient.post('/api/upload-profile-picture', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
         });
-        
-        console.log('Response status:', response.status);
-        console.log('Response headers:', response.headers);
-        
-        const responseText = await response.data;
-        console.log('Raw response:', responseText);
-        
-        let data;
-        try {
-            data = JSON.parse(responseText);
-        } catch (jsonError) {
-            console.error('JSON parsing error:', jsonError);
-            throw new Error('Invalid server response');
-        }
-        
-        if (!response.ok) {
-            throw new Error(data.error || 'Failed to upload profile picture');
-        }
-        
+
+        const data = response.data;
         console.log('Upload response:', data);
-        
+
         // Update displayed picture
         this.currentPicture = data.profilePicture;
         this.currentPreview = null;
-        
+
         // Update stored user data
         const userData = JSON.parse(localStorage.getItem('userData') || '{}');
         userData.profile_picture = data.profilePicture;
         localStorage.setItem('userData', JSON.stringify(userData));
-        
+
         // Also update the user object in localStorage
         const user = JSON.parse(localStorage.getItem('user') || '{}');
         user.profile_picture = data.profilePicture;
         localStorage.setItem('user', JSON.stringify(user));
-        
+
         // Reset file input
         this.selectedFile = null;
         this.$refs.fileInput.value = '';
-        
+
         // Display success message
         this.success = 'Profile picture updated successfully!';
-        
+
         // Emit event for parent components
         this.$emit('picture-updated', data.profilePicture);
-        
+
         // Trigger global event
-        window.dispatchEvent(new CustomEvent('profile-picture-updated', { 
+        window.dispatchEvent(new CustomEvent('profile-picture-updated', {
           detail: { profilePicture: data.profilePicture }
         }));
-          
+
       } catch (error) {
-          console.error('Upload error:', error);
-          this.error = error.message || 'Failed to upload profile picture';
+        console.error('Upload error:', error);
+        this.error = error.response?.data?.error || error.message || 'Failed to upload profile picture';
       } finally {
-          this.uploading = false;
+        this.uploading = false;
       }
     }
   }
