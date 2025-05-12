@@ -19,4 +19,4 @@ const handleCors = (req, res) => {
   return false;
 };
 
-export { pool, authenticateJWT, corsHeaders, handleCors };
+export { corsHeaders, handleCors };
