@@ -1,7 +1,7 @@
 import { corsHeaders, handleCors } from '../utils/cors.js';
 import { query } from '../utils/db.js'
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'
 
 export default async function handler(req, res) {
   // CORS setup...
