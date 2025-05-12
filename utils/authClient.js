@@ -7,7 +7,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 export const useAuthStore = defineStore('authClient', {
   state: () => ({
     user: null,
-    token: null,
+    token: localStorage.getItem('token') || null,
     loading: false,
     error: null
   }),
@@ -41,10 +41,11 @@ export const useAuthStore = defineStore('authClient', {
       const storedUser = localStorage.getItem('user');
       const storedToken = localStorage.getItem('token');
       
-      if (storedUser) {
+      if (storedUser && storedToken) {
         try {
-          this.user = JSON.parse(storedUser);
           this.token = storedToken;
+          this.user = JSON.parse(storedUser);
+          
           
           // Validate with server that session/token is still valid
           await this.validateSession();

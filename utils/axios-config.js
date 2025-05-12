@@ -13,6 +13,7 @@ const apiClient = axios.create({
 // Request interceptor for API calls
 apiClient.interceptors.request.use(config => {
   const authStore = useAuthStore();
+  console.log('Auth token in interceptor:', authStore.token);
   
   // Add auth token if available
   if (authStore.token) {
