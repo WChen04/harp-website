@@ -105,7 +105,7 @@ export default {
           // Try to check content type before parsing
           const contentType = response.headers.get('content-type');
           if (contentType && contentType.includes('application/json')) {
-            const userData = await response.json();
+            const userData = await response.data();
             console.log('User data fetched:', userData);
             console.log('User Picture:', userData.profile_picture);
             
@@ -119,13 +119,13 @@ export default {
             }
           } else {
             // Log the actual response text for debugging
-            const text = await response.text();
+            const text = await response.data();
             console.error('Expected JSON but got:', text);
           }
         } else {
           console.error('Failed to fetch user profile:', response.status);
           // Log response text for more details
-          const text = await response.text();
+          const text = await response.data();
           console.error('Error response:', text);
         }
       } catch (error) {
@@ -194,7 +194,7 @@ export default {
         console.log('Response status:', response.status);
         console.log('Response headers:', response.headers);
         
-        const responseText = await response.text();
+        const responseText = await response.data();
         console.log('Raw response:', responseText);
         
         let data;
