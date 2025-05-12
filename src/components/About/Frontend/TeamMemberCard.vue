@@ -43,7 +43,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import axios from "axios";
+import apiClient from '../../../../utils/axios-config.js';
 
 const props = defineProps({
   member: Object, // member should have an 'id' field
@@ -56,7 +56,7 @@ async function fetchMemberImage() {
   try {
     const baseURL = import.meta.env.VITE_API_URL || '';
 
-    const response = await axios.get(`${baseURL}/api/team-member-image/${props.member.id}`, {
+    const response = await apiClient.get(`${baseURL}/api/team-member-image/${props.member.id}`, {
       responseType: 'blob' // Ensure binary data is received
     });
     

@@ -86,7 +86,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import apiClient from '../../utils/axios-config.js';
 
 export default {
   name: "RegisterPage",
@@ -113,7 +113,7 @@ export default {
 
       console.log("before response");
       try {
-        const response = await axios.post(
+        const response = await apiClient.post(
           `${baseURL}/api/register`,
           {
             fullName: this.fullName,
@@ -135,7 +135,7 @@ export default {
 
     async handleSocialRegister(provider) {
       try {
-        const response = await axios.post(
+        const response = await apiClient.post(
           `${baseURL}/api/social-register/${provider}`
         );
         if (response.data) {

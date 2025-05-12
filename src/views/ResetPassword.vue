@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import apiClient from '../../utils/axios-config.js';
 
 export default {
   name: 'ResetPassword',
@@ -73,7 +73,7 @@ export default {
           
           try {
               const token = this.$route.params.token;
-              const response = await axios.post(`${baseURL}/api/reset-password/${token}`, {
+              const response = await apiClient.post(`${baseURL}/api/reset-password/${token}`, {
                   password: this.password
               });
               

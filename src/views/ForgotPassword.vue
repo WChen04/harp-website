@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import apiClient from '../../utils/axios-config.js';
 import emailjs from "@emailjs/browser";
 
 export default {
@@ -62,7 +62,7 @@ export default {
 
       try {
         // First make the API call to generate token
-        const response = await axios.post(
+        const response = await apiClient.post(
           `${baseURL}/api/forgot-password`,
           {
             email: this.email,

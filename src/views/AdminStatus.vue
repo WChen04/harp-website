@@ -131,7 +131,7 @@
 </template>
   
 <script>
-import axios from 'axios';
+import apiClient from '../../utils/axios-config.js';
 import { useAuthStore } from '../../utils/authClient.js';
 import Header from "@/components/General/Header.vue";
 import Footer from "@/components/General/Footer.vue";
@@ -265,7 +265,7 @@ export default {
       this.error = null;
       
       try {
-        const response = await axios.get(`${baseURL}/api/admin/users`, {
+        const response = await apiClient.get(`${baseURL}/api/admin/users`, {
           withCredentials: true
         });
         
@@ -294,7 +294,7 @@ export default {
     async fetchCurrentUser() {
       const baseURL = import.meta.env.VITE_API_URL || '';
       try {
-        const response = await axios.get(`${baseURL}/api/me`, {
+        const response = await apiClient.get(`${baseURL}/api/me`, {
           withCredentials: true
         });
         this.currentUser = response.data;
@@ -319,7 +319,7 @@ export default {
       this.successMessage = null;
       
       try {
-        const response = await axios.put(`${baseURL}/api/admin/users/${user.email}/toggle-admin`, {}, {
+        const response = await apiClient.put(`${baseURL}/api/admin/users/${user.email}/toggle-admin`, {}, {
           withCredentials: true
         });
         

@@ -74,7 +74,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import { useAuthStore } from '../../utils/authClient.js';
 
 export default {

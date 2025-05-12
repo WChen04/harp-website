@@ -54,7 +54,7 @@
 </template>
   
 <script>
-import axios from 'axios';
+import apiClient from '../../../utils/axios-config.js';
 import ProfilePictureUpload from '../../views/ProfilePictureUpload.vue';
 
 export default {
@@ -111,7 +111,7 @@ export default {
       const baseURL = import.meta.env.VITE_API_URL || '';
       try {
         // First check if the user is logged in
-        const authCheckResponse = await fetch(`${baseURL}/api/auth-check`);
+        const authCheckResponse = await apiClient.get(`${baseURL}/api/auth-check`);
         
         if (!authCheckResponse.ok) {
           console.log('User not authenticated, redirecting to login...');
@@ -120,7 +120,7 @@ export default {
         }
         
         // Now try to load the user data
-        const response = await fetch(`${baseURL}/api/me`, {
+        const response = await apiClient.get(`${baseURL}/api/me`, {
           credentials: 'include'
         });
         
@@ -183,7 +183,7 @@ export default {
     
     async signOut() {
       try {
-        await axios.get(`${baseURL}/api/logout`, {
+        await apiClient.get(`${baseURL}/api/logout`, {
           withCredentials: true
         });
         console.log('Server logout successful');

@@ -110,7 +110,7 @@ import { ref, computed, onMounted } from "vue";
 import TeamMember from "@/components/About/Frontend/TeamMemberCard.vue";
 import Header from "@/components/General/Header.vue";
 import Footer from "@/components/General/Footer.vue";
-import axios from "axios";
+import apiClient from '../../utils/axios-config.js';
 
 const selectedFilter = ref("all");
 const teamMembers = ref([]);
@@ -141,7 +141,7 @@ async function fetchTeamMembers() {
     ) {
       url = `${baseURL}/api/team-members?semester=${selectedFilter.value}`;
     }
-    const response = await axios.get(url);
+    const response = await apiClient.get(url);
     teamMembers.value = response.data;
   } catch (error) {
     console.error("Error fetching team members:", error);

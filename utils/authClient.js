@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import axios from 'axios';
+import apiClient from './axios-config.js';
 
 // Get API base URL from environment variable or use default for local development
 const API_BASE_URL = import.meta.env.VITE_API_URL || '';
@@ -63,7 +63,7 @@ export const useAuthStore = defineStore('authClient', {
       try {
         // If we have a token, use it for JWT auth
         if (this.token) {
-          const response = await axios.get(`${API_BASE_URL}/api/me`, {
+          const response = await apiClient.get(`${API_BASE_URL}/api/me`, {
             headers: { ...this.authHeader }
           });
           
@@ -76,7 +76,7 @@ export const useAuthStore = defineStore('authClient', {
         } 
         // Fall back to session validation if no token (for compatibility)
         else {
-          const response = await axios.get(`${API_BASE_URL}/api/me`, {
+          const response = await apiClient.get(`${API_BASE_URL}/api/me`, {
             withCredentials: true
           });
           
@@ -98,7 +98,7 @@ export const useAuthStore = defineStore('authClient', {
       try {
         // Try using JWT token if available
         if (this.token) {
-          const response = await axios.get(`${API_BASE_URL}/api/me`, {
+          const response = await apiClient.get(`${API_BASE_URL}/api/me`, {
             headers: { ...this.authHeader }
           });
           
@@ -111,7 +111,7 @@ export const useAuthStore = defineStore('authClient', {
         } 
         // Fall back to session-based auth for compatibility
         else {
-          const response = await axios.get(`${API_BASE_URL}/api/me`, {
+          const response = await apiClient.get(`${API_BASE_URL}/api/me`, {
             withCredentials: true
           });
           
@@ -148,7 +148,7 @@ export const useAuthStore = defineStore('authClient', {
       this.error = null;
       
       try {
-        const response = await axios.post(`${API_BASE_URL}/api/login`, credentials);
+        const response = await apiClient.post(`${API_BASE_URL}/api/login`, credentials);
         
         // Handle JWT response
         if (response.data.token) {
@@ -174,13 +174,13 @@ export const useAuthStore = defineStore('authClient', {
       try {
         // If we have a token, use it for JWT logout
         if (this.token) {
-          await axios.post(`${API_BASE_URL}/api/logout`, {}, {
+          await aapiClient.post(`${API_BASE_URL}/api/logout`, {}, {
             headers: { ...this.authHeader }
           });
         } 
         // Fall back to session-based logout
         else {
-          await axios.post(`${API_BASE_URL}/api/logout`, {}, {
+          await apiClient.post(`${API_BASE_URL}/api/logout`, {}, {
             withCredentials: true
           });
         }
