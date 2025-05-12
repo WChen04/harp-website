@@ -1,6 +1,6 @@
-import { corsHeaders, handleCors } from '../utils/cors';
-import { query } from '../utils/db';
-import { authenticateJWT } from '../utils/auth';
+import { corsHeaders, handleCors } from '../utils/cors.js';
+import { query } from '../utils/db.js';
+import { authenticateJWT } from '../utils/auth.js';
 
 export default async function handler(req, res) {
   // Set CORS headers

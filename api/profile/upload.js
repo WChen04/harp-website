@@ -1,6 +1,6 @@
-import { corsHeaders, handleCors } from '../../utils/cors';
-import { authenticateJWT } from '../../utils/auth'
-import { query } from '../../utils/db';
+import { corsHeaders, handleCors } from '../../utils/cors.js';
+import { authenticateJWT } from '../../utils/auth.js'
+import { query } from '../../utils/db.js';
 import multer from 'multer';
 import { createRouter, expressWrapper } from 'next-connect'; 
 

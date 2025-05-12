@@ -1,4 +1,4 @@
-import { corsHeaders, handleCors } from '../../utils/cors';
+import { corsHeaders, handleCors } from '../../utils/cors.js';
 
 // This is a simple redirect to Google OAuth consent screen
 export default async function handler(req, res) {
@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     const googleClientId = process.env.GOOGLE_CLIENT_ID;
     const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
     const redirectUri = process.env.GOOGLE_CALLBACK_URL;
-      
+
     // Construct Google OAuth URL
     const GOOGLE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
     const scope = encodeURIComponent('profile email');
