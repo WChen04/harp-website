@@ -173,7 +173,7 @@ export default {
 
         console.log('Starting upload...');
 
-        const response = await apiClient.post('/api/upload-profile-picture', formData, {
+        const response = await apiClient.post('/api/profile/upload', formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
