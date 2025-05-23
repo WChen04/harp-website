@@ -47,7 +47,9 @@ export default async function handler(req, res) {
       user: {
         email: userData.email,
         full_name: userData.full_name,
-        profilePicture: profilePicture
+        profilePicture: profilePicture,
+        profilePictureType: userData.profile_picture_type,
+        profilePictureData: userData.profile_picture_data
       }
     });
 
