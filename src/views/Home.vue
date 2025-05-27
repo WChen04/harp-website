@@ -24,22 +24,34 @@ export default {
   <div>
     <Animation />
     <div class="harpstart">
-      <div class="harp">
+      <div class="harp-left">
         <h1 id="intro">HARP Research Inc.</h1>
         <div class="founderphotos">
-          <a href="https://www.linkedin.com/in/harper-chisari-117169164/" target="_blank" rel="noopener noreferrer">
+          <a
+            href="https://www.linkedin.com/in/harper-chisari-117169164/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <img
               src="../assets/HARPResearchLockUps/Founder/Harper.webp"
               alt="Founder 1"
             />
           </a>
-          <a href="https://www.linkedin.com/in/kevinscott2000/" target="_blank" rel="noopener noreferrer">
+          <a
+            href="https://www.linkedin.com/in/kevinscott2000/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <img
               src="../assets/HARPResearchLockUps/Founder/Kevin.webp"
               alt="Founder 2"
             />
           </a>
-          <a href="https://www.linkedin.com/in/yuvalshimoni/" target="_blank" rel="noopener noreferrer">
+          <a
+            href="https://www.linkedin.com/in/yuvalshimoni/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <img
               src="../assets/HARPResearchLockUps/Founder/Yuval.webp"
               alt="Founder 3"
@@ -47,25 +59,22 @@ export default {
           </a>
         </div>
         <div class="founderinfo">
-          <h1>FOUNDERS OF HARP</h1>
-          <h1>RESEARCH INC.</h1>
+          <h1 id="intro">FOUNDERS OF HARP RESEARCH INC.</h1>
         </div>
       </div>
 
-      <div class="harpright">
-        <div class="harpinfo">
-          <h1>
-            At HARP Research, we're leading the way in making AI smarter and
-            more accessible with our Polymorphic AI Framework—tailored solutions
-            now, and the future of Artificial General Intelligence tomorrow.
-          </h1>
-          <AboutUsButton />
-        </div>
+      <div class="harp-right">
+        <p class="harp-tagline">
+          At HARP Research, we're leading the way in making AI smarter and more
+          accessible with our Polymorphic AI Framework—tailored solutions now,
+          and the future of Artificial General Intelligence tomorrow.
+        </p>
+        <AboutUsButton />
       </div>
     </div>
 
     <div class="harpprojects">
-      <h1 id="intro2">Products</h1>
+      <h1 id="intro">Products</h1>
       <div class="harp2">
         <div class="vertical-line"></div>
 

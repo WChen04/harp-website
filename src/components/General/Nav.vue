@@ -121,11 +121,7 @@ export default {
     <nav :class="{ scrolled: isScrolled }">
       <div class="nav-left">
         <router-link class="navLink" to="/">
-          <img
-            src="../../assets/HARPResearchLockUps/LogoLockups/HARPRESEARCHLOGO.svg"
-            alt="HARP Logo"
-            class="logo"
-          />
+          <img src="/harplogo.png" alt="HARP Logo" class="logo" />
         </router-link>
         <router-link class="navLink" to="/about">About</router-link>
         <div class="navLink products" @click="toggleProductsDropdown">
