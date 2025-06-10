@@ -56,7 +56,7 @@ async function fetchMemberImage() {
   try {
     const baseURL = import.meta.env.VITE_API_URL || '';
 
-    const response = await apiClient.get(`${baseURL}/api/team-member-image/${props.member.id}`, {
+    const response = await apiClient.get(`${baseURL}/api/team-members/${props.member.id}/image`, {
       responseType: 'blob' // Ensure binary data is received
     });
     
