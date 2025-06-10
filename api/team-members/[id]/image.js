@@ -18,7 +18,10 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { id } = req.query;
+    const {
+      query: { id },
+      method,
+    } = req;
     console.log(`Fetching image for team_member_id: ${id}`);
 
     const result = await query(
@@ -35,7 +38,6 @@ export default async function handler(req, res) {
       // For binary data, we need to return it properly
       return res.status(200).send(Buffer.from(image_data));
     } else {
-      console.log("Image not found in image.js");
       return res.status(404).json({ error: "Image not found" });
     }
   } catch (error) {
