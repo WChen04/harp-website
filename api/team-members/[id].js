@@ -21,6 +21,7 @@ export default async function handler(req, res) {
     const { id } = req.query;
     console.log(`Fetching image for team_member_id: ${id}`);
 
+    console.log("During image call before query");
     const result = await query(
       "SELECT image_data, mime_type FROM team_member_images WHERE team_member_id = $1",
       [id]

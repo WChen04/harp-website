@@ -55,7 +55,7 @@ const memberImage = ref("");
 async function fetchMemberImage() {
   try {
     const baseURL = import.meta.env.VITE_API_URL || '';
-
+    console.log("Before the image call");
     const response = await apiClient.get(`${baseURL}/api/team-members/${props.member.id}`, {
       responseType: 'blob' // Ensure binary data is received
     });
