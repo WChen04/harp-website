@@ -138,6 +138,7 @@ export default {
         </div>
         <!-- <router-link class="navLink" to="/projects">Projects</router-link>-->
         <router-link class="navLink" to="/articles">Articles</router-link>
+        <router-link class="navLink" to="/internships">Internship</router-link>
         <div v-if="userIsAdmin">
           <router-link class="navLink" to="/admin/users"
             >Admin Status</router-link
