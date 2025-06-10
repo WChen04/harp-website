@@ -18,10 +18,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const {
-      query: { id },
-      method,
-    } = req;
+    const { id } = req.query;
     console.log(`Fetching image for team_member_id: ${id}`);
 
     const result = await query(
