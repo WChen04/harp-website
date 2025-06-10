@@ -1,0 +1,22 @@
+services:
+  backend:
+    build: ./Backend
+    env_file:
+      - .env
+    ports:
+      - "3001:3000"
+    networks:
+      - harp-network
+    
+  frontend:
+    build: ./Frontend
+    ports:
+      - "8081:80"
+    depends_on:
+      - backend
+    networks:
+      - harp-network
+
+networks:
+  harp-network:
+    driver: bridge
