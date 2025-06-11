@@ -7,11 +7,11 @@ services:
       - "3001:3000"
     networks:
       - harp-network
-    
+
   frontend:
     build: ./Frontend
     ports:
-      - "8888:80"
+      - "8888:8888"
     depends_on:
       - backend
     networks:

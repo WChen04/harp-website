@@ -6,7 +6,16 @@ import pg from "pg";
 import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
 import dotenv from "dotenv";
-dotenv.config({ path: "./.env" });
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const envPath = process.env.NODE_ENV === "production"
+  ? path.resolve(__dirname, ".env.production")
+  : path.resolve(__dirname, ".env.local");
+
+dotenv.config({ path: envPath });
 
 const app = express();
 const port = process.env.PORT || 5000;
