@@ -72,7 +72,7 @@ export default {
           
           try {
               const token = this.$route.params.token;
-              const response = await axios.post(`http://localhost:3000/api/reset-password/${token}`, {
+              const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/reset-password/${token}`, {
                   password: this.password
               });
               

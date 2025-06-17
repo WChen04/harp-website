@@ -62,7 +62,7 @@ export default {
       try {
         // First make the API call to generate token
         const response = await axios.post(
-          "http://localhost:3000/api/forgot-password",
+          `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/forgot-password`,
           {
             email: this.email,
           }

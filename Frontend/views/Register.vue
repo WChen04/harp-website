@@ -113,7 +113,7 @@ export default {
       console.log("before response");
       try {
         const response = await axios.post(
-          "http://localhost:3000/api/register",
+          `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/register`,
           {
             fullName: this.fullName,
             email: this.email,
@@ -135,7 +135,7 @@ export default {
     async handleSocialRegister(provider) {
       try {
         const response = await axios.post(
-          `http://localhost:3000/api/social-register/${provider}`
+          `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/social-register/${provider}`
         );
         if (response.data) {
           this.$router.push("/");
@@ -152,7 +152,7 @@ export default {
 
     initiateOAuth(provider) {
       // Redirect to backend OAuth endpoint
-      window.location.href = `http://localhost:3000/auth/${provider}`;
+      window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/auth/${provider}`;
     },
   },
 };

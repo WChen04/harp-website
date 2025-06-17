@@ -96,7 +96,7 @@ export default {
   methods: {
     async fetchUserProfile() {
       try {
-        const response = await fetch('http://localhost:3000/api/user', {
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/user`, {
           credentials: 'include'
         });
       
@@ -183,7 +183,7 @@ export default {
         formData.append('profilePicture', this.selectedFile);
         
         console.log('Starting upload...');
-        const response = await fetch('http://localhost:3000/api/upload-profile-picture', {
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/upload-profile-picture`, {
             method: 'POST',
             body: formData,
             credentials: 'include'
