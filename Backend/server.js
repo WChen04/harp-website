@@ -116,8 +116,8 @@ const initializeDatabase = async () => {
                 date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
                 read_time TEXT,
                 link TEXT,
-                "TopStory" BOOLEAN DEFAULT FALSE
-                search_vector TSVECTOR GENERATED ALWAYS AS (to_tsvector('english'::regconfig, (((title)::text || ' '::text) || intro))) STORED;
+                "TopStory" BOOLEAN DEFAULT FALSE,
+                search_vector TSVECTOR GENERATED ALWAYS AS (to_tsvector('english'::regconfig, (((title)::text || ' '::text) || intro))) STORED
             );
         `;
     await pool.query(createArticlesTableQuery);
