@@ -20,6 +20,17 @@ services:
     networks:
       - harp-network
 
+  python-tools:
+    build: ./python-tools
+    env_file:
+      - .env
+    volumes:
+      - ./Frontend/components/About:/app/scripts
+    networks:
+      - harp-network
+    profiles:
+      - tools
+
 networks:
   harp-network:
     driver: bridge
