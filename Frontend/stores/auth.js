@@ -45,7 +45,7 @@ export const useAuthStore = defineStore('auth', {
     
     async validateSession() {
       try {
-        const response = await axios.get('http://localhost:3000/api/me', {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/me`, {
           withCredentials: true
         });
         
@@ -67,7 +67,7 @@ export const useAuthStore = defineStore('auth', {
       this.error = null;
       
       try {
-        const response = await axios.get('http://localhost:3000/api/me', {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/me`, {
           withCredentials: true
         });
         
@@ -89,7 +89,7 @@ export const useAuthStore = defineStore('auth', {
     
     async logout() {
       try {
-        await axios.post('http://localhost:3000/api/logout', {}, {
+        await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/logout`, {}, {
           withCredentials: true
         });
         this.user = null;

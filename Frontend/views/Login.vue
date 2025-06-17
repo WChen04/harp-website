@@ -93,7 +93,7 @@ export default {
 
       try {
         const response = await axios.post(
-          "http://localhost:3000/api/login",
+          `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/login`,
           {
             email: this.email,
             password: this.password,
@@ -120,7 +120,7 @@ export default {
 
     handleSocialLogin(provider) {
       if (provider === "google") {
-        window.location.href = "http://localhost:3000/auth/google";
+        window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/auth/google`;
         return;
       }
 

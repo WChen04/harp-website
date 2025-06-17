@@ -10,6 +10,8 @@ services:
 
   frontend:
     build: ./Frontend
+    environment:
+      - VITE_API_URL=${VITE_API_URL}
     ports:
       - "8888:8888"
     depends_on:
