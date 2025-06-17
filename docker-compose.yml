@@ -9,9 +9,10 @@ services:
       - harp-network
 
   frontend:
-    build: ./Frontend
-    environment:
-      - VITE_API_URL=${VITE_API_URL}
+    build: 
+      context: ./Frontend
+      args:
+        - VITE_API_URL=${VITE_API_URL}
     ports:
       - "8888:8888"
     depends_on:
