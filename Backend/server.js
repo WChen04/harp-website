@@ -488,13 +488,38 @@ app.get("/api/team-members", async (req, res) => {
   }
 });
 
-// API endpoint to fetch team member profile images from the team_member_images table
-// Note: This assumes that the images are stored as binary data in the database.
-// Refer to convert_images.py to see how images are converted to binary data and stored in the database.
+// In-memory cache for frequently accessed images
+const imageCache = new Map();
+const CACHE_MAX_SIZE = 50; // Cache up to 50 images
+const CACHE_TTL = 60 * 60 * 1000; // 1 hour
+
+// API endpoint to fetch team member profile images with caching
 app.get("/api/team-member-image/:id", async (req, res) => {
   try {
     const memberId = req.params.id;
-    console.log(`Fetching image for team_member_id: ${memberId}`);
+    const cacheKey = `image_${memberId}`;
+    
+    // Check in-memory cache first
+    const cached = imageCache.get(cacheKey);
+    if (cached && (Date.now() - cached.timestamp) < CACHE_TTL) {
+      console.log(`Serving cached image for member ${memberId}`);
+      
+      // Set headers
+      res.setHeader("Content-Type", cached.mime_type);
+      res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+      res.setHeader("ETag", cached.etag);
+      res.setHeader("X-Cache", "HIT");
+      
+      // Check if client has cached version
+      const ifNoneMatch = req.headers['if-none-match'];
+      if (ifNoneMatch === cached.etag) {
+        return res.status(304).end();
+      }
+      
+      return res.send(cached.image_data);
+    }
+
+    console.log(`Fetching image from database for member ${memberId}`);
 
     const result = await pool.query(
       "SELECT image_data, mime_type FROM team_member_images WHERE team_member_id = $1",
@@ -503,7 +528,35 @@ app.get("/api/team-member-image/:id", async (req, res) => {
 
     if (result.rows.length > 0) {
       const { image_data, mime_type } = result.rows[0];
+      const etag = `"${memberId}-${Buffer.from(image_data).length}"`;
+      
+      // Cache the result (with size limit)
+      if (imageCache.size >= CACHE_MAX_SIZE) {
+        // Remove oldest entry
+        const firstKey = imageCache.keys().next().value;
+        imageCache.delete(firstKey);
+      }
+      
+      imageCache.set(cacheKey, {
+        image_data,
+        mime_type: mime_type || "image/png",
+        etag,
+        timestamp: Date.now()
+      });
+      
+      // Set response headers
       res.setHeader("Content-Type", mime_type || "image/png");
+      res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+      res.setHeader("ETag", etag);
+      res.setHeader("Last-Modified", new Date().toUTCString());
+      res.setHeader("X-Cache", "MISS");
+      
+      // Check if client has cached version
+      const ifNoneMatch = req.headers['if-none-match'];
+      if (ifNoneMatch === etag) {
+        return res.status(304).end();
+      }
+      
       res.send(image_data);
     } else {
       res.status(404).json({ error: "Image not found" });
@@ -512,6 +565,16 @@ app.get("/api/team-member-image/:id", async (req, res) => {
     console.error("Error fetching image:", error);
     res.status(500).json({ error: "Internal server error" });
   }
+});
+
+// Cache stats endpoint for monitoring
+app.get("/api/image-cache-stats", (req, res) => {
+  res.json({
+    cacheSize: imageCache.size,
+    maxSize: CACHE_MAX_SIZE,
+    cacheTTL: CACHE_TTL,
+    entries: Array.from(imageCache.keys())
+  });
 });
 //Admin only Routes:
 

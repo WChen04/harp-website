@@ -358,6 +358,7 @@ import TeamMember from "../components/About/Frontend/TeamMemberCard.vue";
 import { useAuthStore } from '../stores/auth.js';
 import Header from "../components/General/Header.vue";
 import Footer from "../components/General/Footer.vue";
+import { imagePreloader } from "../components/About/Frontend/imagePreloader.js";
 import axios from "axios";
 
 // Access the auth store
@@ -440,9 +441,25 @@ async function fetchTeamMembers() {
     
     const response = await axios.get(url);
     teamMembers.value = response.data;
+    
+    // Preload images for better performance
+    preloadTeamMemberImages();
   } catch (error) {
     console.error("Error fetching team members:", error);
   }
+}
+
+// Preload team member images
+async function preloadTeamMemberImages() {
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+  const imageUrls = teamMembers.value.map(member => 
+    `${apiUrl}/api/team-member-image/${member.id}`
+  );
+  
+  // Preload images in background (don't await to avoid blocking UI)
+  imagePreloader.preloadImages(imageUrls, 2).catch(error => {
+    console.warn("Some images failed to preload:", error);
+  });
 }
 
 function handleDropdownChange(event) {

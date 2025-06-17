@@ -2,9 +2,16 @@
   <div class="member">
     <div class="member-card">
       <div class="card front">
+        <div v-if="isImageLoading" class="image-skeleton">
+          <div class="skeleton-loader"></div>
+        </div>
         <img
+          v-show="!isImageLoading"
           :src="imageUrl"
           :alt="`${member.name}'s profile image`"
+          loading="lazy"
+          @load="onImageLoad"
+          @error="onImageError"
         />
         <div class="member-box"></div>
       </div>
@@ -59,6 +66,7 @@ const emit = defineEmits(['edit', 'delete']);
 
 const authStore = useAuthStore();
 const imageUrl = ref('');
+const isImageLoading = ref(true);
 // Add a timestamp to force image cache refresh when needed
 const imageTimestamp = ref(Date.now());
 
@@ -74,29 +82,33 @@ function confirmDelete() {
   emit('delete', props.member.id);
 }
 
-// Generate the URL with a cache-busting timestamp
+// Generate the URL with optimized caching
 function generateImageUrl() {
   const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-  return `${apiUrl}/api/team-member-image/${props.member.id}?t=${imageTimestamp.value}`;
+  // Remove cache-busting for better caching, use version-based cache invalidation instead
+  return `${apiUrl}/api/team-member-image/${props.member.id}`;
+}
+
+// Image loading handlers
+function onImageLoad() {
+  isImageLoading.value = false;
+}
+
+function onImageError() {
+  isImageLoading.value = false;
+  // Fallback to a default image if loading fails
+  imageUrl.value = '../../../assets/Photos/profile.png';
 }
 
 // Fetch the team member image
 async function fetchMemberImage() {
   try {
-    // Set the URL with cache-busting parameter
+    isImageLoading.value = true;
+    // Set the URL - no need to pre-fetch with axios, let browser handle it natively
     imageUrl.value = generateImageUrl();
-    
-    // Fetch the image to ensure it's in browser cache
-    const response = await axios.get(imageUrl.value, {
-      responseType: 'blob'
-    });
-    
-    // If we want to use object URLs instead of direct linking (optional)
-    // imageUrl.value = URL.createObjectURL(response.data);
   } catch (error) {
-    console.error("Error fetching team member image:", error);
-    // Fallback to a default image if fetch fails
-    imageUrl.value = '../../../assets/default-profile.png';
+    console.error("Error generating team member image URL:", error);
+    onImageError();
   }
 }
 
@@ -214,5 +226,32 @@ onMounted(() => {
 
 .delete-btn:hover {
   background-color: #c0392b;
+}
+
+/* Image loading skeleton */
+.image-skeleton {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.skeleton-loader {
+  width: 80%;
+  height: 80%;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 50%;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 </style>
