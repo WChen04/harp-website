@@ -109,7 +109,7 @@ export default {
     async loadUserData() {
       try {
         // First check if the user is logged in
-        const authCheckResponse = await fetch('http://localhost:3000/api/auth-check', {
+        const authCheckResponse = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/auth-check`, {
           credentials: 'include'
         });
         
@@ -120,7 +120,7 @@ export default {
         }
         
         // Now try to load the user data
-        const response = await fetch('http://localhost:3000/api/user', {
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/user`, {
           credentials: 'include'
         });
         
@@ -183,7 +183,7 @@ export default {
     
     async signOut() {
       try {
-        await axios.get('http://localhost:3000/api/logout', {
+        await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/logout`, {
           withCredentials: true
         });
         console.log('Server logout successful');

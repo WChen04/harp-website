@@ -474,7 +474,7 @@ function openDeleteConfirmation(member) {
 }
 function editMember(member) {
   // Fetch the latest member data first
-  axios.get(`http://localhost:3000/api/team-members/${member.id}`)
+  axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/team-members/${member.id}`)
     .then(response => {
       // Copy member data to editing form
       editingMember.value = { ...response.data };
@@ -496,7 +496,7 @@ function editMember(member) {
 
 async function fetchMemberImageForEdit(memberId) {
   try {
-    const apiUrl = 'http://localhost:3000';
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
     const imageUrl = `${apiUrl}/api/team-member-image/${memberId}`;
     
     const response = await axios.get(imageUrl, {
@@ -538,7 +538,7 @@ async function updateTeamMember() {
     // Submit to API using environment variable for API URL
     console.log("Updating team member data...");
     const response = await axios.put(
-      `http://localhost:3000/api/team-members/${editingMember.value.id}`, 
+      `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/team-members/${editingMember.value.id}`, 
       formData, 
       {
         headers: {

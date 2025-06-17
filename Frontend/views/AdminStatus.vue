@@ -136,7 +136,7 @@ import { useAuthStore } from '../stores/auth.js';
 import Header from "../components/General/Header.vue";
 import Footer from "../components/General/Footer.vue";
 
-axios.defaults.baseURL = 'http://localhost:3000';
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 export default {
   components: {
@@ -266,7 +266,7 @@ export default {
       this.error = null;
       
       try {
-        const response = await axios.get('http://localhost:3000/api/admin/users', {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/admin/users`, {
           withCredentials: true
         });
         
@@ -294,7 +294,7 @@ export default {
     
     async fetchCurrentUser() {
       try {
-        const response = await axios.get('http://localhost:3000/api/me', {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/me`, {
           withCredentials: true
         });
         this.currentUser = response.data;
@@ -318,7 +318,7 @@ export default {
       this.successMessage = null;
       
       try {
-        const response = await axios.put(`http://localhost:3000/api/admin/users/${user.email}/toggle-admin`, {}, {
+        const response = await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/admin/users/${user.email}/toggle-admin`, {}, {
           withCredentials: true
         });
         
