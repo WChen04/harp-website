@@ -61,7 +61,7 @@ app.use(
       secure: process.env.NODE_ENV === "production",
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
-      sameSite: "lax",
+      sameSite: "none",
     },
     store: new pgSession({
       pool: pool, // Use the PostgreSQL pool

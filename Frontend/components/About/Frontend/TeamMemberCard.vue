@@ -52,7 +52,6 @@
 
 <script setup>
 import { computed, ref, onMounted, watch } from "vue";
-import axios from "axios";
 import { useAuthStore } from '../../../stores/auth.js';
 
 const props = defineProps({
@@ -104,7 +103,6 @@ function onImageError() {
 async function fetchMemberImage() {
   try {
     isImageLoading.value = true;
-    // Set the URL - no need to pre-fetch with axios, let browser handle it natively
     imageUrl.value = generateImageUrl();
   } catch (error) {
     console.error("Error generating team member image URL:", error);

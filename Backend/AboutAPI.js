@@ -116,17 +116,24 @@ function AboutAPI(pool) {
   // GET a specific team member by ID
   router.get("/team-members/:id", async (req, res) => {
     try {
-      const { id } = req.params;
-      const result = await pool.query(
-        "SELECT * FROM team_members WHERE id = $1",
-        [id]
-      );
+    const { id } = req.params;
+    const result = await pool.query(
+      "SELECT image_data, mime_type FROM team_member_images WHERE team_member_id = $1",
+      [id]
+    );
 
-      if (result.rows.length === 0) {
-        return res.status(404).json({ error: "Team member not found" });
-      }
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Image not found" });
+    }
 
-      res.json(result.rows[0]);
+    const { image_data, mime_type } = result.rows[0];
+
+    // ✅ Add these headers
+    res.setHeader("Content-Type", mime_type || "image/png");
+    res.setHeader("Cache-Control", "public, max-age=86400"); // cache for 1 day
+    res.setHeader("Content-Length", image_data.length); // optional but good
+
+    res.send(image_data);
     } catch (error) {
       console.error("Error fetching team member:", error);
       res.status(500).json({ error: error.message });
