@@ -1,0 +1,90 @@
+.internship-item-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-right: 5rem;
+    padding-left: 5rem;
+    margin-top: 4rem;
+    gap: 2rem;
+}
+
+.internship-item-text {
+    flex: 1.75;
+    color: white;
+}
+
+.software-header {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    line-height: 1.4;
+}
+
+.software-description {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.business-header {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    line-height: 1.4;
+}
+
+.business-description {
+    font-size: .9rem;
+}
+
+.research-header {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    line-height: 1.4;
+}
+
+.research-description {
+    font-size: .9rem;
+    line-height: 1.6;
+}
+.PAP-header {
+    font-size: 2.25rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    line-height: 1.4;
+}
+
+.PAP-description {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.internship-item-qualities {
+    flex: 1;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    color: white;
+    background: linear-gradient(135deg, #2a4271 0%, #050f22 100%);
+    align-self: center;
+}
+
+.internship-item-qualities h2 {
+    font-size: 1.5rem;
+    color: rgb(92, 159, 255);
+    margin-bottom: 1rem;
+    font-weight: bold;
+}
+
+.internship-item-qualities ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.internship-item-qualities li {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+

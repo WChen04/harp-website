@@ -4,6 +4,7 @@ import About from "@/views/About.vue";
 import ViewPoint from "@/components/ViewPoint/ViewPoint.vue";
 import Projects from "@/views/Projects.vue";
 import Articles from "@/views/Articles.vue";
+import Internships from "@/views/Internships.vue";
 import Contact from "@/views/Contact.vue";
 import Login from "@/views/Login.vue";
 import Register from "@/views/Register.vue";
@@ -50,6 +51,11 @@ const routes = [
     path: "/articles",
     name: "Articles",
     component: Articles,
+  },
+  {
+    path: "/internships",
+    name: "Internships",
+    component: Internships,
   },
   {
     path: "/contact",

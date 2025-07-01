@@ -1,0 +1,98 @@
+.internship-top-section {
+    color: white;
+    padding: 4rem 6rem;
+}
+
+.internship-intro {
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2rem;
+}
+
+.label {
+    font-size: 1rem;
+}
+
+.intro-text h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.description {
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.apply-btn-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    margin-top: 1.5rem;
+}
+
+.internship-bottom-section {
+    position: relative; /* Required for pseudo-element to anchor */
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background-image: url("@/assets/HARPResearchLockUps/Photos/prometheus.webp");
+    background-size: cover;
+    background-position: center;
+    padding: 4rem 6rem;
+    color: white;
+    z-index: 0; /* allow child elements to layer on top */
+}
+
+.internship-bottom-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5); /* This is the key: semi-transparent black overlay */
+    z-index: 1; /* below content */
+}
+
+.internship-bottom-section > * {
+    position: relative;
+    z-index: 2; /* put content above overlay */
+}
+
+.positions-column {
+    flex: 1;
+}
+
+.positions-column h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.positions-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.positions-list li {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.learn-more-column {
+    flex: 1;
+    text-align: right;
+}
+
+.learn-more-column h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.arrow-icon {
+    font-size: 2rem;
+    display: inline-block;
+}
+
+.internships {
+    margin-bottom: 5rem;
+}
