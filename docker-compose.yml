@@ -9,7 +9,7 @@ services:
       - harp-network
 
   frontend:
-    build: 
+    build:
       context: ./Frontend
       args:
         - VITE_API_URL=${VITE_API_URL}
@@ -31,6 +31,21 @@ services:
     profiles:
       - tools
 
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    ports:
+      - "10000:10000" # Blob service
+      - "10001:10001" # Queue service
+      - "10002:10002" # Table service
+    volumes:
+      - azurite_data:/data
+    networks:
+      - harp-network
+    command: "azurite-blob --blobHost 0.0.0.0 --blobPort 10000"
+
 networks:
   harp-network:
     driver: bridge
+
+volumes:
+  azurite_data:
