@@ -1,0 +1,51 @@
+services:
+  backend:
+    build: ./Backend
+    env_file:
+      - .env
+    ports:
+      - "3001:3000"
+    networks:
+      - harp-network
+
+  frontend:
+    build:
+      context: ./Frontend
+      args:
+        - VITE_API_URL=${VITE_API_URL}
+    ports:
+      - "8888:8888"
+    depends_on:
+      - backend
+    networks:
+      - harp-network
+
+  python-tools:
+    build: ./python-tools
+    env_file:
+      - .env
+    volumes:
+      - ./Frontend/components/About:/app/scripts
+    networks:
+      - harp-network
+    profiles:
+      - tools
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    ports:
+      - "10000:10000" # Blob service
+      - "10001:10001" # Queue service
+      - "10002:10002" # Table service
+    volumes:
+      - azurite_data:/data
+    networks:
+      - harp-network
+    command: "azurite-blob --blobHost 0.0.0.0 --blobPort 10000"
+
+networks:
+  harp-network:
+    driver: bridge
+
+volumes:
+  azurite_data:
