@@ -4,7 +4,7 @@
       <div class="footer-logo">
         <router-link class="navLink" to="/"
           ><img
-            src="../../assets/HARPResearchLockUps/LogoLockups/HARPLogoShirtRes.svg"
+            src="../../assets/HARPResearchLockUps/LogoLockups/HARPUpdatedScienceLogo%20(1).svg"
             alt="HARP Logo"
             class="logo"
         /></router-link>
