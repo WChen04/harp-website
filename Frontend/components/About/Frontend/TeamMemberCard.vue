@@ -81,12 +81,6 @@ function confirmDelete() {
   emit('delete', props.member.id);
 }
 
-// Generate the URL with optimized caching
-function generateImageUrl() {
-  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-  // Remove cache-busting for better caching, use version-based cache invalidation instead
-  return `${apiUrl}/api/team-member-image/${props.member.id}`;
-}
 
 // Image loading handlers
 function onImageLoad() {
@@ -103,12 +97,21 @@ function onImageError() {
 async function fetchMemberImage() {
   try {
     isImageLoading.value = true;
-    imageUrl.value = generateImageUrl();
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    const response = await fetch(`${apiUrl}/api/team-member-image/${props.member.id}`);
+    const data = await response.json();
+
+    if (response.ok && data.imageUrl) {
+      imageUrl.value = data.imageUrl;
+    } else {
+      throw new Error("Invalid image response");
+    }
   } catch (error) {
-    console.error("Error generating team member image URL:", error);
+    console.error("Error loading team member image:", error);
     onImageError();
   }
 }
+
 
 // Watch for changes in member data to refresh the image when needed
 watch(() => props.member, (newVal, oldVal) => {

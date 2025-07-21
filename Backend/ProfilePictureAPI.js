@@ -3,6 +3,8 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+import { uploadFile, deleteFile, generateBlobUrl } from "./services/azureStorage.js";
+
 
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
@@ -91,19 +93,15 @@ export default (pool) => {
             // Read the file into a buffer
             const fileBuffer = fs.readFileSync(req.file.path);
             
-            // Convert the buffer to a Base64 string
-            const base64Image = fileBuffer.toString('base64');
+            const { blobName, url } = await uploadFile(fileBuffer, req.file.originalname, req.file.mimetype);
             
             // Create a data URL for the response
-            const dataUrl = `data:${req.file.mimetype};base64,${base64Image}`;
-            
-            console.log('Attempting to update profile picture for user:', req.user.email);
-            
-            // Update user's profile picture in the database
             await pool.query(
                 'UPDATE "Login" SET profile_picture_data = $1, profile_picture_type = $2 WHERE email = $3',
-                [base64Image, req.file.mimetype, req.user.email]
+                [blobName, req.file.mimetype, req.user.email]
             );
+            
+            console.log('Attempting to update profile picture for user:', req.user.email);
             
             // Delete the temporary file
             if (fs.existsSync(req.file.path)) {
@@ -112,7 +110,7 @@ export default (pool) => {
             
             return res.json({
                 message: 'Profile picture uploaded successfully',
-                profilePicture: dataUrl
+                profilePicture: url
             });
         } catch (error) {
             console.error('Profile picture upload error:', error);
@@ -132,8 +130,7 @@ export default (pool) => {
             });
         }
     });
-    
-    // Get user profile endpoint
+
     // Get user profile endpoint
     router.get('/user', async (req, res) => {
         if (req.isAuthenticated()) {
@@ -145,18 +142,19 @@ export default (pool) => {
                 );
                 
                 if (result.rows.length > 0) {
-                    const userData = result.rows[0];
-                    
-                    // Create a data URL if profile picture exists
-                    if (userData.profile_picture_data && userData.profile_picture_type) {
-                        userData.profile_picture = `data:${userData.profile_picture_type};base64,${userData.profile_picture_data}`;
+                    const userData = result.rows[0];   
+
+                    if (userData.profile_picture_data) {
+                        // Treat profile_picture_data as the blob name stored earlier
+                        userData.profile_picture = generateBlobUrl(userData.profile_picture_data);
                     }
-                    
-                    // Remove the raw data before sending to client
+
+                    // Optionally remove blob name and mime type from response
                     delete userData.profile_picture_data;
                     delete userData.profile_picture_type;
-                    
+
                     res.json(userData);
+
                 } else {
                     res.status(404).json({ error: 'User not found' });
                 }

@@ -1,5 +1,7 @@
 import express from "express";
 import multer from "multer";
+import { uploadFile, deleteFile, generateBlobUrl } from "./services/azureStorage.js";
+
 
 // Configure multer for image uploads
 const storage = multer.memoryStorage();
@@ -89,28 +91,18 @@ function AboutAPI(pool) {
     }
   });
   router.get("/team-member-image/:id", async (req, res) => {
-    try {
-      const { id } = req.params;
-      const result = await pool.query(
-        "SELECT image_data, mime_type FROM team_member_images WHERE team_member_id = $1",
-        [id]
-      );
-  
-      if (result.rows.length === 0) {
-        return res.status(404).json({ error: "Image not found" });
-      }
-  
-      const { image_data, mime_type } = result.rows[0];
-      
-      // Set the content type
-      res.setHeader('Content-Type', mime_type);
-      
-      // Convert Buffer data to send as response
-      res.send(image_data);
-    } catch (error) {
-      console.error("Error fetching team member image:", error);
-      res.status(500).json({ error: error.message });
-    }
+    const { id } = req.params;
+    const result = await pool.query(
+      "SELECT image_data, mime_type FROM team_member_images WHERE team_member_id = $1",
+      [id]
+    );
+
+    if (result.rows.length === 0) return res.status(404).json({ error: "Image not found" });
+
+    const { image_data: blobName, mime_type } = result.rows[0];
+    const imageUrl = generateBlobUrl(blobName);
+
+    res.json({ imageUrl }); // Client will fetch image directly from Azurite
   });
 
   // GET a specific team member by ID
@@ -199,11 +191,13 @@ function AboutAPI(pool) {
         // Handle image upload if provided
         if (req.file) {
           console.log("Inserting image data");
+          console.log("Uploading image to Azurite...");
+          const { blobName, url } = await uploadFile(req.file.buffer, req.file.originalname, req.file.mimetype);
           await client.query(
             `INSERT INTO team_member_images 
              (team_member_id, image_data, mime_type) 
              VALUES ($1, $2, $3)`,
-            [memberId, req.file.buffer, req.file.mimetype]
+            [memberId, blobName, req.file.mimetype]
           );
           console.log("Image inserted");
         }
