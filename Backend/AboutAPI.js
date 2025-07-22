@@ -106,35 +106,34 @@ function AboutAPI(pool) {
   });
 
   // GET a specific team member by ID
+  // GET a specific team member by ID
   router.get("/team-members/:id", async (req, res) => {
     try {
-    const { id } = req.params;
-    const result = await pool.query(
-      "SELECT image_data, mime_type FROM team_member_images WHERE team_member_id = $1",
-      [id]
-    );
+      const { id } = req.params;
+      const result = await pool.query(
+        "SELECT image_data, mime_type FROM team_member_images WHERE team_member_id = $1",
+        [id]
+      );
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: "Image not found" });
-    }
+      if (result.rows.length === 0) {
+        return res.status(404).json({ error: "Image not found" });
+      }
 
-    const { image_data, mime_type } = result.rows[0];
+      const { image_data: blobName, mime_type } = result.rows[0]; // ✅ Only destructure once
 
-    // ✅ Add these headers
-    res.setHeader("Content-Type", mime_type || "image/png");
-    res.setHeader("Cache-Control", "public, max-age=86400"); // cache for 1 day
-    res.setHeader("Content-Length", image_data.length); // optional but good
+      // Optional headers if needed for reference
+      res.setHeader("Cache-Control", "public, max-age=86400");
 
-    const { image_data: blobName, mime_type } = result.rows[0];
-    const imageUrl = generateBlobUrl(blobName);
+      const imageUrl = generateBlobUrl(blobName);
 
-    res.json({ imageUrl });
+      res.json({ imageUrl });
 
     } catch (error) {
       console.error("Error fetching team member:", error);
       res.status(500).json({ error: error.message });
     }
   });
+
 
   // POST a new team member (admin only)
   // Use multer middleware for single file upload in the route handler
