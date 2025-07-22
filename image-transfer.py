@@ -24,8 +24,8 @@ def main():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # Replace with your table and column names
-    cursor.execute("SELECT id, image_name, image_data, image_type FROM your_table_name")
+    # Change Table name and columns
+    cursor.execute("SELECT image_id, file_name, image_data, mime_type FROM team_member_images")
 
     rows = cursor.fetchall()
 

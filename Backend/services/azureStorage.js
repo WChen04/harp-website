@@ -5,59 +5,55 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const AZURITE_CONNECTION_STRING = process.env.AZURITE_CONNECTION_STRING || 
-  "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;" +
-  "AccountKey=Eby8vdM02xNo" +  // default dev key
-  "BlobEndpoint=http://azurite:10000/devstoreaccount1;";
+const AZURE_CONNECTION_STRING = process.env.AZURE_CONNECTION_STRING;
+const AZURE_ACCOUNT_NAME = process.env.AZURE_ACCOUNT_NAME; // Add this to .env if not already
+const VALID_CONTAINERS = ["articleimages", "profileimages", "aboutimages"];
 
-const containerName = "uploads"; // make sure this exists or handle creation
-
-const blobServiceClient = BlobServiceClient.fromConnectionString(AZURITE_CONNECTION_STRING);
-const containerClient = blobServiceClient.getContainerClient(containerName);
-
-// Ensure container exists
-async function ensureContainerExists() {
-  console.log("Checking if container exists!");
-  const exists = await containerClient.exists();
-  if (!exists) {
-    await containerClient.create();
-    console.log(`🪣 Created container "${containerName}"`);
-  }
-  console.log("Container Exists");
+if (!AZURE_CONNECTION_STRING || !AZURE_ACCOUNT_NAME) {
+  throw new Error("Missing AZURE_CONNECTION_STRING or AZURE_ACCOUNT_NAME in environment variables.");
 }
 
-export async function uploadFile(buffer, originalName, mimetype) {
-  console.log("📤 Uploading to Azurite...");
+const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_CONNECTION_STRING);
 
-  await ensureContainerExists();
+/**
+ * Uploads a file to the specified Azure Blob container.
+ */
+export async function uploadFile(buffer, originalName, mimetype, containerName) {
+  if (!VALID_CONTAINERS.includes(containerName)) {
+    throw new Error(`Invalid container: ${containerName}`);
+  }
 
-  console.log("Hi");
-  const blobName = `${Date.now()}-${originalName}`;
+  const containerClient = blobServiceClient.getContainerClient(containerName);
+  const blobName = `${Date.now()}-${uuidv4()}-${originalName}`;
   const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
-  console.log("Uploading Data");
   await blockBlobClient.uploadData(buffer, {
     blobHTTPHeaders: {
       blobContentType: mimetype,
     },
   });
 
-  console.log(`✅ Uploaded blob: ${blobName}`);
+  console.log(`✅ Uploaded blob: ${blobName} to container: ${containerName}`);
 
   return {
     blobName,
-    url: blockBlobClient.url,
+    url: generateBlobUrl(blobName, containerName),
   };
 }
 
-
-export async function deleteFile(blobName) {
+/**
+ * Deletes a file from the specified container.
+ */
+export async function deleteFile(blobName, containerName) {
+  const containerClient = blobServiceClient.getContainerClient(containerName);
   const blockBlobClient = containerClient.getBlockBlobClient(blobName);
   const response = await blockBlobClient.deleteIfExists();
   return response.succeeded;
 }
 
-export function generateBlobUrl(blobName) {
-  // For Azurite, blobs are accessible without SAS
-  return `http://127.0.0.1:10000/devstoreaccount1/${containerName}/${blobName}`;
+/**
+ * Generates a public blob URL (use SAS tokens for private blobs).
+ */
+export function generateBlobUrl(blobName, containerName) {
+  return `https://${AZURE_ACCOUNT_NAME}.blob.core.windows.net/${containerName}/${blobName}`;
 }

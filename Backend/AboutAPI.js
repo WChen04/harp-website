@@ -125,7 +125,11 @@ function AboutAPI(pool) {
     res.setHeader("Cache-Control", "public, max-age=86400"); // cache for 1 day
     res.setHeader("Content-Length", image_data.length); // optional but good
 
-    res.send(image_data);
+    const { image_data: blobName, mime_type } = result.rows[0];
+    const imageUrl = generateBlobUrl(blobName);
+
+    res.json({ imageUrl });
+
     } catch (error) {
       console.error("Error fetching team member:", error);
       res.status(500).json({ error: error.message });
@@ -228,18 +232,24 @@ function AboutAPI(pool) {
 
       const client = await pool.connect();
       try {
-        await client.query("BEGIN");
+        const { blobName, url } = await uploadFile(req.file.buffer, req.file.originalname, req.file.mimetype);
 
-        const { id } = req.params;
-        const { 
-          name, 
-          role, 
-          github_link, 
-          linkedin_link, 
-          semester, 
-          member_type, 
-          founder 
-        } = req.body;
+        if (imageCheck.rows.length > 0) {
+          await client.query(
+            `UPDATE team_member_images 
+            SET image_data = $1, mime_type = $2 
+            WHERE team_member_id = $3`,
+            [blobName, req.file.mimetype, id]
+          );
+        } else {
+          await client.query(
+            `INSERT INTO team_member_images 
+            (team_member_id, image_data, mime_type) 
+            VALUES ($1, $2, $3)`,
+            [id, blobName, req.file.mimetype]
+          );
+        }
+
 
         // Validate required fields
         if (!name || !role || !semester || !member_type) {
