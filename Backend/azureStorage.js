@@ -13,6 +13,7 @@ const envPath = process.env.NODE_ENV === "production"
 
 dotenv.config({ path: envPath });
 
+const BASE_BLOB_URL = "http://giggityglen.internal.harpresearch.ai:8888/";
 
 const AZURE_CONNECTION_STRING = process.env.AZURE_CONNECTION_STRING;
 const AZURE_ACCOUNT_NAME = process.env.AZURE_ACCOUNT_NAME; // Add this to .env if not already
@@ -64,5 +65,5 @@ export async function deleteFile(blobName, containerName) {
  * Generates a public blob URL (use SAS tokens for private blobs).
  */
 export function generateBlobUrl(blobName, containerName) {
-  return `https://${AZURE_ACCOUNT_NAME}.blob.core.windows.net/${containerName}/${blobName}`;
+  return `${BASE_BLOB_URL}/${containerName}/${blobName}`;
 }

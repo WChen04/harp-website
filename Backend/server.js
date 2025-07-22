@@ -490,18 +490,18 @@ app.get("/api/team-member-image/:id", async (req, res) => {
   try {
     const memberId = req.params.id;
     const result = await pool.query(
-      "SELECT image_data FROM team_member_images WHERE team_member_id = $1",
+      "SELECT blob_name, mime_type FROM team_members WHERE id = $1",
       [memberId]
     );
 
-    if (result.rows.length === 0) {
+    if (result.rows.length === 0 || !result.rows[0].blob_name) {
       return res.status(404).json({ error: "Image not found" });
     }
 
-    const blobName = result.rows[0].image_data;
-    const imageUrl = generateBlobUrl(blobName);
+    const { blob_name, mime_type } = result.rows[0];
+    const imageUrl = generateBlobUrl(blob_name, "aboutimages");
 
-    res.json({ imageUrl });
+    res.json({ imageUrl, mime_type });
   } catch (error) {
     console.error("Error fetching image:", error);
     res.status(500).json({ error: "Internal server error" });
