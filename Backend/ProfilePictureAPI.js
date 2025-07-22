@@ -3,7 +3,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-import { uploadFile, deleteFile, generateBlobUrl } from "./services/azureStorage.js";
+import { uploadFile, deleteFile, generateBlobUrl } from "./azureStorage.js";
 
 
 const router = express.Router();

@@ -2,8 +2,17 @@
 import { BlobServiceClient } from "@azure/storage-blob";
 import { v4 as uuidv4 } from "uuid";
 import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 
-dotenv.config();
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const envPath = process.env.NODE_ENV === "production"
+  ? path.resolve(__dirname, ".env.production")
+  : path.resolve(__dirname, ".env.local");
+
+dotenv.config({ path: envPath });
+
 
 const AZURE_CONNECTION_STRING = process.env.AZURE_CONNECTION_STRING;
 const AZURE_ACCOUNT_NAME = process.env.AZURE_ACCOUNT_NAME; // Add this to .env if not already

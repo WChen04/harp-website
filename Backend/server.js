@@ -8,7 +8,7 @@ import connectPgSimple from "connect-pg-simple";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
-import { uploadFile, generateBlobUrl } from "./services/azureStorage.js";
+import { uploadFile, generateBlobUrl } from "./azureStorage.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
