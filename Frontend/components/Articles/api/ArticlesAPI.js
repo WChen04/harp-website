@@ -28,15 +28,15 @@ export const articleAPI = {
     },
     async getArticleImage(articleId) {
         try {
-            const response = await axios.get(`${API_URL}/articles/${articleId}/image`, {
-                responseType: 'blob'
-            });
-            return URL.createObjectURL(response.data);
+            const response = await axios.get(`${API_URL}/articles/${articleId}/image`);
+            // Backend returns { imageUrl: "https://..." }
+            return response.data.imageUrl || null;
         } catch (error) {
             console.error('Error retrieving article image:', error);
             return null;
         }
     },
+
     async getTopStories() {
         try {
             console.log('Sending request for Top Stories to:', `${API_URL}/articles/top`);

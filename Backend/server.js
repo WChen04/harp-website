@@ -122,27 +122,6 @@ const initializeDatabase = async () => {
             );
         `;
     await pool.query(createArticlesTableQuery);
-
-    // New ArticleImages table
-    const createArticleImagesTableQuery = `
-            CREATE TABLE IF NOT EXISTS "public"."ArticleImages" (
-                id SERIAL PRIMARY KEY,
-                article_id INTEGER NOT NULL,
-                image_data BYTEA NOT NULL,
-                image_mimetype VARCHAR(100) NOT NULL,
-                uploaded_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (article_id) REFERENCES "public"."Articles"(id) ON DELETE CASCADE
-            );
-        `;
-    await pool.query(createArticleImagesTableQuery);
-
-    // Create index on article_id in ArticleImages table
-    const createArticleImagesIndexQuery = `
-            CREATE INDEX IF NOT EXISTS idx_article_images_article_id 
-            ON "public"."ArticleImages"(article_id);
-        `;
-    await pool.query(createArticleImagesIndexQuery);
-
     console.log("Database initialized successfully");
   } catch (error) {
     console.error("Error initializing database:", error);
@@ -311,21 +290,21 @@ app.get("/articles/:id/image", async (req, res) => {
     const { id } = req.params;
 
     const result = await pool.query(
-      'SELECT image_data FROM "ArticleImages" WHERE article_id = $1',
+      'SELECT blob_name FROM "Articles" WHERE id = $1',
       [id]
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ error: "No image found" });
+      return res.status(404).json({ error: "No image found for this article." });
     }
 
-    const blobName = result.rows[0].image_data;
-    const imageUrl = generateBlobUrl(blobName);
+    const blobName = result.rows[0].blob_name;
+    const imageUrl = generateBlobUrl(blobName, "articleimages"); // Generates https://.../articleimages/blobName
 
-    res.json({ imageUrl });
+    res.status(200).json({ imageUrl });
   } catch (error) {
-    console.error("Error retrieving image:", error);
-    res.status(500).json({ error: "Failed to retrieve image", details: error.message });
+    console.error("Error retrieving article image:", error);
+    res.status(500).json({ error: "Internal Server Error", details: error.message });
   }
 });
 
@@ -394,18 +373,19 @@ app.get("/articles/search", async (req, res) => {
 
 app.delete('/articles/:id', async (req, res) => {
    const client = await pool.connect();
+   const { id } = req.params;
 
   try {
     await client.query("BEGIN");
 
     // Get the blob name from the image table
     const imageRes = await client.query(
-      'SELECT image_data FROM "ArticleImages" WHERE article_id = $1',
+      'SELECT blob_name FROM "Articles" WHERE id = $1',
       [id]
     );
 
     if (imageRes.rows.length > 0) {
-      const blobName = imageRes.rows[0].image_data;
+      const blobName = imageRes.rows[0].blob_name;
       await deleteFile(blobName, "articleimages"); // Delete from Azure
     }
 
@@ -557,15 +537,27 @@ app.post("/admin/articles/add", upload.single("image"), async (req, res) => {
   const client = await pool.connect();
 
   try {
-    // Start a transaction
     await client.query("BEGIN");
 
-    // Extract article data
     const { title, intro, date, read_time, link, TopStory } = req.body;
 
-    // Insert article first
+    let blobName = null;
+    let imageType = null;
+
+    // If an image is uploaded, upload to Azure and get blob info
+    if (req.file) {
+      const uploadResult = await uploadFile(
+        req.file.buffer,
+        req.file.originalname,
+        req.file.mimetype,
+        "articleimages"
+      );
+      blobName = uploadResult.blobName;
+      imageType = req.file.mimetype;
+    }
+
     const articleResult = await client.query(
-      'INSERT INTO "Articles" (title, intro, date, read_time, link, "TopStory") VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
+      'INSERT INTO "Articles" (title, intro, date, read_time, link, "TopStory", blob_name, image_type) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id',
       [
         title,
         intro,
@@ -573,28 +565,18 @@ app.post("/admin/articles/add", upload.single("image"), async (req, res) => {
         read_time,
         link,
         TopStory === "true" || TopStory === true,
+        blobName,
+        imageType,
       ]
     );
 
-    const articleId = articleResult.rows[0].id;
-
-    // Handle image if uploaded
-    if (req.file) {
-      const { blobName } = await uploadFile(req.file.buffer, req.file.originalname, req.file.mimetype);
-      await client.query(
-        'INSERT INTO "ArticleImages" (article_id, image_data, image_mimetype) VALUES ($1, $2, $3)',
-        [articleId, blobName, req.file.mimetype]
-      );
-    }
-
-    // Commit the transaction
     await client.query("COMMIT");
 
-    res
-      .status(201)
-      .json({ id: articleId, message: "Article added successfully" });
+    res.status(201).json({
+      id: articleResult.rows[0].id,
+      message: "Article added successfully",
+    });
   } catch (error) {
-    // Rollback the transaction in case of error
     await client.query("ROLLBACK");
     console.error("Error adding article:", error);
     res
@@ -604,6 +586,7 @@ app.post("/admin/articles/add", upload.single("image"), async (req, res) => {
     client.release();
   }
 });
+
 
 app.get("/", (req, res) => {
   res.json({ message: "Backend is running" });
