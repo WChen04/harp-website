@@ -25,19 +25,20 @@ def main():
     cursor = conn.cursor()
 
     # Change Table name and columns
-    cursor.execute("SELECT image_id, file_name, image_data, mime_type FROM team_member_images")
+    cursor.execute('SELECT email, profile_picture_data, profile_picture_type FROM "Login"')
 
     rows = cursor.fetchall()
 
     blob_service_client = BlobServiceClient.from_connection_string(AZURE_CONNECTION_STRING)
 
     for row in rows:
-        record_id, image_name, image_data, image_type = row
+        image_name, image_data, image_type = row
         if not image_data or not image_name:
             continue
 
         try:
-            upload_to_azure(blob_service_client, AZURE_CONTAINER_NAME, image_name, image_data, image_type)
+            image_new_name = image_name +".png"
+            upload_to_azure(blob_service_client, AZURE_CONTAINER_NAME, image_new_name, image_data, image_type)
         except Exception as e:
             print(f"❌ Error uploading {image_name}: {e}")
 

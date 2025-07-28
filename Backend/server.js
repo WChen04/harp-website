@@ -8,7 +8,7 @@ import connectPgSimple from "connect-pg-simple";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
-import { uploadFile, generateBlobUrl } from "./azureStorage.js";
+import { uploadFile, generateBlobUrl, deleteFile } from "./azureStorage.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -250,7 +250,7 @@ app.get("/api/user", (req, res) => {
     res.json({
       email: req.user.email,
       full_name: req.user.full_name,
-      profile_picture: req.user.profile_picture,
+      profile_picture: generateBlobUrl(req.user.blob_name, "profileimages"),
       is_admin: req.user.is_admin,
     });
   } else {
@@ -263,13 +263,12 @@ app.get("/api/me", (req, res) => {
   if (!req.isAuthenticated() || !req.user) {
     return res.status(401).json({ error: "Not authenticated" });
   }
-
   // Return user data (omit sensitive info)
   return res.json({
     id: req.user.id,
     email: req.user.email,
     full_name: req.user.full_name,
-    profile_picture: req.user.profile_picture,
+    profile_picture: generateBlobUrl(req.user.blob_name, "profileimages"),
     is_admin: req.user.is_admin || false,
   });
 });
@@ -394,19 +393,33 @@ app.get("/articles/search", async (req, res) => {
 });
 
 app.delete('/articles/:id', async (req, res) => {
-  const articleId = req.params.id;
+   const client = await pool.connect();
 
   try {
-    const success = await deleteArticleById(articleId); // You define this function
+    await client.query("BEGIN");
 
-    if (!success) {
-      return res.status(404).json({ error: 'Article not found' });
+    // Get the blob name from the image table
+    const imageRes = await client.query(
+      'SELECT image_data FROM "ArticleImages" WHERE article_id = $1',
+      [id]
+    );
+
+    if (imageRes.rows.length > 0) {
+      const blobName = imageRes.rows[0].image_data;
+      await deleteFile(blobName, "articleimages"); // Delete from Azure
     }
 
-    res.status(200).json({ message: `Article ${articleId} deleted successfully.` });
-  } catch (err) {
-    console.error('Error deleting article:', err);
-    res.status(500).json({ error: 'Failed to delete article.' });
+    // Delete the article (this will also delete the image row due to ON DELETE CASCADE)
+    const result = await client.query('DELETE FROM "Articles" WHERE id = $1', [id]);
+
+    await client.query("COMMIT");
+    return result.rowCount > 0;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("Error in deleteArticleById:", error);
+    throw error;
+  } finally {
+    client.release();
   }
 });
 
